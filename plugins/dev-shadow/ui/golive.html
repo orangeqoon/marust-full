@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>本番切り替え</title>
+  <link rel="stylesheet" href="golive.css">
+</head>
+<body>
+  <h1>本番切り替え</h1>
+  <div class="controls">
+    <label for="site">サイト</label>
+    <select id="site" aria-label="サイト"></select>
+    <button type="button" id="refresh">更新</button>
+  </div>
+  <p id="status" class="hint" aria-live="polite"></p>
+  <div id="steps"></div>
+  <p class="hint">案内だけです。モードの変更や配信の操作はしません（モードは「モード」の画面で）。</p>
+  <script src="theme-apply.js"></script>
+  <script src="golive.js"></script>
+</body>
+</html>

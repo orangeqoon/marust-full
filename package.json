@@ -1,0 +1,48 @@
+{
+  "name": "marust",
+  "version": "0.2.6",
+  "marustReleasesRepo": "orangeqoon/marust-full",
+  "private": false,
+  "description": "marust (丸スト): OBS から複数の配信サイトへ同時に配信するときの操作をまとめる Windows のアプリ",
+  "main": "electron-main.js",
+  "bin": {
+    "marust": "cli/marust.js"
+  },
+  "scripts": {
+    "start": "node main.js",
+    "test": "node test/run-all.js",
+    "marust": "node cli/marust.js",
+    "map": "node cli/code-map.js",
+    "check": "node test/check-syntax.js && tsc --noEmit -p .",
+    "test:e2e": "node test/e2e/flow.test.js",
+    "test:l11a": "node test/l11a-destination-setkey.test.js && node plugins/sites/rumble/test/l11a-prepare-slot.test.js",
+    "test:l11b": "node test/l11b-login-column.test.js",
+    "start:app": "electron .",
+    "start:headless": "electron . --headless",
+    "build": "node cli/build-edition.js",
+    "build:core": "node cli/build-core.js",
+    "pack:plugins": "node cli/pack-plugins.js",
+    "test:security": "node --test test/security/api-permissions.test.js && node --test test/security/plugins.test.js && node --test test/security/transport.test.js && node --test test/security/xss.test.js && node --test test/security/logs.test.js && node --test test/security/gateway.test.js && node --test test/security/paths.test.js",
+    "autocast": "node cli/autocast.js",
+    "new-plugin": "node cli/new-plugin.js",
+    "export:public": "node cli/export-public.js"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "20.19.43",
+    "electron": "^30.5.1",
+    "electron-packager": "^17.1.2",
+    "typescript": "7.0.2"
+  },
+  "dependencies": {
+    "dockview": "^8.4.0",
+    "obs-websocket-js": "^5.0.8",
+    "ws": "^8.22.0",
+    "yauzl": "3.4.0"
+  },
+  "marustEdition": "full",
+  "marustPluginCount": 37
+}

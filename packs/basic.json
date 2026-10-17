@@ -1,0 +1,11 @@
+{
+  "pack": "basic",
+  "version": 1,
+  "plugins": [
+    "backup",
+    "theme-default",
+    "theme-light-large",
+    "ui-standard",
+    "update-check"
+  ]
+}

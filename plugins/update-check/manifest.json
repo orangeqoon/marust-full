@@ -1,0 +1,27 @@
+{
+  "id": "update-check",
+  "name": "更新の確認",
+  "category": "tool",
+  "tags": [
+    "更新"
+  ],
+  "version": "1.0.0",
+  "tier": "basic",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "integration",
+  "defaultMode": "live",
+  "audience": "public",
+  "stability": "stable",
+  "api": {
+    "namespaces": [
+      "update"
+    ],
+    "modeGated": true
+  },
+  "coreApi": 2,
+  "needs": [
+    "api.register"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "id": "site-login",
+  "name": "サイトのログイン",
+  "category": "login",
+  "for": [
+    "*"
+  ],
+  "tags": [
+    "ログイン"
+  ],
+  "version": "1.0.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "integration",
+  "provides": [
+    "site.login@1"
+  ],
+  "defaultMode": "live",
+  "audience": "public",
+  "stability": "stable",
+  "secrets": [
+    "youtube.oauth",
+    "google.oauth",
+    "twitch.oauth",
+    "kick.oauth"
+  ],
+  "needs": [
+    "external.open",
+    "api.call",
+    "api.register",
+    "secrets"
+  ],
+  "external": {
+    "hosts": [
+      "accounts.google.com",
+      "id.twitch.tv",
+      "id.kick.com"
+    ]
+  },
+  "api": {
+    "namespaces": [
+      "auth",
+      "sites"
+    ],
+    "calls": [
+      "sites.loginFacts"
+    ],
+    "modeGated": true
+  },
+  "coreApi": 2
+}

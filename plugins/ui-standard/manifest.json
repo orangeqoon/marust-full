@@ -1,0 +1,46 @@
+{
+  "id": "ui-standard",
+  "name": "丸ストの標準画面",
+  "version": "1.0.1",
+  "manifestVersion": 2,
+  "coreApi": 2,
+  "kind": "shell",
+  "tier": "basic",
+  "audience": "public",
+  "stability": "stable",
+  "isDefault": true,
+  "shell": {
+    "label": "標準の画面",
+    "template": "template.html",
+    "scripts": [
+      "strings.js",
+      "core/state.js",
+      "core/util.js",
+      "core/parent-actions.js",
+      "core/panels.js",
+      "core/dock.js",
+      "view-dock.js",
+      "menubar.js",
+      "setup.js",
+      "panels/emergency.js",
+      "panels/destinations.js",
+      "panels/features.js",
+      "panels/plugin-manager.js",
+      "panels/approvals.js",
+      "panels/secrets.js",
+      "panels/obs-connect.js",
+      "panels/site-add.js",
+      "panels/clients.js",
+      "panels/sites.js",
+      "panels/home.js",
+      "panels/about.js",
+      "panels/migration.js",
+      "shell-settings.js",
+      "hub.js"
+    ],
+    "styles": [
+      "hub.css"
+    ],
+    "layout": "default-layout.json"
+  }
+}

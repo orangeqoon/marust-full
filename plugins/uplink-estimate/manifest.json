@@ -1,0 +1,59 @@
+{
+  "id": "uplink-estimate",
+  "name": "回線の余裕",
+  "category": "tool",
+  "tags": [
+    "回線",
+    "上り"
+  ],
+  "version": "1.0.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "ui",
+  "feature": {
+    "label": "回線の余裕",
+    "hint": "使う配信先のビットレートを足して、上りの速さと比べます（外へは通信しません）",
+    "level": "standard",
+    "activation": "live",
+    "group": "uplink",
+    "order": 79,
+    "openPanel": "plugin:uplink-estimate:main"
+  },
+  "provides": [
+    "ui.panel@1"
+  ],
+  "panels": [
+    {
+      "name": "main",
+      "title": "回線の余裕",
+      "file": "ui/panel.html",
+      "aliases": [
+        "uplink"
+      ]
+    }
+  ],
+  "ui": {
+    "relay": [
+      "uplink.setSettings"
+    ]
+  },
+  "defaultMode": "legacy",
+  "audience": "public",
+  "stability": "stable",
+  "api": {
+    "namespaces": [
+      "uplink"
+    ],
+    "calls": [
+      "engine.targetRates"
+    ]
+  },
+  "coreApi": 2,
+  "needs": [
+    "api.call",
+    "api.register",
+    "storage"
+  ]
+}

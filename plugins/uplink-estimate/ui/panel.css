@@ -1,0 +1,18 @@
+:root { color-scheme: dark; font-family: "Segoe UI", sans-serif; background: var(--bg, #141820); color: var(--text, #e7ecf5); --ok: #7ad08a; }
+body { margin: 16px; }
+h1 { margin: 0 0 12px; font-size: 18px; font-weight: 600; }
+
+.setup { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: flex-end; margin: 8px 0; }
+.setup label { display: flex; flex-direction: column; gap: 4px; color: var(--muted, #9aa6bd); font-size: 0.9rem; }
+.actions { margin: 10px 0; }
+input, button { font: inherit; color: inherit; background: var(--input-bg, #0d1118); border: 1px solid var(--line, #2a3140); border-radius: 8px; padding: 6px 10px; }
+button { cursor: pointer; }
+button:disabled { opacity: 0.5; cursor: default; }
+button.primary { background: #2c5fd6; border-color: #3b70ea; }
+button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px solid var(--accent, #7aa2ff); outline-offset: 2px; }
+.hint { color: var(--muted, #9aa6bd); min-height: 1.2em; }
+.broadcast-ok { color: var(--ok); }
+.broadcast-ng { color: var(--danger, #ff8f8f); }
+table { border-collapse: collapse; margin-top: 8px; }
+td { padding: 4px 12px 4px 0; border-bottom: 1px solid var(--line, #2a3140); font-size: 0.9rem; }
+.site-off { color: var(--muted, #9aa6bd); }

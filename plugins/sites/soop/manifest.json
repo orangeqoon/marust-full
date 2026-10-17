@@ -1,0 +1,70 @@
+{
+  "id": "soop",
+  "name": "SOOP",
+  "category": "destination",
+  "version": "0.1.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "secrets": [
+    "cookies.soop-main",
+    "capture.soop-main.soop-save"
+  ],
+  "roles": {
+    "site": {
+      "main": "site.js",
+      "provides": [
+        "stream.site@1",
+        "ui.panel@1"
+      ],
+      "secrets": [
+        "cookies.soop-main",
+        "capture.soop-main.soop-save"
+      ],
+      "defaultMode": "legacy",
+      "actions": {
+        "getStatus": "read"
+      },
+      "panels": [
+        {
+          "name": "status",
+          "title": "SOOP",
+          "file": "ui/panel.html"
+        }
+      ],
+      "needs": [
+        "secrets"
+      ]
+    }
+  },
+  "audience": "public",
+  "stability": "experimental",
+  "site": {
+    "id": "soop",
+    "name": "SOOP",
+    "order": 10,
+    "tier": "extra",
+    "ingest": [
+      {
+        "label": "標準",
+        "url": "rtmp://stream.soop.live/app/",
+        "helpUrl": "https://github.com/obsproject/obs-studio/blob/master/plugins/rtmp-services/data/services.json"
+      }
+    ],
+    "keyHelpUrl": null,
+    "addHint": "サーバーは OBS の一覧と同じものです。ストリームキーは SOOP の配信の設定の画面で確かめて、下の欄に貼ってください。",
+    "tosUrl": null,
+    "login": {
+      "type": "cookie",
+      "needed": "optional",
+      "for": [
+        "題名"
+      ]
+    },
+    "apiHosts": [
+      "api-broadcast.sooplive.com",
+      "live.sooplive.co.kr"
+    ]
+  },
+  "coreApi": 2
+}

@@ -1,0 +1,78 @@
+{
+  "id": "kukulu",
+  "name": "kukulu",
+  "category": "destination",
+  "version": "0.1.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "secrets": [
+    "kukulu.config"
+  ],
+  "roles": {
+    "site": {
+      "main": "site.js",
+      "provides": [
+        "stream.site@1",
+        "ui.panel@1"
+      ],
+      "secrets": [
+        "kukulu.config"
+      ],
+      "defaultMode": "legacy",
+      "actions": {
+        "getStatus": "read"
+      },
+      "panels": [
+        {
+          "name": "status",
+          "title": "kukulu",
+          "file": "ui/panel.html"
+        }
+      ],
+      "needs": [
+        "secrets"
+      ]
+    },
+    "sink": {
+      "name": "kukulu 送信",
+      "main": "sink.js",
+      "provides": [
+        "chat.sink@1"
+      ],
+      "secrets": [
+        "kukulu.config"
+      ],
+      "defaultMode": "legacy",
+      "actions": {
+        "getStatus": "read"
+      },
+      "needs": [
+        "secrets"
+      ]
+    }
+  },
+  "audience": "public",
+  "stability": "experimental",
+  "site": {
+    "id": "kukulu",
+    "name": "kukulu",
+    "order": 7,
+    "tier": "extra",
+    "ingest": [],
+    "keyHelpUrl": null,
+    "addHint": "このサイトのサーバーの URL とキーは、サイトの配信の設定の画面で確かめて、下の欄に貼ってください。",
+    "tosUrl": null,
+    "login": {
+      "type": "config",
+      "needed": "optional",
+      "for": [
+        "題名"
+      ]
+    },
+    "apiHosts": [
+      "live.erinn.biz"
+    ]
+  },
+  "coreApi": 2
+}

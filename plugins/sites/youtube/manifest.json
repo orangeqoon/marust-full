@@ -1,0 +1,138 @@
+{
+  "id": "youtube",
+  "name": "YouTube",
+  "category": "destination",
+  "version": "0.2.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "secrets": [
+    "youtube.oauth"
+  ],
+  "roles": {
+    "site": {
+      "main": "site.js",
+      "provides": [
+        "stream.site@1",
+        "ui.panel@1"
+      ],
+      "secrets": [
+        "youtube.oauth"
+      ],
+      "defaultMode": "legacy",
+      "timeouts": {
+        "updateMetadata": 30000,
+        "getStatus": 20000
+      },
+      "actions": {
+        "getStatus": "read"
+      },
+      "panels": [
+        {
+          "name": "status",
+          "title": "YouTube",
+          "file": "ui/panel.html"
+        }
+      ],
+      "needs": [
+        "secrets"
+      ]
+    },
+    "sink": {
+      "name": "YouTube コメント送信",
+      "main": "sink.js",
+      "provides": [
+        "chat.sink@1"
+      ],
+      "secrets": [
+        "youtube.oauth"
+      ],
+      "defaultMode": "legacy",
+      "timeouts": {
+        "sendComment": 30000,
+        "getStatus": 20000
+      },
+      "actions": {
+        "getStatus": "read"
+      },
+      "needs": [
+        "secrets"
+      ]
+    },
+    "slot": {
+      "name": "YouTube の自動枠取り",
+      "main": "slot.js",
+      "feature": {
+        "label": "YouTube の自動枠取り",
+        "hint": "配信のたびに、YouTube の枠を自動で取ります（ログインが必要）",
+        "activation": "guide",
+        "group": "autocast",
+        "order": 20,
+        "needs": [
+          "login:youtube"
+        ],
+        "openPanel": "plugin:site-youtube:status",
+        "tip": "YouTube の配信の枠を、OBS で配信を始めたときに丸ストが自動で作れます（長時間の切り替えも自動）。使いますか？"
+      },
+      "provides": [
+        "stream.slot@1"
+      ],
+      "needs": [
+        "obs.read",
+        "obs.streamControl",
+        "destinations",
+        "events.emit",
+        "secrets",
+        "storage"
+      ],
+      "secrets": [
+        "youtube.oauth"
+      ],
+      "timeouts": {
+        "prepareBroadcast": 5000,
+        "verifyLive": 20000,
+        "endBroadcast": 5000
+      },
+      "configSchema": "config.schema.json",
+      "defaultMode": "legacy",
+      "actions": {
+        "getStatus": "read",
+        "setConfig": "write",
+        "createTestSlot": "write"
+      }
+    }
+  },
+  "audience": "public",
+  "stability": "stable",
+  "site": {
+    "id": "youtube",
+    "name": "YouTube",
+    "order": 2,
+    "autoSlot": true,
+    "tier": "core",
+    "ingest": [
+      {
+        "label": "RTMPS（暗号化。おすすめ）",
+        "url": null,
+        "helpUrl": "https://support.google.com/youtube/answer/10364924"
+      }
+    ],
+    "keyHelpUrl": "https://support.google.com/youtube/answer/10364924",
+    "tosUrl": "https://www.youtube.com/t/terms",
+    "addHint": "YouTube Studio の配信の設定で「自動停止」をオフにしてください（送りが一瞬止まっても枠が終わらなくなります）。",
+    "login": {
+      "type": "oauth",
+      "needed": "optional",
+      "for": [
+        "題名",
+        "カテゴリ",
+        "コメント送信"
+      ]
+    },
+    "apiHosts": [
+      "oauth2.googleapis.com",
+      "youtube.googleapis.com"
+    ]
+  },
+  "coreApi": 2
+}

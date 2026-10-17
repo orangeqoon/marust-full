@@ -1,0 +1,39 @@
+{
+  "id": "layout-table",
+  "name": "表の並べ方",
+  "version": "1.0.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "kind": "layout",
+  "audience": "public",
+  "stability": "stable",
+  "description": "配信先の表を左に大きく、ホームと題名・コメントを右に並べる見本。",
+  "layout": {
+    "label": "表の並べ方",
+    "levels": [
+      "standard",
+      "advanced"
+    ],
+    "placements": [
+      {
+        "panel": "destinations"
+      },
+      {
+        "panel": "home",
+        "beside": "destinations",
+        "direction": "right"
+      },
+      {
+        "panel": "plugin:bulk-title:main",
+        "beside": "home",
+        "direction": "below"
+      },
+      {
+        "panel": "plugin:comment-send:main",
+        "beside": "plugin:bulk-title:main",
+        "direction": "within"
+      }
+    ]
+  },
+  "coreApi": 2
+}

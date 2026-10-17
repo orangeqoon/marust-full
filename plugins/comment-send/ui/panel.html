@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>コメント</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <main class="chat-card">
+    <h1>コメント</h1>
+    <div class="onecomme-notice" id="chat-onecomme" hidden>
+      <p class="hint" id="chat-onecomme-line">コメントを受け取る「わんコメ」とまだつながっていません。 <button type="button" class="select-all-btn" id="chat-onecomme-open" aria-expanded="false">入れ方を見る</button></p>
+      <div id="chat-onecomme-steps" hidden>
+        <ol class="hint">
+          <li>わんコメの公式サイト（onecomme.com）の「ダウンロード」から、自分の PC 用（Windows または macOS）を入れます。</li>
+          <li>わんコメを起動します。</li>
+          <li>丸ストの上級の細かさで「接続端末」を開き、「わんコメをつなぐ」を押します。出たコードを、わんコメ側の丸ストの連携の設定画面に入れます。</li>
+          <li>つながると、わんコメのコメントがここに流れ、この案内は消えます。</li>
+        </ol>
+        <p class="hint">公式サイト: <code>https://onecomme.com/</code>（ダウンロードは <code>https://onecomme.com/download</code>）。くわしくは、上のメニュー「ヘルプ → わんコメの入れ方」。</p>
+      </div>
+    </div>
+    <div class="chat-selector">
+      <div class="selector-header">
+        <span title="チェックを付けたサイトへ、下の欄の文を同時に書き込みます。">送信先</span>
+        <span>
+          <button type="button" class="select-all-btn" id="chat-all">全部</button>
+          <span class="sep">|</span>
+          <button type="button" class="select-all-btn" id="chat-none">なし</button>
+        </span>
+      </div>
+      <div class="platform-pills" id="chat-sites"></div>
+    </div>
+    <div class="chat-stream-container" id="chat-list"></div>
+    <div id="chat-send-results" aria-live="polite"></div>
+    <div class="chat-input-bar">
+      <input class="chat-input" id="chat-text" type="text" maxlength="200" autocomplete="off" placeholder="送るコメントを入力（Enter で送信）">
+      <button class="send-button" id="chat-send" type="button" title="選んだサイトへ送信 (Enter)" aria-label="送信">
+        <svg class="send-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+      </button>
+    </div>
+  </main>
+  <script src="bridge.js"></script>
+  <script src="panel.js"></script>
+</body>
+</html>

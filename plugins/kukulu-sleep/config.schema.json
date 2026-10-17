@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "kukulu-sleep",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "sleepWords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "寝る",
+        "昼寝",
+        "sleeping",
+        "nap"
+      ],
+      "description": "睡眠判定の語。省略時は NeonTimer と同じ並び。配列を置くとその並びに入れ替わる（空配列は一度も睡眠にしない）。"
+    }
+  }
+}

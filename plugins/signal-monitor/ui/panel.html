@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>回線の見張り</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <h1>回線の見張り</h1>
+  <dl>
+    <dt>今の状態</dt>
+    <dd id="state" class="state" aria-live="polite">-</dd>
+    <dt>最後に状態が変わった時刻</dt>
+    <dd id="at">-</dd>
+    <dt>輻輳（outputCongestion）</dt>
+    <dd id="congestion">-</dd>
+    <dt>スキップ率</dt>
+    <dd id="skipped">-</dd>
+    <dt>再接続</dt>
+    <dd id="reconnecting">-</dd>
+    <dt>モード</dt>
+    <dd id="mode">-</dd>
+  </dl>
+  <p class="note">表示だけです。モードの変更や OBS の操作はできません。</p>
+  <script src="theme-apply.js"></script>
+  <script src="panel.js"></script>
+</body>
+</html>

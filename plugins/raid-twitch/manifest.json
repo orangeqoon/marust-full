@@ -1,0 +1,47 @@
+{
+  "id": "raid-twitch",
+  "name": "Twitch レイド",
+  "category": "tool",
+  "for": [
+    "twitch"
+  ],
+  "tags": [
+    "レイド"
+  ],
+  "version": "0.1.0",
+  "tier": "advanced",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "integration",
+  "provides": [
+    "stream.lifecycle@1",
+    "ui.panel@1"
+  ],
+  "subscribes": [
+    "stream.stopping"
+  ],
+  "secrets": [
+    "twitch.oauth"
+  ],
+  "timeouts": {
+    "onEvent": 20000
+  },
+  "defaultMode": "legacy",
+  "actions": {
+    "getStatus": "read",
+    "setSuggested": "write"
+  },
+  "panels": [
+    {
+      "name": "status",
+      "title": "Twitch レイド",
+      "file": "ui/panel.html"
+    }
+  ],
+  "coreApi": 2,
+  "needs": [
+    "secrets",
+    "storage"
+  ]
+}

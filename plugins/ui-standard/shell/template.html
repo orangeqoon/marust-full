@@ -1,0 +1,184 @@
+
+  <header class="app-title">
+    <h1>丸スト <span class="slash">/ marust</span></h1>
+  </header>
+  <nav id="menubar" role="menubar" aria-label="メニュー">
+    <span class="brand" aria-hidden="true">丸スト</span>
+    <div class="menu" data-menu="file"><button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false">ファイル</button><div class="menu-pop" role="menu" hidden></div></div>
+    <div class="menu" data-menu="edit"><button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false">編集</button><div class="menu-pop" role="menu" hidden></div></div>
+    <div class="menu" data-menu="view"><button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false">表示</button><div class="menu-pop" role="menu" hidden></div></div>
+    <div class="menu" data-menu="profile"><button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false">プロファイル</button><div class="menu-pop" role="menu" hidden></div></div>
+    <div class="menu" data-menu="tools"><button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false">ツール</button><div class="menu-pop" role="menu" hidden></div></div>
+    <div class="menu" data-menu="level"><button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false">段階</button><div class="menu-pop" role="menu" hidden></div></div>
+    <div class="menu" data-menu="look"><button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false">見た目</button><div class="menu-pop" role="menu" hidden></div></div>
+    <div class="menu" data-menu="help"><button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false">ヘルプ</button><div class="menu-pop" role="menu" hidden></div></div>
+    <span class="menu-spacer"></span>
+    <span id="mode-badge" class="mode-badge" title="モード（開発者用）"></span>
+    <p id="connection-status" class="wait" aria-live="polite">丸スト: つながっていません</p>
+  </nav>
+  <div id="vault-bar"></div>
+  <div id="shell-bar" hidden></div>
+  <div id="dock" class="dockview-theme-github-dark-spaced"></div>
+  <main id="panel-source">
+    <section class="card" data-panel="engine-status">
+      <h2>エンジン</h2>
+      <p id="engine-headline" class="engine-line">OBS 未接続</p>
+      <p id="engine-mode" class="timer-hint"></p>
+      <p id="profile-warn" class="profile-warn"></p>
+    </section>
+    <section class="card" data-panel="emergency">
+      <h2>全部止める</h2>
+      <p class="timer-hint">押すとすぐ、OBS のメイン出力と全部の配信先への送信を止めます。止まったかを確かめて結果を出します。</p>
+      <button id="emergency-stop" class="emergency gray" type="button" data-need="emergency">OBS 未接続</button>
+      <p id="emergency-result" class="timer-hint" aria-live="polite"></p>
+    </section>
+    <section class="card" id="engine-panel" data-panel="destinations">
+      <h2>配信ボタン</h2>
+      <p class="timer-hint">サイトの名前のボタンを押すと、そのサイトの配信が始まります。もう一度押すと止まります（止まっている＝薄い赤、配信中＝明るい緑）。</p>
+      <p id="stream-mode" class="timer-hint broadcast-legacy"></p>
+      <div class="timer-actions broadcast-main">
+        <button class="timer-btn primary" id="stream-all-start" type="button" data-need="write">全配信開始</button>
+      </div>
+      <div id="stream-buttons" class="site-buttons"><p class="empty">読み込み中…</p></div>
+      <p id="stream-status" class="timer-hint" aria-live="polite"></p>
+      <div id="stream-failed" class="broadcast-failed" hidden></div>
+    </section>
+    <section class="card" data-panel="features">
+      <h2>機能を足す</h2>
+      <p class="timer-hint" id="features-hint"></p>
+      <div id="features-list"><p class="empty">読み込み中…</p></div>
+      <p id="features-status" class="timer-hint" aria-live="polite"></p>
+    </section>
+    <section class="card" data-panel="plugin-manager">
+      <h2>プラグインの管理</h2>
+      <p class="timer-hint" id="plugin-manager-hint"></p>
+      <div id="plugin-manager-install"></div>
+      <div id="plugin-manager-make"></div>
+      <div id="plugin-manager-list"><p class="empty">読み込み中…</p></div>
+      <p id="plugin-manager-status" class="timer-hint" aria-live="polite"></p>
+    </section>
+    <section class="card" data-panel="approvals">
+      <h2>承認待ち</h2>
+      <div id="approval-list"><p class="empty">読み込み中…</p></div>
+      <p class="timer-hint">操作できるのはこのウィンドウだけです。引数の値は出しません。</p>
+    </section>
+    <section class="card" data-panel="obs-connect">
+      <h2>OBS とつなぐ</h2>
+      <p class="timer-hint" id="obs-connect-guide"></p>
+      <div id="obs-connect-now"><p class="empty">読み込み中…</p></div>
+      <div id="obs-connect-admin" hidden>
+        <div class="timer-setup">
+          <label>ホスト <input id="obs-host" type="text" maxlength="253" autocomplete="off" spellcheck="false" /></label>
+          <label>ポート <input id="obs-port" type="number" min="1" max="65535" /></label>
+          <label>パスワード <input id="obs-password" type="password" autocomplete="new-password" placeholder="未設定" /></label>
+        </div>
+        <p class="timer-hint" id="obs-password-note"></p>
+        <div class="timer-actions">
+          <button class="timer-btn" id="obs-test" type="button" data-need="write">つないでみる</button>
+          <button class="timer-btn" id="obs-save" type="button" data-need="write">保存してつなぐ</button>
+        </div>
+        <p id="obs-connect-status" class="timer-hint" aria-live="polite"></p>
+        <label class="timer-hint"><input id="obs-control" type="checkbox" data-need="write" /> <span id="obs-control-label"></span></label>
+        <p class="timer-hint" id="obs-control-hint"></p>
+        <p id="obs-plugin-status" class="timer-hint" aria-live="polite"></p>
+      </div>
+    </section>
+    <section class="card" data-panel="site-add">
+      <h2>サイトを足す</h2>
+      <p class="timer-hint" id="site-add-guide"></p>
+      <label class="timer-hint"><input id="site-add-experimental" type="checkbox" data-need="write" /> <span id="site-add-experimental-label"></span></label>
+      <p class="timer-hint" id="site-add-obs-warn" aria-live="polite"></p>
+      <div id="site-add-admin">
+        <div class="timer-setup">
+          <label>サイト <select id="site-add-site"></select></label>
+          <label id="site-add-name-wrap" hidden>サイト名 <input id="site-add-name" type="text" maxlength="40" autocomplete="off" placeholder="例: マイサイト" /></label>
+          <label>送り先 <select id="site-add-ingest"></select></label>
+        </div>
+        <p class="timer-hint" id="site-add-links"></p>
+        <div class="timer-setup">
+          <label>配信の送り先（サーバー URL） <input id="site-add-server" type="text" maxlength="300" autocomplete="off" spellcheck="false" placeholder="rtmp://…" /></label>
+          <label>配信キー（人に見せない合言葉） <input id="site-add-key" type="password" maxlength="300" autocomplete="off" placeholder="未設定" /></label>
+        </div>
+        <p class="timer-hint" id="site-add-notes"></p>
+        <p class="timer-hint" id="site-add-tos"></p>
+        <div class="timer-actions"><button class="timer-btn primary" id="site-add-run" type="button" data-need="write">このサイトを足す</button></div>
+        <p id="site-add-status" class="timer-hint" aria-live="polite"></p>
+        <details class="adv">
+          <summary>詳しい設定（URL を自分で入れる）</summary>
+          <h3>新規作成</h3>
+          <div class="timer-setup">
+            <label>名前 <input id="create-name" type="text" maxlength="100" /></label>
+            <label>方式 <select id="create-protocol"><option>RTMP</option><option>SRT_RIST</option><option>WHIP</option></select></label>
+            <label>server <input id="create-server" type="text" maxlength="300" /></label>
+            <label>key <input id="create-key" type="password" maxlength="300" autocomplete="off" placeholder="未設定" /></label>
+            <button class="timer-btn" id="create-target" type="button" data-need="write">新規作成</button>
+          </div>
+          <h3>リンク</h3>
+          <div class="timer-setup">
+            <label>配信先 id <input id="link-dest" type="text" maxlength="80" /></label>
+            <label>OBS id <input id="link-target" type="text" maxlength="80" /></label>
+            <label>サイト <input id="link-site" type="text" maxlength="40" /></label>
+            <label>accountId <input id="link-account" type="text" maxlength="80" /></label>
+            <button class="timer-btn" id="link-save" type="button" data-need="write">リンク</button>
+          </div>
+        </details>
+      </div>
+    </section>
+    <section class="card" data-panel="secrets">
+      <h2>金庫</h2>
+      <div id="secret-list"><p class="empty">読み込み中…</p></div>
+      <div id="secret-admin" hidden>
+        <div class="timer-actions" id="oauth-reauth-actions">
+          <span>ログインが切れたサイト:</span>
+          <button class="timer-btn primary" type="button" id="oauth-reauth-all" hidden>順番に結び直す</button>
+        </div>
+        <p class="timer-hint">※結び直しは 1 つずつ行います。引っ越しのあとなど全部切れているときは「順番に結び直す」を押すと、ブラウザの許可画面が 1 つずつ開きます（許可して戻ると、次が開きます）。</p>
+        <p id="oauth-reauth-status" class="timer-hint" aria-live="polite"></p>
+        <div class="timer-setup">
+          <label>名前 <input id="secret-name" type="text" maxlength="64" autocomplete="off" /></label>
+          <label>値 <input id="secret-value" type="password" autocomplete="new-password" placeholder="未設定" /></label>
+          <button class="timer-btn" id="secret-save" type="button" data-need="write">保存</button>
+        </div>
+        <p id="secret-status" class="timer-hint" aria-live="polite"></p>
+        <div id="secret-import" hidden>
+          <button class="timer-btn" id="secret-import-scan" type="button">NeonTimer から取り込む</button>
+          <div id="secret-import-bulk" hidden>
+            <button class="timer-btn" id="secret-import-all" type="button">すべて選ぶ</button>
+            <button class="timer-btn" id="secret-import-new" type="button">金庫にないものだけ選ぶ</button>
+            <button class="timer-btn" id="secret-import-none" type="button">すべて外す</button>
+          </div>
+          <div id="secret-import-list"></div>
+          <button class="timer-btn" id="secret-import-run" type="button" data-need="write" hidden>選んだものを取り込む</button>
+          <p id="secret-import-status" class="timer-hint" aria-live="polite"></p>
+          <p class="timer-hint">名前・大きさ・更新日時と、取り込み先の名前だけです。値は表示しません。</p>
+        </div>
+      </div>
+    </section>
+    <section class="card" data-panel="clients">
+      <h2>接続端末</h2>
+      <div id="client-list"><p class="empty">読み込み中…</p></div>
+      <div id="client-admin" hidden>
+        <div class="timer-setup">
+          <label>名前 <input id="pair-name" type="text" maxlength="40" /></label>
+          <label><input id="pair-read" type="checkbox" checked disabled /> read</label>
+          <label><input id="pair-emergency" type="checkbox" checked /> emergency</label>
+          <label><input id="pair-write" type="checkbox" /> write</label>
+          <button class="timer-btn" id="pair-start" type="button" data-need="write">新しい端末をつなぐ</button>
+        </div>
+        <p id="pair-code" class="mode"></p>
+        <p class="timer-hint">コードは 1 回限り、2 分で失効します。5 回間違えると無効です。write はチェックしたときだけ付きます。</p>
+      </div>
+    </section>
+    <section class="card" data-panel="about">
+      <h2>この画面について</h2>
+      <ul class="notes" id="notes"></ul>
+      <div id="login-item" hidden>
+        <label><input id="open-at-login" type="checkbox" data-need="write" /> Windows の起動時に marust を開く</label>
+        <p class="timer-hint">変更できるのはこのウィンドウだけです。</p>
+        <p id="open-at-login-status" class="timer-hint" aria-live="polite"></p>
+      </div>
+    </section>
+  </main>
+  <div id="panel-bin" hidden></div>
+  <div id="solo" hidden></div>
+<div id="hotkey-toast" role="status" aria-live="polite" hidden></div>

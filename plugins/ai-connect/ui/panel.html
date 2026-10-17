@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>AI をつなぐ</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <h1>AI をつなぐ</h1>
+  <p id="ai-auto-state" class="mode"></p>
+  <div id="ai-auto-on" hidden>
+    <p>開発者モードのあいだは、ペアリングは要りません。AI（Claude など）は、そのまま丸ストを操作できます（承認も要りません）。</p>
+    <ul class="notes">
+      <li>CLI: <code>node cli/marust.js status</code> や <code>node cli/marust.js plugin reload &lt;id&gt;</code>（<code>npm run marust -- status</code> でも同じ）</li>
+      <li>AI（MCP）: そのまま道具が出ます（起動し直しは要りません）</li>
+    </ul>
+  </div>
+  <div id="ai-auto-off" hidden>
+    <p>自動のつなぎは止まっています（今つながっている AI はそのまま使えます）。手でつなぐ（ペアリング）場合は、下のボタンでコードを出します。</p>
+  </div>
+  <details>
+    <summary>手でペアリングする（リリース用・自動が切れているとき）</summary>
+    <ol class="notes">
+      <li>下のボタンを押すと、コードがここに大きく出ます（2 分で無効）。</li>
+      <li>ターミナルで <code>node cli/marust.js pair</code> を実行して、このコードを入れます。</li>
+      <li>AI 側（MCP）は <code>node mcp/server.js pair</code> で同じようにコードを入れます。</li>
+    </ol>
+    <button type="button" id="ai-pair-start">コードを出す</button>
+    <p id="ai-pair-code" class="mode ai-code"></p>
+    <p id="ai-pair-status" class="hint" aria-live="polite"></p>
+  </details>
+  <script src="bridge.js"></script>
+  <script src="panel.js"></script>
+</body>
+</html>

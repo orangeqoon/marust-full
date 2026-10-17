@@ -1,0 +1,90 @@
+{
+  "id": "dev-shadow",
+  "name": "シャドウの記録と本番への案内（開発者用）",
+  "category": "dev",
+  "tags": [
+    "モード",
+    "シャドウ"
+  ],
+  "owns": {
+    "parentActions": [
+      "modes.change",
+      "modes.setMany",
+      "modes.setDefault",
+      "hub.forceLegacy"
+    ]
+  },
+  "version": "1.2.0",
+  "tier": "advanced",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "integration",
+  "audience": "dev",
+  "stability": "stable",
+  "api": {
+    "namespaces": [
+      "shadow",
+      "golive"
+    ],
+    "calls": [
+      "diagnostics.siteFacts",
+      "broadcast.preflight"
+    ]
+  },
+  "provides": [
+    "ui.panel@1"
+  ],
+  "panels": [
+    {
+      "name": "shadow-report",
+      "title": "shadow の報告",
+      "file": "ui/shadow-report.html"
+    },
+    {
+      "name": "golive",
+      "title": "本番切り替え",
+      "file": "ui/golive.html"
+    },
+    {
+      "name": "modes",
+      "title": "モード",
+      "file": "ui/modes.html",
+      "aliases": [
+        "modes"
+      ]
+    },
+    {
+      "name": "plugins",
+      "title": "プラグイン一覧",
+      "file": "ui/plugins.html",
+      "aliases": [
+        "plugins"
+      ]
+    }
+  ],
+  "ui": {
+    "menu": [
+      {
+        "label": "プラグインとモード（開発者用）",
+        "openPanel": "modes"
+      },
+      {
+        "label": "プラグインの詳細（開発者用）",
+        "openPanel": "plugins"
+      }
+    ],
+    "parentActions": [
+      "modes.change",
+      "modes.setMany",
+      "modes.setDefault",
+      "hub.forceLegacy"
+    ]
+  },
+  "coreApi": 2,
+  "needs": [
+    "api.call",
+    "api.register",
+    "core"
+  ]
+}

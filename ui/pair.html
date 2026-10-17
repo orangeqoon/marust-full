@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>丸スト ペアリング</title>
+  <link rel="stylesheet" href="/ui/pair.css" />
+</head>
+<body>
+  <header>
+    <h1>丸スト <span class="slash">/ marust</span></h1>
+    <p class="sub">marust のウィンドウに出ているコードを入力</p>
+  </header>
+  <main>
+    <section class="card">
+      <h2>端末をつなぐ</h2>
+      <form id="pair-form">
+        <label>6 桁のコード <input id="pair-input" type="text" inputmode="numeric" maxlength="6" autocomplete="off" /></label>
+        <button class="timer-btn primary" type="submit">つなぐ</button>
+      </form>
+      <p id="pair-error" class="timer-hint"></p>
+    </section>
+  </main>
+  <script src="/ui/pair.js"></script>
+</body>
+</html>

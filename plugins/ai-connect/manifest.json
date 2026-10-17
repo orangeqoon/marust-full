@@ -1,0 +1,56 @@
+{
+  "id": "ai-connect",
+  "name": "AI をつなぐ",
+  "category": "connect",
+  "tags": [
+    "AI",
+    "MCP"
+  ],
+  "owns": {
+    "parentActions": [
+      "ai.pair"
+    ]
+  },
+  "version": "1.0.0",
+  "tier": "advanced",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "ui",
+  "defaultMode": "live",
+  "audience": "public",
+  "stability": "stable",
+  "provides": [
+    "ui.panel@1"
+  ],
+  "panels": [
+    {
+      "name": "main",
+      "title": "AI をつなぐ",
+      "file": "ui/panel.html",
+      "aliases": [
+        "ai-connect"
+      ]
+    }
+  ],
+  "ui": {
+    "menu": [
+      {
+        "label": "AI をつなぐ",
+        "openPanel": "main"
+      }
+    ],
+    "parentActions": [
+      "ai.pair"
+    ]
+  },
+  "api": {
+    "namespaces": [
+      "ai"
+    ]
+  },
+  "coreApi": 2,
+  "needs": [
+    "api.register"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "pack": "standard",
+  "version": 1,
+  "plugins": [
+    "backup",
+    "bulk-title",
+    "chat-inlet",
+    "comment-send",
+    "fc2",
+    "hotkeys",
+    "kick",
+    "kukulu",
+    "kukulu-port",
+    "niconico",
+    "picarto",
+    "rumble",
+    "set-youtube",
+    "site-login",
+    "soop",
+    "theme-default",
+    "theme-light-large",
+    "twitcasting",
+    "twitch",
+    "ui-standard",
+    "update-check",
+    "uplink-estimate",
+    "youtube"
+  ]
+}

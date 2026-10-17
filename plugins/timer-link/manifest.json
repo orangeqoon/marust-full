@@ -1,0 +1,45 @@
+{
+  "id": "timer-link",
+  "name": "タイマーの連携",
+  "category": "tool",
+  "tags": [
+    "タイマー",
+    "連携"
+  ],
+  "version": "1.1.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "integration",
+  "feature": {
+    "label": "タイマーの連携",
+    "hint": "タイマーを始めたら、題名とカテゴリを全部のサイトへ送ります（「題名・カテゴリのくわしい設定」とタイマーが要ります）",
+    "level": "standard",
+    "activation": "live",
+    "group": "timer",
+    "order": 61
+  },
+  "requires": [
+    "session.controller@1",
+    "title.fanout@1"
+  ],
+  "provides": [],
+  "needs": [
+    "title.reserved",
+    "api.call",
+    "events.subscribe"
+  ],
+  "defaultMode": "legacy",
+  "audience": "public",
+  "stability": "stable",
+  "subscribes": [
+    "session.started"
+  ],
+  "api": {
+    "calls": [
+      "hub.fanoutReserved"
+    ]
+  },
+  "coreApi": 2
+}

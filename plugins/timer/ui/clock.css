@@ -1,0 +1,381 @@
+:root {
+  color-scheme: dark;
+  --main-neon: #00ff66;
+  --main-bright: #afffaf;
+  --p1-neon: #ff00ff; /* 1: ピンク */
+  --p1-bright: #ffafff;
+  --p2-neon: #00ffff; /* 2: 水色 */
+  --p2-bright: #afffff;
+  --p3-neon: #ffff00; /* 3: 黄色 */
+  --p3-bright: #ffffaf;
+  --p4-neon: #ff8800; /* 4: オレンジ */
+  --p4-bright: #ffccaa;
+  --p5-neon: #00ff88; /* 5: エメラルド */
+  --p5-bright: #aaffcc;
+  --p6-neon: #ffffff; /* 6: 白 */
+  --p6-bright: #ffffff;
+
+  --timer-font-size: 64px;
+  --timer-letter-spacing: -1px;
+  --timer-font-family: "Cascadia Mono", Consolas, "Roboto Mono", monospace;
+  --app-zoom: 1;
+}
+
+body {
+  margin: 0;
+  padding: 14px;
+  background: #0d1017;
+  color: var(--text, #e7e4dc);
+  font: 15px/1.4 "Segoe UI", sans-serif;
+  zoom: var(--app-zoom, 1);
+  user-select: none;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+#legacy {
+  margin: 0;
+  color: var(--warn, #e0b15a);
+  font-size: 13px;
+}
+
+.icon-btn {
+  padding: 3px 8px;
+  font-size: 12px;
+  background: #1b202e;
+  border: 1px solid #3c4458;
+  color: var(--muted, #9aa3b5);
+  cursor: pointer;
+  border-radius: 4px;
+}
+.icon-btn:hover {
+  background: #28324a;
+  color: #fff;
+  border-color: var(--main-neon);
+}
+
+.timer-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px 12px;
+  margin-bottom: 10px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(0, 255, 102, 0.3);
+  border-radius: 8px;
+  box-shadow: inset 0 0 14px rgba(0, 255, 102, 0.08);
+}
+
+#display {
+  margin: 4px 0 2px;
+  font-family: var(--timer-font-family);
+  font-size: var(--timer-font-size);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: var(--timer-letter-spacing);
+  text-align: center;
+  color: #ffffff;
+  text-shadow: 0 0 5px var(--main-bright), 0 0 15px var(--main-neon), 0 0 30px var(--main-neon);
+  cursor: pointer;
+  transition: opacity 0.15s, color 0.2s, text-shadow 0.2s;
+}
+
+#display:hover {
+  opacity: 0.9;
+}
+#display:active {
+  opacity: 0.7;
+}
+#display.paused {
+  opacity: 0.55;
+  color: #e0e0e0;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+}
+
+#display.time-up {
+  color: #ff4500;
+  text-shadow: 0 0 8px #ff4500, 0 0 20px #ff2200, 0 0 35px #ff0000;
+  animation: pulse-warn 1.5s infinite;
+}
+
+@keyframes pulse-warn {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50% { opacity: 0.85; filter: brightness(1.2); }
+}
+
+#pause-duration {
+  font-family: var(--timer-font-family);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--p4-neon);
+  text-shadow: 0 0 6px var(--p4-neon);
+  margin: 4px 0 2px;
+}
+
+.progress-container {
+  width: 96%;
+  height: 6px;
+  background: rgba(0, 255, 102, 0.12);
+  border-radius: 3px;
+  margin: 6px 0 8px;
+  overflow: hidden;
+}
+
+#progress-bar {
+  height: 100%;
+  width: 0%;
+  background-color: var(--main-neon);
+  border-radius: 3px;
+  box-shadow: 0 0 8px var(--main-neon);
+  transition: width 0.25s linear;
+}
+
+.time-up-bar {
+  background-color: #ff2200 !important;
+  box-shadow: 0 0 12px #ff2200 !important;
+}
+
+#status {
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted, #9aa3b5);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.no-drag {
+  user-select: none;
+}
+
+.row,
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 8px 0;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+  background: #1c2030;
+  border: 1px solid #3c4458;
+  border-radius: 6px;
+}
+
+button {
+  padding: 7px 13px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+button[aria-pressed="true"] {
+  background: #243044;
+  border-color: #6ec8ff;
+  color: #6ec8ff;
+}
+
+input,
+select {
+  padding: 6px 8px;
+  width: 5rem;
+}
+
+#title,
+#category {
+  width: 14rem;
+}
+
+#start {
+  background: #153828;
+  border-color: var(--main-neon);
+  color: var(--main-bright);
+  font-weight: 600;
+  text-shadow: 0 0 4px var(--main-neon);
+}
+#start:hover:not(:disabled) {
+  background: #1c4d37;
+}
+
+#stop {
+  background: #3b1d1d;
+  border-color: #ff5555;
+  color: #ffaaaa;
+}
+#stop:hover:not(:disabled) {
+  background: #502727;
+}
+
+#reset {
+  background: #232838;
+}
+#reset:hover:not(:disabled) {
+  background: #31384e;
+}
+
+#error {
+  min-height: 1.2em;
+  color: var(--danger, #ff8f8f);
+  margin: 2px 0;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--main-neon);
+  outline-offset: 2px;
+}
+
+.labels { display: grid; grid-template-columns: 1fr; gap: 8px; }
+.labels label { display: grid; gap: 4px; font-size: 13px; color: var(--muted, #9aa3b5); }
+.labels input { width: 100%; padding: 8px 10px; background: #161c28; border: 1px solid #3c4864; color: #f2f5fc; border-radius: 6px; }
+.labels #title { font-size: 18px; font-weight: 600; padding: 8px 10px; border-width: 1px; border-color: var(--accent, #7aa2ff); }
+.labels input:focus { background: #1f2738; border-color: var(--main-neon); }
+
+/* プリセットボタングループ（NeonTimerApp 準拠） */
+.presets {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.preset-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  border-radius: 6px;
+  border: 2px solid;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.4);
+  transition: transform 0.1s, filter 0.15s;
+}
+.preset-cell:hover {
+  filter: brightness(1.25);
+  transform: translateY(-1px);
+}
+
+.preset-cell .preset {
+  flex: 1;
+  padding: 6px 2px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.1;
+  text-align: center;
+  color: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.arrows {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  border-top: 1px solid currentColor;
+}
+
+.arrow {
+  flex: 1;
+  padding: 3px 0;
+  font-size: 10px;
+  line-height: 1;
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+  border-radius: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.arrow:first-child {
+  border-right: 1px solid currentColor;
+}
+.arrow:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* プリセット各段のネオンカラー */
+.p1 { border-color: var(--p1-neon); color: var(--p1-bright); text-shadow: 0 0 5px var(--p1-neon); }
+.p2 { border-color: var(--p2-neon); color: var(--p2-bright); text-shadow: 0 0 5px var(--p2-neon); }
+.p3 { border-color: var(--p3-neon); color: var(--p3-bright); text-shadow: 0 0 5px var(--p3-neon); }
+.p4 { border-color: var(--p4-neon); color: var(--p4-bright); text-shadow: 0 0 5px var(--p4-neon); }
+.p5 { border-color: var(--p5-neon); color: var(--p5-bright); text-shadow: 0 0 5px var(--p5-neon); }
+.p6 { border-color: var(--p6-neon); color: var(--p6-bright); text-shadow: 0 0 5px var(--p6-neon); }
+
+.presets button:disabled, #duration button:disabled { opacity: 0.5; cursor: default; }
+.modes { margin-top: 14px; }
+input, button { box-sizing: border-box; }
+
+.hint { font-size: 12px; opacity: .75; margin: 4px 0; }
+
+/* 設定ダイアログ */
+dialog {
+  background: #10141f;
+  color: #fff;
+  border: 2px solid var(--main-neon);
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 0 25px rgba(0, 255, 102, 0.35);
+  font-family: inherit;
+  max-width: 320px;
+  width: 90%;
+}
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.75);
+}
+dialog h3 {
+  margin: 0 0 14px;
+  font-size: 17px;
+  color: var(--main-bright);
+  text-shadow: 0 0 6px var(--main-neon);
+}
+.dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.dialog-body label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--muted, #9aa3b5);
+}
+.dialog-body input,
+.dialog-body select {
+  width: 100%;
+  padding: 6px 8px;
+}
+.dialog-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+}
+.dialog-actions button {
+  flex: 1;
+}
+.dialog-actions .btn-primary {
+  background: #184230;
+  border-color: var(--main-neon);
+  color: var(--main-bright);
+  font-weight: bold;
+}

@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "kind": "builtin",
+  "panels": [
+    "emergency",
+    "destinations",
+    "session",
+    "modes",
+    "plugins",
+    "overlays",
+    "approvals",
+    "secrets",
+    "clients",
+    "ai-connect",
+    "about"
+  ]
+}

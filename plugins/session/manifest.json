@@ -1,0 +1,61 @@
+{
+  "id": "session",
+  "name": "配信の経過時間",
+  "category": "tool",
+  "tags": [
+    "経過時間"
+  ],
+  "owns": {
+    "events": [
+      "session.*"
+    ]
+  },
+  "version": "1.0.0",
+  "tier": "advanced",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "ui",
+  "defaultMode": "live",
+  "audience": "public",
+  "stability": "stable",
+  "provides": [
+    "session.store@1",
+    "ui.panel@1"
+  ],
+  "panels": [
+    {
+      "name": "main",
+      "title": "配信の経過時間",
+      "file": "ui/panel.html",
+      "aliases": [
+        "session"
+      ]
+    }
+  ],
+  "ui": {
+    "menu": [
+      {
+        "label": "配信の経過時間",
+        "openPanel": "main"
+      }
+    ]
+  },
+  "subscribes": [
+    "broadcast.started",
+    "broadcast.stopped"
+  ],
+  "api": {
+    "namespaces": [
+      "session"
+    ],
+    "modeGated": true
+  },
+  "coreApi": 2,
+  "needs": [
+    "api.register",
+    "destinations",
+    "events.emit",
+    "storage"
+  ]
+}

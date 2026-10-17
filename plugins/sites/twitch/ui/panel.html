@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>Twitch</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <h1>Twitch</h1>
+  <h2>題名とカテゴリ</h2>
+  <dl>
+    <dt>モード</dt>
+    <dd id="mode">-</dd>
+    <dt>設定</dt>
+    <dd id="configured">-</dd>
+    <dt>最後の更新</dt>
+    <dd id="op">-</dd>
+    <dt>時刻</dt>
+    <dd id="at">-</dd>
+  </dl>
+  <h2>コメント送信</h2>
+  <dl>
+    <dt>モード</dt>
+    <dd id="sink-mode">-</dd>
+    <dt>設定</dt>
+    <dd id="sink-configured">-</dd>
+    <dt>最後の送信</dt>
+    <dd id="sink-op">-</dd>
+    <dt>時刻</dt>
+    <dd id="sink-at">-</dd>
+  </dl>
+  <p class="actions">
+    <button id="refresh" type="button">更新</button>
+  </p>
+  <script src="theme-apply.js"></script>
+  <script src="panel.js"></script>
+  <script src="panel-sink.js"></script>
+</body>
+</html>

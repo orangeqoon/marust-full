@@ -1,0 +1,94 @@
+{
+  "id": "twitch",
+  "name": "Twitch",
+  "category": "destination",
+  "version": "0.2.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "secrets": [
+    "twitch.oauth"
+  ],
+  "roles": {
+    "site": {
+      "main": "site.js",
+      "provides": [
+        "stream.site@1",
+        "ui.panel@1"
+      ],
+      "secrets": [
+        "twitch.oauth"
+      ],
+      "defaultMode": "legacy",
+      "timeouts": {
+        "updateMetadata": 30000,
+        "getStatus": 20000
+      },
+      "actions": {
+        "getStatus": "read"
+      },
+      "panels": [
+        {
+          "name": "status",
+          "title": "Twitch",
+          "file": "ui/panel.html"
+        }
+      ],
+      "needs": [
+        "secrets"
+      ]
+    },
+    "sink": {
+      "name": "Twitch コメント送信",
+      "main": "sink.js",
+      "provides": [
+        "chat.sink@1"
+      ],
+      "secrets": [
+        "twitch.oauth"
+      ],
+      "defaultMode": "legacy",
+      "timeouts": {
+        "sendComment": 30000,
+        "getStatus": 20000
+      },
+      "actions": {
+        "getStatus": "read"
+      },
+      "needs": [
+        "secrets"
+      ]
+    }
+  },
+  "audience": "public",
+  "stability": "stable",
+  "site": {
+    "id": "twitch",
+    "name": "Twitch",
+    "order": 1,
+    "tier": "core",
+    "ingest": [
+      {
+        "label": "自動（おすすめ）",
+        "url": null,
+        "helpUrl": "https://dev.twitch.tv/docs/video-broadcast/"
+      }
+    ],
+    "keyHelpUrl": "https://dashboard.twitch.tv/settings/stream",
+    "tosUrl": "https://legal.twitch.com/en/legal/terms-of-service/",
+    "login": {
+      "type": "oauth",
+      "needed": "optional",
+      "for": [
+        "題名",
+        "カテゴリ",
+        "コメント送信"
+      ]
+    },
+    "apiHosts": [
+      "api.twitch.tv",
+      "id.twitch.tv"
+    ]
+  },
+  "coreApi": 2
+}

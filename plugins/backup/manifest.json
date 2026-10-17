@@ -1,0 +1,51 @@
+{
+  "id": "backup",
+  "name": "バックアップ",
+  "category": "tool",
+  "tags": [
+    "バックアップ",
+    "設定"
+  ],
+  "version": "1.0.0",
+  "tier": "basic",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "ui",
+  "feature": {
+    "label": "バックアップ",
+    "hint": "設定（レイアウト・モード・ホットキー・配信先・プラグインの設定）をファイルに書き出し、あとで選んで戻せます（秘密は入りません）",
+    "level": "advanced",
+    "activation": "live",
+    "group": "backup",
+    "order": 95,
+    "openPanel": "plugin:backup:main"
+  },
+  "provides": [
+    "ui.panel@1"
+  ],
+  "panels": [
+    {
+      "name": "main",
+      "title": "バックアップ",
+      "file": "ui/panel.html",
+      "menu": {
+        "key": "backup",
+        "title": "バックアップ…",
+        "desc": "設定だけ（秘密なし）をファイルに書き出し、あとで選んで戻します。",
+        "order": 10,
+        "in": "file"
+      }
+    }
+  ],
+  "ui": {
+    "relay": [
+      "settings.exportToFile",
+      "settings.import"
+    ]
+  },
+  "defaultMode": "legacy",
+  "audience": "public",
+  "stability": "stable",
+  "coreApi": 2
+}

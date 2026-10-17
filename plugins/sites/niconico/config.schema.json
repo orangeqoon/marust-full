@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "slot-niconico",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "title": { "type": "string", "maxLength": 100, "default": "ライブ配信 第{part}枠", "description": "前の枠があればその題名を引き継ぐ。無いときの題名。{part} は枠の通し番号。" },
+    "description": { "type": "string", "maxLength": 5000, "default": "", "description": "番組の説明文（HTML 可）。" },
+    "category": { "type": "string", "maxLength": 40, "default": "一般(その他)", "description": "ニコ生のカテゴリ名。" },
+    "tags": { "type": "string", "maxLength": 500, "default": "", "description": "カンマ区切りのタグ。" },
+    "autoCloseMin": { "type": "integer", "minimum": 1, "maximum": 120, "default": 5, "description": "OBS の配信が止まって（または OBS に接続できずに）この分数たったら枠を終了する。" },
+    "createNextOnNaturalEnd": { "type": "boolean", "default": true, "description": "枠が自然に終わったとき、OBS が配信中なら次の枠を作る。" },
+    "extendToMax": { "type": "boolean", "default": true, "description": "枠を作ったあと、30 分ずつ上限まで延長する。" },
+    "nextDelaySec": { "type": "integer", "minimum": 0, "maximum": 60, "default": 5, "description": "自然終了から次の枠を作るまでの待ち秒数。" },
+    "monetize": { "type": "boolean", "default": false, "description": "収益化・作品収入申請（ギフト・広告・クリエイター奨励）の指定を入れる。" },
+    "cruiseWait": { "type": "boolean", "default": false, "description": "「クルーズ待ち」に入れ、他の番組からの引用を許可する。" }
+  }
+}

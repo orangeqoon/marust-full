@@ -1,0 +1,56 @@
+{
+  "id": "sample-v2",
+  "audience": "dev",
+  "name": "見本 v2",
+  "category": "dev",
+  "version": "0.1.0",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "ui",
+  "provides": [
+    "ui.panel@1"
+  ],
+  "subscribes": [
+    "session.*"
+  ],
+  "secrets": [
+    "sample.token"
+  ],
+  "actions": {
+    "remember": "write"
+  },
+  "panels": [
+    {
+      "name": "main",
+      "title": "見本",
+      "file": "ui/panel.html",
+      "menu": {
+        "key": "sample",
+        "title": "見本",
+        "in": "none"
+      }
+    }
+  ],
+  "overlays": [
+    {
+      "name": "clock",
+      "file": "overlay/clock.html",
+      "fields": [
+        "title",
+        "note"
+      ]
+    }
+  ],
+  "requires": [
+    "session.controller@1"
+  ],
+  "defaultMode": "legacy",
+  "coreApi": 2,
+  "needs": [
+    "events.subscribe",
+    "overlay",
+    "storage"
+  ],
+  "tier": "advanced"
+}

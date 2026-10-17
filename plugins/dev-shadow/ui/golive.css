@@ -1,0 +1,9 @@
+@import url("panel-common.css");
+.controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+select { min-width: 8rem; }
+ul { padding-left: 1.2em; }
+li { margin: 4px 0; }
+.golive-ok { color: var(--ok, #6fd08c); }
+.golive-warn { color: var(--warn, #e0b050); }
+.golive-todo { color: var(--text, #e7ecf5); }
+:focus-visible { outline: 2px solid var(--accent, #7aa2ff); outline-offset: 2px; }

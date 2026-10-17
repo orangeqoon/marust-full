@@ -1,0 +1,95 @@
+.plugin-host-root {
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+  background: var(--panel, #1b1f2a);
+}
+
+.plugin-host-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--bg, #12141a);
+}
+
+.overlays-panel-root {
+  height: 100%;
+  overflow: auto;
+  background: var(--bg, #12141a);
+  color: var(--text, #e8ecf5);
+}
+
+.overlays-panel h2 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  color: var(--accent, #7aa2ff);
+}
+
+.overlay-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.overlay-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--line, #2c3344);
+  border-radius: 10px;
+  background: var(--panel, #1b1f2a);
+}
+
+.overlay-title {
+  flex: 1 1 12rem;
+  font-weight: 650;
+}
+
+.overlay-url {
+  flex: 1 1 16rem;
+  min-width: 0;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.82rem;
+  color: var(--text, #e8ecf5);
+  background: var(--bg, #12141a);
+  border: 1px solid var(--line, #2c3344);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+.overlay-preview {
+  flex: 1 1 100%;
+  width: 100%;
+  max-width: 28rem;
+  height: 9rem;
+  border: 1px solid var(--line, #2c3344);
+  border-radius: 8px;
+  background: var(--bg, #12141a);
+}
+
+@media (max-width: 599px) {
+  .overlay-url { flex-basis: 100%; }
+  .overlay-preview { height: 8rem; }
+}
+
+/* タイマーなど、下に本体側の部品を付けるパネル */
+.plugin-host-root.with-extras { overflow: auto; height: 100%; }
+.plugin-host-root.with-extras .plugin-host-frame { height: 560px; }
+.timer-extras { padding: 8px 16px 20px; display: grid; gap: 12px; }
+.extras-card { border: 1px solid #283042; border-radius: 10px; padding: 10px 14px; background: #161b26; }
+.extras-card h3 { margin: 0 0 4px; font-size: 0.95rem; color: var(--accent, #7aa2ff); }
+.extras-row { display: flex; align-items: center; gap: 6px; margin: 6px 0; cursor: pointer; }
+.guide-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.steps li { display: flex; gap: 10px; align-items: flex-start; }
+.steps .num { flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%; background: #2f4f9e; color: #fff; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+.steps small { display: block; color: #a0aabd; font-size: 13px; }
+.link-btn { border: 0; background: transparent; color: #8fb4ff; padding: 2px 6px; cursor: pointer; font: inherit; font-size: 13px; }
+.link-btn:hover { text-decoration: underline; }
+.link-btn.small { font-size: 12px; justify-self: start; }
+.extras-card[hidden], .link-btn[hidden] { display: none; }

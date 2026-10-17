@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>タイマー</title>
+  <link rel="stylesheet" href="clock.css">
+</head>
+<body>
+  <div class="header-row">
+    <p id="legacy" hidden>legacy: 記録・題名送信はしません</p>
+    <button id="font-btn" type="button" class="icon-btn" title="表示・フォント設定">⚙ 設定</button>
+  </div>
+
+  <div class="timer-section">
+    <div id="display" class="no-drag" title="クリックで開始 / 一時停止">00:05:00</div>
+    <div id="pause-duration" class="hidden">Paused: 00:00</div>
+    <div class="progress-container">
+      <div id="progress-bar"></div>
+    </div>
+    <p id="status" aria-live="polite">停止</p>
+  </div>
+
+  <form id="labels" class="labels">
+    <label class="title-label">題名
+      <input id="title" type="text" maxlength="200" autocomplete="off" list="fav-titles" placeholder="今日の配信の題名">
+    </label>
+    <label>カテゴリ
+      <input id="category" type="text" maxlength="100" autocomplete="off" list="fav-categories" placeholder="ゲーム名など">
+    </label>
+  </form>
+  <datalist id="fav-titles"></datalist>
+  <datalist id="fav-categories"></datalist>
+  <p class="hint" id="fanout-hint">開始すると、題名とカテゴリを全サイトへ送ります（ホームの「全部に反映」で一度確認したあと）。お気に入りはホームの ★ で入れられます。</p>
+
+  <div id="presets" class="presets" role="group" aria-label="よく使う時間（押すとすぐ始まります）"></div>
+
+  <form id="duration">
+    <label>H <input id="hours" type="number" min="0" max="24" step="1" value="0"></label>
+    <label>分 <input id="minutes" type="number" min="0" max="59" step="1" value="5"></label>
+    <label>秒 <input id="seconds" type="number" min="0" max="59" step="1" value="0"></label>
+    <button id="apply-duration" type="submit" title="この時間にセットします（まだ始まりません）">設定</button>
+  </form>
+
+  <div class="row controls-row">
+    <button id="start" type="button" title="タイマーを動かし、配信の経過時間の記録を始めます">開始</button>
+    <button id="stop" type="button" title="タイマーと配信の経過時間の記録を止めます">停止</button>
+    <button id="reset" type="button" title="時間を最初に戻します">リセット</button>
+  </div>
+  <p id="error" role="status" aria-live="polite"></p>
+
+  <div class="row modes" role="group" aria-label="モード">
+    <button id="mode-countdown" type="button" title="残り時間が減っていきます">カウントダウン</button>
+    <button id="mode-countup" type="button" title="経過時間が増えていきます">カウントアップ</button>
+  </div>
+
+  <dialog id="font-dialog">
+    <h3>表示・フォント設定</h3>
+    <div class="dialog-body">
+      <label>フォント
+        <select id="font-select">
+          <option value="">既定（Cascadia Mono / Consolas）</option>
+          <option value="Orbitron">Orbitron</option>
+          <option value="Roboto Mono">Roboto Mono</option>
+          <option value="Cascadia Mono">Cascadia Mono</option>
+          <option value="Consolas">Consolas</option>
+          <option value="BIZ UDGothic">BIZ UDGothic</option>
+          <option value="Meiryo">メイリオ (Meiryo)</option>
+          <option value="Yu Gothic">游ゴシック (Yu Gothic)</option>
+          <option value="MS Gothic">ＭＳ ゴシック</option>
+          <option value="custom">直接入力...</option>
+        </select>
+        <input id="font-custom-input" type="text" placeholder="フォント名を入力" class="hidden">
+      </label>
+      <label>タイマー文字サイズ (px)
+        <input id="timer-size-input" type="number" min="24" max="140" value="64">
+      </label>
+      <label>題名文字サイズ (px)
+        <input id="title-size-input" type="number" min="14" max="36" value="20">
+      </label>
+      <label>全体の拡大率 (ズーム: 0.7 〜 2.0)
+        <input id="zoom-input" type="number" min="0.7" max="2.0" step="0.05" value="1.0">
+      </label>
+      <label>文字間隔 (px)
+        <input id="spacing-input" type="number" min="-6" max="12" step="1" value="0">
+      </label>
+    </div>
+    <div class="dialog-actions">
+      <button id="font-cancel" type="button">キャンセル</button>
+      <button id="font-apply" type="button" class="btn-primary">適用</button>
+    </div>
+  </dialog>
+
+  <script src="theme-apply.js"></script>
+  <script src="clock.js"></script>
+</body>
+</html>

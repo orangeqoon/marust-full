@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>モード</title>
+  <link rel="stylesheet" href="panel-common.css">
+  <link rel="stylesheet" href="modes.css">
+</head>
+<body>
+  <h1>モード</h1>
+  <div><span class="mode" id="mode">…</span></div>
+  <p class="hint" id="mode-hint"></p>
+  <p class="hint" id="state-warning"></p>
+  <div class="actions">
+    <button type="button" id="force-legacy">全部 legacy に戻す</button>
+    <button type="button" id="force-live">全部 live にする</button>
+  </div>
+  <p class="hint">「全部 legacy に戻す」は、再起動するまで全部のプラグインを legacy として扱います。確認はありません。ファイルは書きません。live にする操作は、本体の窓が確認を出します。</p>
+  <div id="modes-root"></div>
+  <script src="bridge.js"></script>
+  <script src="strings.js"></script>
+  <script src="modes.js"></script>
+</body>
+</html>

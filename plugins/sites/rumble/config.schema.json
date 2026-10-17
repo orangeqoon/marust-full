@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "rumble-slot",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "description": {
+      "type": "string",
+      "maxLength": 4000,
+      "default": "",
+      "description": "番組の説明文。空でも作る。"
+    },
+    "tags": {
+      "type": "string",
+      "maxLength": 500,
+      "default": "",
+      "description": "カンマ区切りのタグ。"
+    },
+    "categoryId": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 999999,
+      "default": 13,
+      "description": "Rumble の siteChannelId。"
+    },
+    "defaultTitle": {
+      "type": "string",
+      "maxLength": 200,
+      "default": "Live",
+      "description": "session.title が空のときの題名。"
+    }
+  }
+}

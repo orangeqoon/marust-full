@@ -1,0 +1,2 @@
+body{margin:0;background:#171a21;color:#eee;font-family:system-ui}#core-fallback{max-width:48rem;margin:3rem auto;padding:1.5rem}#core-fallback button{padding:.7rem;margin:.3rem}#core-stop{background:#a32b35;color:white}#shell-root[hidden],#core-fallback[hidden]{display:none}#shell-root{height:100vh}
+#shell-root{display:contents}#shell-root[hidden]{display:none}

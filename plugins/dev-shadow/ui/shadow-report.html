@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>shadow の報告</title>
+  <link rel="stylesheet" href="shadow-report.css">
+</head>
+<body>
+  <h1>shadow の報告</h1>
+  <div class="shadow-report-days">
+    <label for="days">日数</label>
+    <input type="number" id="days" min="1" max="30" step="1" value="7">
+    <button type="button" id="refresh">更新</button>
+  </div>
+  <p id="status" class="hint" aria-live="polite"></p>
+  <div id="sites"></div>
+  <div id="plugins"></div>
+  <script src="theme-apply.js"></script>
+  <script src="shadow-report.js"></script>
+</body>
+</html>

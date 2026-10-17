@@ -1,0 +1,90 @@
+{
+  "id": "bulk-title",
+  "name": "題名とカテゴリの一括変更",
+  "category": "title",
+  "for": [
+    "*"
+  ],
+  "tags": [
+    "題名",
+    "カテゴリ"
+  ],
+  "version": "1.0.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "ui",
+  "feature": {
+    "label": "題名・カテゴリのくわしい設定",
+    "hint": "サイトごとに題名とカテゴリを変えたり、まとめて変えたりできます",
+    "level": "standard",
+    "activation": "live",
+    "group": "title",
+    "order": 30,
+    "openPanel": "plugin:bulk-title:main",
+    "tip": "題名やカテゴリを、サイトごとに変えたり、まとめて入れたりできる画面があります。使いますか？"
+  },
+  "provides": [
+    "title.fanout@1",
+    "ui.panel@1"
+  ],
+  "panels": [
+    {
+      "name": "main",
+      "title": "題名とカテゴリ",
+      "file": "ui/panel.html",
+      "aliases": [
+        "metadata"
+      ],
+      "dock": [
+        "advanced"
+      ],
+      "dockOrder": 10,
+      "menu": {
+        "key": "title",
+        "title": "題名とカテゴリ",
+        "desc": "全サイトへ題名とカテゴリを一斉に送る窓です。",
+        "order": 10
+      }
+    }
+  ],
+  "ui": {
+    "relay": [
+      "hub.fanout",
+      "favorites.add",
+      "favorites.remove",
+      "favorites.merge"
+    ]
+  },
+  "defaultMode": "legacy",
+  "audience": "public",
+  "stability": "stable",
+  "api": {
+    "namespaces": [
+      "category",
+      "favorites"
+    ]
+  },
+  "peers": {
+    "methods": [
+      "updateMetadata",
+      "updateStream",
+      "updateTitle",
+      "updateCategory",
+      "isConfigured",
+      "suggestCategories"
+    ]
+  },
+  "timeouts": {
+    "fanout": 120000
+  },
+  "coreApi": 2,
+  "needs": [
+    "api.register",
+    "audit",
+    "events.emit",
+    "peers",
+    "storage"
+  ]
+}

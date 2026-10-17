@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "kukulu-port",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "sleepWords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "寝る",
+        "昼寝",
+        "sleeping",
+        "nap"
+      ],
+      "description": "睡眠判定の語。kukulu-sleep と同じ規則。省略時は NeonTimer と同じ並び。"
+    }
+  }
+}

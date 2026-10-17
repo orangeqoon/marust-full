@@ -1,0 +1,10 @@
+The following plugins are included under the MIT License with the rights holder’s confirmation:
+- plugins/gcal/
+- plugins/layout-table/
+- plugins/overlay-basic/
+- plugins/raid-twitch/
+- plugins/timer/
+- plugins/timer-link/
+- plugins/tips/
+
+This notice applies to these seven community plugin folders in this repository. The repository LICENSE contains the MIT terms.

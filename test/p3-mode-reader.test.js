@@ -1,0 +1,21 @@
+'use strict';
+const assert = require('assert');
+const { readModesDocument } = require('../host/layer1/modes');
+const core = { STATE_DIR: __dirname };
+const doc = { plugins: { 'site-synthetic': 'live' }, note: '配信テスト' };
+let readCalls = 0;
+const io = { existsSync: () => true, readFileSync(...args) {
+  readCalls++;
+  assert.strictEqual(args.length, 1, 'avoid the direct UTF-8 native binding');
+  return Buffer.from('\uFEFF' + JSON.stringify(doc), 'utf8');
+} };
+assert.deepStrictEqual(readModesDocument(core, io).data, doc, 'UTF-8 Unicode and BOM preserved');
+assert.strictEqual(readCalls, 1);
+assert.strictEqual(readModesDocument(core, { existsSync: () => false, readFileSync() { assert.fail('missing file read'); } }).missing, true);
+const invalid = readModesDocument(core, { existsSync: () => true, readFileSync: () => Buffer.from('{bad') });
+assert.strictEqual(invalid.ok, false); assert.strictEqual(invalid.reason, 'parse');
+const denied = readModesDocument(core, { existsSync: () => true, readFileSync() { throw new Error('synthetic-denied'); } });
+assert.strictEqual(denied.ok, false); assert.strictEqual(denied.missing, false);
+const stringIO = { existsSync: () => true, readFileSync: () => JSON.stringify(doc) };
+assert.deepStrictEqual(readModesDocument(core, stringIO).data, doc, 'existing string-based test IO still works');
+console.log('P3 mode reader: Buffer/BOM/Unicode/missing/invalid/read failure/string IO PASS');

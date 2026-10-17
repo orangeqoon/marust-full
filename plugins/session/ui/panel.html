@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>配信の経過時間</title>
+  <style>
+    :root { color-scheme: dark; font-family: "Segoe UI", sans-serif; background: #141820; color: #e7ecf5; }
+    body { margin: 16px; }
+    h1 { margin: 0 0 12px; font-size: 18px; font-weight: 600; }
+    .hint { color: #9aa6bd; }
+  </style>
+</head>
+<body>
+  <h1>配信の経過時間</h1>
+  <p class="hint">今の配信が始まってからの時間です。配信していないときは「なし」と出ます。</p>
+  <p id="session-summary">なし</p>
+  <script src="bridge.js"></script>
+  <script src="panel.js"></script>
+</body>
+</html>

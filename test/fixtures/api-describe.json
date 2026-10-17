@@ -1,0 +1,1512 @@
+[
+  {
+    "method": "api.describe",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "app.restart",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "app.settings.get",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "app.settings.set",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "openAtLogin": {
+        "type": "boolean",
+        "required": true
+      }
+    }
+  },
+  {
+    "method": "approval.approve",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 80
+      }
+    }
+  },
+  {
+    "method": "approval.deny",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 80
+      }
+    }
+  },
+  {
+    "method": "approval.list",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "broadcast.preflight",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "destinationIds": {
+        "type": "array",
+        "required": false,
+        "max": 20
+      }
+    }
+  },
+  {
+    "method": "broadcast.start",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "destinationIds": {
+        "type": "array",
+        "required": true,
+        "min": 1,
+        "max": 20
+      },
+      "confirmed": {
+        "type": "boolean",
+        "required": false
+      }
+    }
+  },
+  {
+    "method": "broadcast.status",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "broadcast.stop",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "destinationIds": {
+        "type": "array",
+        "required": true,
+        "min": 1,
+        "max": 20
+      }
+    }
+  },
+  {
+    "method": "broadcast.stopAll",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "chat.inlets",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "chat.publish",
+    "permission": "chat-write",
+    "windowOnly": false,
+    "noApproval": true,
+    "owner": "",
+    "params": {
+      "messages": {
+        "type": "array",
+        "required": true,
+        "min": 1,
+        "max": 50
+      },
+      "source": {
+        "type": "string",
+        "required": false,
+        "max": 40
+      }
+    }
+  },
+  {
+    "method": "chat.recent",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "limit": {
+        "type": "number",
+        "required": false,
+        "min": 1,
+        "max": 200
+      }
+    }
+  },
+  {
+    "method": "clients.beginPairing",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "name": {
+        "type": "string",
+        "required": false,
+        "max": 40
+      },
+      "permissions": {
+        "type": "array",
+        "required": false
+      },
+      "kind": {
+        "type": "string",
+        "required": false,
+        "max": 16
+      },
+      "requiresApproval": {
+        "type": "boolean",
+        "required": false
+      }
+    }
+  },
+  {
+    "method": "clients.list",
+    "permission": "read",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "clients.revoke",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 80
+      }
+    }
+  },
+  {
+    "method": "destination.list",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "destination.setKey",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 80
+      },
+      "key": {
+        "type": "string",
+        "required": true,
+        "max": 300
+      },
+      "server": {
+        "type": "string",
+        "required": false,
+        "max": 300
+      }
+    }
+  },
+  {
+    "method": "destination.setMain",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "use": {
+        "type": "boolean",
+        "required": true
+      },
+      "site": {
+        "type": "string",
+        "required": false,
+        "max": 40
+      }
+    }
+  },
+  {
+    "method": "destination.start",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 80
+      }
+    }
+  },
+  {
+    "method": "destination.stop",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 80
+      }
+    }
+  },
+  {
+    "method": "devmode.get",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "devmode.set",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "value": {
+        "type": "boolean",
+        "required": true
+      }
+    }
+  },
+  {
+    "method": "diagnostics.facts",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "diagnostics.siteFacts",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "site": {
+        "type": "string",
+        "required": true,
+        "max": 32
+      },
+      "secretNames": {
+        "type": "array",
+        "required": false,
+        "max": 16
+      },
+      "pluginIds": {
+        "type": "array",
+        "required": false,
+        "max": 16
+      }
+    }
+  },
+  {
+    "method": "engine.create",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "protocol": {
+        "type": "string",
+        "required": true
+      },
+      "name": {
+        "type": "string",
+        "required": true,
+        "max": 100
+      },
+      "server": {
+        "type": "string",
+        "required": true,
+        "max": 300
+      },
+      "key": {
+        "type": "string",
+        "required": true,
+        "max": 300
+      }
+    }
+  },
+  {
+    "method": "engine.emergencyStop",
+    "permission": "emergency",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "engine.link",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "destinationId": {
+        "type": "string",
+        "required": true,
+        "max": 80
+      },
+      "targetId": {
+        "type": "string",
+        "required": true,
+        "max": 80
+      },
+      "site": {
+        "type": "string",
+        "required": false,
+        "max": 40
+      },
+      "accountId": {
+        "type": "string",
+        "required": false,
+        "max": 80
+      }
+    }
+  },
+  {
+    "method": "engine.listTargets",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "engine.remove",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 80
+      }
+    }
+  },
+  {
+    "method": "engine.setEnabled",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 80
+      },
+      "enabled": {
+        "type": "boolean",
+        "required": true
+      }
+    }
+  },
+  {
+    "method": "engine.setKey",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 80
+      },
+      "key": {
+        "type": "string",
+        "required": true,
+        "max": 300
+      },
+      "server": {
+        "type": "string",
+        "required": false,
+        "max": 300
+      },
+      "restartIfActive": {
+        "type": "boolean",
+        "required": false
+      }
+    }
+  },
+  {
+    "method": "engine.start",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 80
+      }
+    }
+  },
+  {
+    "method": "engine.status",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "engine.stop",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 80
+      }
+    }
+  },
+  {
+    "method": "engine.targetRates",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "engine.targetStats",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "engine.unlink",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "destinationId": {
+        "type": "string",
+        "required": true,
+        "max": 80
+      }
+    }
+  },
+  {
+    "method": "features.list",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "features.set",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 64
+      },
+      "enabled": {
+        "type": "boolean",
+        "required": true
+      }
+    }
+  },
+  {
+    "method": "features.setSet",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 64
+      },
+      "enabled": {
+        "type": "boolean",
+        "required": true
+      }
+    }
+  },
+  {
+    "method": "features.sets",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "home.dismissAlert",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "home.getState",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "hub.fanout",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "title": {
+        "type": "string",
+        "required": false,
+        "max": 500
+      },
+      "category": {
+        "type": "string",
+        "required": false,
+        "max": 200
+      },
+      "confirmed": {
+        "type": "boolean",
+        "required": false
+      },
+      "allowedLiveIds": {
+        "type": "array",
+        "required": false
+      }
+    }
+  },
+  {
+    "method": "hub.fanoutReserved",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "title": {
+        "type": "string",
+        "required": false,
+        "max": 500
+      },
+      "category": {
+        "type": "string",
+        "required": false,
+        "max": 200
+      }
+    }
+  },
+  {
+    "method": "hub.forceLegacy",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "hub.getState",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "layout.get",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "name": {
+        "type": "string",
+        "required": true,
+        "max": 40
+      }
+    }
+  },
+  {
+    "method": "layout.getLevel",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "level": {
+        "type": "string",
+        "required": true,
+        "max": 10
+      }
+    }
+  },
+  {
+    "method": "layout.list",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "layout.remove",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "name": {
+        "type": "string",
+        "required": true,
+        "max": 40
+      }
+    }
+  },
+  {
+    "method": "layout.save",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "name": {
+        "type": "string",
+        "required": true,
+        "max": 40
+      },
+      "data": {
+        "type": "object",
+        "required": true
+      }
+    }
+  },
+  {
+    "method": "layout.saveLevel",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "level": {
+        "type": "string",
+        "required": true,
+        "max": 10
+      },
+      "data": {
+        "type": "object",
+        "required": true
+      }
+    }
+  },
+  {
+    "method": "migration.export",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "passphrase": {
+        "type": "string",
+        "required": true,
+        "max": 200
+      }
+    }
+  },
+  {
+    "method": "migration.import",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "passphrase": {
+        "type": "string",
+        "required": true,
+        "max": 200
+      },
+      "bundle": {
+        "type": "string",
+        "required": true,
+        "max": 8388608
+      }
+    }
+  },
+  {
+    "method": "modes.list",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "modes.set",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 32
+      },
+      "mode": {
+        "type": "string",
+        "required": true
+      },
+      "confirmName": {
+        "type": "string",
+        "required": false,
+        "max": 80
+      }
+    }
+  },
+  {
+    "method": "modes.setDefault",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "mode": {
+        "type": "string",
+        "required": true
+      }
+    }
+  },
+  {
+    "method": "modes.setMany",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "mode": {
+        "type": "string",
+        "required": true
+      },
+      "ids": {
+        "type": "array",
+        "required": false,
+        "max": 64
+      }
+    }
+  },
+  {
+    "method": "obs.getConnection",
+    "permission": "read",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "obs.importConfig",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "obs.installPlugin",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "overwrite": {
+        "type": "boolean",
+        "required": false
+      }
+    }
+  },
+  {
+    "method": "obs.pluginInfo",
+    "permission": "read",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "obs.setConnection",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "host": {
+        "type": "string",
+        "required": false,
+        "max": 253
+      },
+      "port": {
+        "type": "number",
+        "required": false,
+        "min": 1,
+        "max": 65535
+      },
+      "password": {
+        "type": "string",
+        "required": false,
+        "max": 256
+      }
+    }
+  },
+  {
+    "method": "obs.setControl",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "enabled": {
+        "type": "boolean",
+        "required": true
+      }
+    }
+  },
+  {
+    "method": "obs.testConnection",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "host": {
+        "type": "string",
+        "required": false,
+        "max": 253
+      },
+      "port": {
+        "type": "number",
+        "required": false,
+        "min": 1,
+        "max": 65535
+      },
+      "password": {
+        "type": "string",
+        "required": false,
+        "max": 256
+      }
+    }
+  },
+  {
+    "method": "plugin.create",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 40
+      }
+    }
+  },
+  {
+    "method": "plugin.inspect",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "kind": {
+        "type": "string",
+        "required": true,
+        "max": 8
+      }
+    }
+  },
+  {
+    "method": "plugin.install",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "sha256": {
+        "type": "string",
+        "required": true,
+        "max": 64
+      }
+    }
+  },
+  {
+    "method": "plugin.list",
+    "permission": "read",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "plugin.logs",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 40
+      },
+      "n": {
+        "type": "number",
+        "required": false,
+        "min": 1,
+        "max": 200
+      }
+    }
+  },
+  {
+    "method": "plugin.openFolder",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 40
+      }
+    }
+  },
+  {
+    "method": "plugin.reload",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": true,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 40
+      }
+    }
+  },
+  {
+    "method": "plugin.remove",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 40
+      }
+    }
+  },
+  {
+    "method": "plugin.restore",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 40
+      }
+    }
+  },
+  {
+    "method": "plugin.status",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 40
+      }
+    }
+  },
+  {
+    "method": "plugins.browse",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "plugins.disable",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 40
+      }
+    }
+  },
+  {
+    "method": "plugins.list",
+    "permission": "read",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "plugins.reloadAll",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": true,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "plugins.setHidden",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 40
+      },
+      "hidden": {
+        "type": "boolean",
+        "required": true
+      }
+    }
+  },
+  {
+    "method": "secrets.list",
+    "permission": "read",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "secrets.remove",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "secrets.set",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "settings.export",
+    "permission": "read",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "settings.exportToFile",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "settings.import",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "document": {
+        "type": "object",
+        "required": true
+      },
+      "sections": {
+        "type": "array",
+        "required": true,
+        "min": 1,
+        "max": 6
+      }
+    }
+  },
+  {
+    "method": "settings.preview",
+    "permission": "read",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "document": {
+        "type": "object",
+        "required": true
+      }
+    }
+  },
+  {
+    "method": "sites.loginFacts",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "sites.loginStates",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "sites.setAutoSlot",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "site": {
+        "type": "string",
+        "required": true,
+        "max": 32
+      },
+      "enabled": {
+        "type": "boolean",
+        "required": true
+      }
+    }
+  },
+  {
+    "method": "sites.setCommentSend",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "site": {
+        "type": "string",
+        "required": true,
+        "max": 32
+      },
+      "on": {
+        "type": "boolean",
+        "required": true
+      },
+      "confirmName": {
+        "type": "string",
+        "required": false,
+        "max": 80
+      }
+    }
+  },
+  {
+    "method": "sites.setConfig",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "site": {
+        "type": "string",
+        "required": true,
+        "max": 32
+      },
+      "fields": {
+        "type": "object",
+        "required": true
+      }
+    }
+  },
+  {
+    "method": "sites.setReceive",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "site": {
+        "type": "string",
+        "required": true,
+        "max": 32
+      },
+      "receive": {
+        "type": "boolean",
+        "required": true
+      }
+    }
+  },
+  {
+    "method": "sites.setSend",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 32
+      },
+      "send": {
+        "type": "boolean",
+        "required": true
+      },
+      "confirmName": {
+        "type": "string",
+        "required": false,
+        "max": 80
+      }
+    }
+  },
+  {
+    "method": "ui.getSettings",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "ui.getShell",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "excluded": {
+        "type": "string",
+        "required": false,
+        "max": 400
+      }
+    }
+  },
+  {
+    "method": "ui.getTheme",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "ui.layouts",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "ui.logRefusal",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "pluginId": {
+        "type": "string",
+        "required": true,
+        "max": 40
+      },
+      "name": {
+        "type": "string",
+        "required": true,
+        "max": 40
+      }
+    }
+  },
+  {
+    "method": "ui.reload",
+    "permission": "write",
+    "windowOnly": false,
+    "noApproval": true,
+    "owner": "",
+    "params": {
+      "target": {
+        "type": "string",
+        "required": true,
+        "max": 60
+      }
+    }
+  },
+  {
+    "method": "ui.restart",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": true,
+    "owner": "",
+    "params": {}
+  },
+  {
+    "method": "ui.setSettings",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "showExperimental": {
+        "type": "boolean",
+        "required": false
+      },
+      "uiLevel": {
+        "type": "string",
+        "required": false
+      },
+      "setupDone": {
+        "type": "boolean",
+        "required": false
+      },
+      "fanoutAck": {
+        "type": "boolean",
+        "required": false
+      },
+      "setupStep": {
+        "type": "number",
+        "required": false,
+        "min": 0,
+        "max": 20
+      },
+      "setupSkipped": {
+        "type": "string",
+        "required": false,
+        "max": 400
+      },
+      "setupSites": {
+        "type": "string",
+        "required": false,
+        "max": 400
+      }
+    }
+  },
+  {
+    "method": "ui.setShell",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 32
+      }
+    }
+  },
+  {
+    "method": "ui.setTheme",
+    "permission": "write",
+    "windowOnly": true,
+    "noApproval": false,
+    "owner": "",
+    "params": {
+      "id": {
+        "type": "string",
+        "required": true,
+        "max": 32
+      }
+    }
+  },
+  {
+    "method": "vault.health",
+    "permission": "read",
+    "windowOnly": false,
+    "noApproval": false,
+    "owner": "",
+    "params": {}
+  }
+]

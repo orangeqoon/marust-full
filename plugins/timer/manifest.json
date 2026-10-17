@@ -1,0 +1,65 @@
+{
+  "id": "timer",
+  "name": "タイマー",
+  "category": "tool",
+  "tags": [
+    "タイマー"
+  ],
+  "version": "1.0.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "ui",
+  "feature": {
+    "label": "タイマー",
+    "hint": "配信の残り時間を数えます。オーバーレイにも出せます",
+    "activation": "live",
+    "group": "timer",
+    "order": 60,
+    "openPanel": "plugin:timer:clock"
+  },
+  "provides": [
+    "session.controller@1",
+    "ui.panel@1"
+  ],
+  "actions": {
+    "getState": "read",
+    "setMode": "write",
+    "setDuration": "write",
+    "setPreset": "write",
+    "start": "write",
+    "startPreset": "write",
+    "stop": "write",
+    "reset": "write",
+    "setTitle": "write"
+  },
+  "panels": [
+    {
+      "name": "clock",
+      "title": "タイマー",
+      "file": "ui/clock.html"
+    }
+  ],
+  "overlays": [
+    {
+      "name": "clock",
+      "file": "overlay/clock.html",
+      "fields": [
+        "display",
+        "remainingSec",
+        "elapsedSec",
+        "mode",
+        "state",
+        "title"
+      ]
+    }
+  ],
+  "defaultMode": "legacy",
+  "coreApi": 2,
+  "needs": [
+    "overlay",
+    "sessions",
+    "storage"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "edition": "full",
+  "distribution": "edition",
+  "pluginCount": 37,
+  "editionDefaults": {
+    "uiLevel": "advanced",
+    "devMode": true
+  }
+}

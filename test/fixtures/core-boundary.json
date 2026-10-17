@@ -1,0 +1,699 @@
+{
+  "note": "v3 §2・§2.1 の表をそのまま写した一覧。判断で増減しない（食い違ったら止めて報告）。行き先の段階は stage。減らしたら ceiling を同じ数に下げる（試験が言う）。",
+  "ceiling": {
+    "files": 0,
+    "namespaces": 0,
+    "methods": 0,
+    "markers": 0,
+    "confirmedTrue": 0,
+    "ctxCore": 2
+  },
+  "files": [
+    {
+      "feature": "題名の一斉変更",
+      "stage": "V7",
+      "path": "ui/panels/metadata.js"
+    },
+    {
+      "feature": "コメント送信",
+      "stage": "V2",
+      "path": "host/chat-send.js"
+    },
+    {
+      "feature": "コメント送信",
+      "stage": "V7",
+      "path": "ui/panels/chat.js"
+    },
+    {
+      "feature": "オーバーレイの書き出し",
+      "stage": "V7",
+      "path": "ui/panels/overlays.js"
+    },
+    {
+      "feature": "回線の余裕",
+      "stage": "V3",
+      "path": "host/uplink.js"
+    },
+    {
+      "feature": "回線の余裕",
+      "stage": "V7",
+      "path": "ui/panels/uplink.js"
+    },
+    {
+      "feature": "ホットキー",
+      "stage": "V7",
+      "path": "ui/panels/hotkeys.js"
+    },
+    {
+      "feature": "バックアップ",
+      "stage": "V7",
+      "path": "ui/panels/settings-export.js"
+    }
+  ],
+  "namespaces": [
+    {
+      "feature": "回線の余裕",
+      "stage": "V3",
+      "name": "uplink"
+    },
+    {
+      "feature": "Google カレンダーのログイン状態",
+      "stage": "V4",
+      "name": "calendar"
+    }
+  ],
+  "markers": [],
+  "keep": {
+    "files": [
+      "host/layer1/modes.js",
+      "host/layer1/migration-bundle.js",
+      "host/layer1/overlay-hub.js",
+      "host/core/vault.js",
+      "host/layer1/plugin-registry.js",
+      "host/core/engine/preflight.js",
+      "host/layer1/orchestrator.js",
+      "host/layer1/fanout-gate.js",
+      "host/core/engine/broadcast.js"
+    ],
+    "namespaces": [
+      "engine",
+      "destination",
+      "secrets",
+      "modes",
+      "plugins",
+      "approval",
+      "broadcast",
+      "settings"
+    ],
+    "note": "PLAN-K の K1 で上書き。役は roles が正本（出すと決めた sessions・timer-fanout・hotkeys は keep から外した）"
+  },
+  "methods": [
+    {
+      "feature": "コメント送信",
+      "stage": "V2",
+      "method": "chat.send"
+    }
+  ],
+  "x": {
+    "note": "計画 X（PLAN-X-run-all.md）の見張り。数えるのは test/_core-x.js。ゼロ目標（P1・P4・P8）は減ったら上限を下げる。大きさ（P7）は上限以下。keepIdRefs は理由つきの例外（'ファイル → id': 理由）。P1b（json/html/css）と P4 の _community・marust-plugins は Q15 で足した数え方（2026-10-12）。 C3/C4: shellを外へ移し参照/配置の上限を再測定。核にshell-pickを1ファイル追加。C4 見直し: plugin-scaffold を核に戻し hostLines を再測定。C5: ctx-ports.js を足し hostFiles/hostLines を再測定。C5 見直し: always の口と obs の付け方で hostLines を再測定。",
+    "pluginIdRefs": 0,
+    "pluginIdRefsAssets": 23,
+    "keepIdRefsMax": 5,
+    "stringsPluginPrefixes": [
+      "migration",
+      "gcal",
+      "tip",
+      "update"
+    ],
+    "stringsPluginKeys": 26,
+    "rootPluginTests": 42,
+    "noCategory": 0,
+    "hostFiles": 109,
+    "hostLines": 21066,
+    "apiNamespaces": 24,
+    "keepIdRefs": {
+      "host/layer1/capture-receiver.js → soop": "旧い平文の経路（作者の印があるときだけ開く）の中のサイト名。plugins-author への切り出しは見送り（QUESTIONS Q9）",
+      "host/layer1/migration-bundle.js → hotkeys": "同上（引っ越しの節の名前）",
+      "host/layer1/settings-export.js → hotkeys": "設定ファイルの節の名前（hotkeys.json を書く節）。キーの検査は keys-port のまま（A3 の割りは見送り。QUESTIONS Q9）",
+      "host/layer1/plugin-install.js → backup": "プラグインの id ではなく、書式の名前（format: 'backup'）",
+      "host/layer1/api/ns/settings.js → backup": "settings.* の featurePlugin（backup の機能が切れているあいだは settings.* を隠す）。画面を backup へ移す A4 は見送り（QUESTIONS Q9）"
+    },
+    "unitOut": 0
+  },
+  "layers": {
+    "note": "L7 で再編した層の表。核（host/core/）と一層目（その他）。範囲は host/**・ui/panels・ui/core・ui 直下の .js・electron-main.js・main.js。",
+    "names": {
+      "core": "核",
+      "layer1": "一層目"
+    },
+    "units": {
+      "1": "OBS",
+      "2": "エンジンをつなぐもの",
+      "3": "丸スト本体"
+    },
+    "files": {
+      "electron-main.js": {
+        "layer": "layer1",
+        "note": "起動（Electron のウィンドウ・各部品の組み立て）",
+        "unit": "3"
+      },
+      "host/layer1/api.js": {
+        "layer": "layer1",
+        "note": "役 3。本体の名前空間だけ残す。プラグインの名前空間は api.js から離す（K2 以降） / S8a: 入口の 1 行。本体は host/core/api/",
+        "unit": "3",
+        "unitPart": "名前空間ごとのファイルに割る（S8）。プラグインの名前空間は ctx.api.register で持たせる"
+      },
+      "host/layer1/approvals.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "host/layer1/audit-fields.js": {
+        "layer": "layer1",
+        "note": "監査の記録（shadow.jsonl）の行を作る",
+        "unit": "3"
+      },
+      "host/layer1/audit.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "host/layer1/boot-context.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "host/layer1/mode-source.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "host/core/engine/broadcast.js": {
+        "layer": "core",
+        "unit": "2",
+        "note": "S4 判断: 配信開始の流れ。registry・engines・store・orchestrator を直接受けて動く＝エンジンをつなぐもの（単位 2）。プラグインにすると host を require したくなる（Opus C1.1）ので出さない"
+      },
+      "host/layer1/capture-receiver.js": {
+        "layer": "layer1",
+        "note": "ポート 18770 の固定・禁止と窓口の口。旧い Cookie の経路（core.legacyRoutes）は持ち越し（PLAN §2.1） / Opus（A5）: ポートの固定は本体（port-lock）。旧い平文の経路だけ plugins-author/legacy-capture へ",
+        "unit": "3",
+        "unitPart": "Opus（A5）: ポートの固定は本体（port-lock）。旧い平文の経路だけ plugins-author/legacy-capture へ"
+      },
+      "host/layer1/chat-port.js": {
+        "layer": "layer1",
+        "note": "K3: コメントの受け口（プラグイン chat-inlet）への薄い写し。chat.publish は chat-write の権限（プラグインが出せない）なので核の api.js が持つ / S4 判断: 28 行の「役割の口」。受け口の本体はもう chat-inlet にある。口は核の持ち物",
+        "unit": "3"
+      },
+      "host/layer1/clients.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "host/core/core-bridge.js": {
+        "layer": "core",
+        "note": "保存場所（core）を作る。作者用の差し込みは plugins-author",
+        "unit": "3"
+      },
+      "host/core/index.js": {
+        "layer": "core",
+        "note": "核の単一入口",
+        "unit": "3"
+      },
+      "host/layer1/dev-autopair.js": {
+        "layer": "layer1",
+        "note": "端末の承認を迂回する道なので核の中で守る。開発者モード専用・DEV_AUTOPAIR で切れる / Opus（A6）: 承認を迂回する道なので核の中で守る",
+        "unit": "3"
+      },
+      "host/layer1/data-plugins.js": {
+        "layer": "layer1",
+        "note": "V8・V9: データだけのプラグイン（テーマ・並べ方）の検査。main・secrets・provides などを持っていれば読み込みを断る（plugin-surface と同じ manifest の検査）",
+        "unit": "3"
+      },
+      "host/layer1/dev-mode.js": {
+        "layer": "layer1",
+        "note": "開発者モードの判定を 1 か所に（起動の設定）",
+        "unit": "3"
+      },
+      "host/layer1/diagnostics-facts.js": {
+        "layer": "layer1",
+        "note": "K3: 診断の材料を名前と有無だけの平らな表にする（read の diagnostics.facts）。診断の文はプラグイン diagnostics / S4 判断（Opus A/B1）: 金庫と modes を読む材料なので本体に残す。診断の文は diagnostics プラグイン",
+        "unit": "3"
+      },
+      "host/core/engine/emergency-button.js": {
+        "layer": "core",
+        "unit": "2"
+      },
+      "host/core/engine/index.js": {
+        "layer": "core",
+        "unit": "2"
+      },
+      "host/core/engine/obs-local.js": {
+        "layer": "core",
+        "unit": "2",
+        "unitPart": "割る候補（S8）"
+      },
+      "host/core/event-bus.js": {
+        "layer": "core",
+        "unit": "3"
+      },
+      "host/core/events.js": {
+        "layer": "core",
+        "note": "イベント名の一覧と、持ち主のあるイベント（OWNERS: session.*＝session・chat.message＝chat-inlet・feature.toggled＝核）。K2 で ctx.events.NAMES として出したので役 2（挿す口の約束）",
+        "unit": "3"
+      },
+      "host/layer1/ext-receiver.js": {
+        "layer": "layer1",
+        "note": "拡張の端末の認証つきの受け口（窓口の一部）。金庫に入れる所は役 4 の門を通る / Opus（A5）: 端末認証と金庫の名前の門なので本体に残す（ext-gate）",
+        "unit": "3"
+      },
+      "host/layer1/features.js": {
+        "layer": "layer1",
+        "note": "段階・機能の入切（V7-result K1 答え 3） / Opus（C2）: 名乗りを並べる本体の仕事。registry/gates へ",
+        "unit": "3"
+      },
+      "host/layer1/gateway.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "unitPart": "割る候補（S8）。プラグイン用の口を窓口に開ける"
+      },
+      "host/layer1/home-state.js": {
+        "layer": "layer1",
+        "note": "本体に残すパネル home の控え",
+        "unit": "3"
+      },
+      "host/layer1/keys-port.js": {
+        "layer": "layer1",
+        "note": "K3: キーの口（旧 host/hotkeys.js）。検査も押下の実行（窓と同じ権限）も核。プラグイン hotkeys は ctx.keys 越しに使う / Opus（A3）: 押下・登録・方針・保存は本体（keys-gate）。キーの文字の整形だけ hotkeys へ",
+        "unit": "3",
+        "unitPart": "Opus（A3）: 押下・登録・方針・保存は本体（keys-gate）。キーの文字の整形だけ hotkeys へ"
+      },
+      "host/layer1/layouts.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S4 判断: 配置の保存の置き場。gateway・settings-export・api が使う。土台のまま（初級の固定の並べ方は本体）"
+      },
+      "host/layer1/log-retention.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S4 判断: 核のログの置き場の構造（shadow/engine/api/vault/emergency）を知る掃除。プラグインにすると ctx.core が要る。土台のまま"
+      },
+      "host/core/log-writer.js": {
+        "layer": "core",
+        "unit": "3"
+      },
+      "host/layer1/migration-bundle.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "Opus（A4）: 同上"
+      },
+      "host/layer1/modes.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "host/core/engine/obs-connection.js": {
+        "layer": "core",
+        "unit": "2"
+      },
+      "host/layer1/obs-setup.js": {
+        "layer": "layer1",
+        "unit": "2"
+      },
+      "host/core/engine/obs-stream-control.js": {
+        "layer": "core",
+        "unit": "2"
+      },
+      "host/core/engine/observed-bridge.js": {
+        "layer": "core",
+        "note": "destination.observed を配信先の actual.siteLive へ反映（OBS の状態）",
+        "unit": "2"
+      },
+      "host/layer1/orchestrator.js": {
+        "layer": "layer1",
+        "unit": "2",
+        "unitPart": "題名ファンアウトの部分は bulk-title へ（S4）。OBS イベントの分配は単位 2 に残す。hub.fanout の確認の門は本体に残す"
+      },
+      "host/layer1/overlay-hub.js": {
+        "layer": "layer1",
+        "note": "プラグインのオーバーレイを配る口。overlay-basic の中身ではない（V7-result K1 答え 3） / Opus（A5）: ctx.overlay と窓口の SSE の運び役なので本体に残す",
+        "unit": "3"
+      },
+      "host/layer1/panel-messages.js": {
+        "layer": "layer1",
+        "note": "役 6。ただし marust:relay の中継の決まり（出どころの絞り・params の捨て方・hub.fanout の確認）は役 3 の仕事（V7-result K1 答え 1）",
+        "unit": "3"
+      },
+      "host/core/set-dirs.js": {
+        "layer": "core",
+        "unit": "3",
+        "note": "計画 C・C2-1: セット（配るプラグイン）の置き場の決め方。保存場所の差し込み（core-bridge）も使う"
+      },
+      "host/core/paths-local.js": {
+        "layer": "core",
+        "unit": "3"
+      },
+      "host/layer1/plugin-api-check.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "host/layer1/plugin-errors.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "host/layer1/plugin-install-wire.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "host/layer1/plugin-install.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "host/layer1/plugin-registry.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "unitPart": "段階・モード・読み直し・サイトの二重探索を割る（S8）"
+      },
+      "host/layer1/plugin-scaffold.js": {
+        "layer": "layer1",
+        "note": "plugin.create が使うひな形（templateFiles）。CLI がここを require する。核の API が使うので核に残す",
+        "unit": "3"
+      },
+      "host/layer1/plugin-surface.js": {
+        "layer": "layer1",
+        "note": "normalizeUi を含む（V7-result K1 答え 1）",
+        "unit": "3"
+      },
+      "host/core/engine/preflight.js": {
+        "layer": "core",
+        "unit": "2",
+        "note": "S4 判断: 配信前の確かめ。broadcast と対。単位 2（同上）"
+      },
+      "host/core/safe-runner.js": {
+        "layer": "core",
+        "unit": "3"
+      },
+      "host/core/secret-mask.js": {
+        "layer": "core",
+        "unit": "3"
+      },
+      "host/core/secret-provider.js": {
+        "layer": "core",
+        "unit": "3"
+      },
+      "host/core/secret-tail.js": {
+        "layer": "core",
+        "unit": "3"
+      },
+      "host/layer1/settings-export.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "Opus（A4）: marust-modes.json と金庫を書くので本体に残す。画面だけ backup へ"
+      },
+      "host/layer1/site-config.js": {
+        "layer": "layer1",
+        "note": "K3: サイトの設定欄 <site>.config の保存とログインの有無（金庫の持ち主の振り分け）。OAuth の状態・結び直しはプラグイン site-login / Opus（S3・A1）: 金庫の持ち主の門なので本体に残す。S11 で host/core/ へ",
+        "unit": "3"
+      },
+      "host/layer1/site-info.js": {
+        "layer": "layer1",
+        "note": "manifest.site を画面に渡せる形に整える（manifest の読み取り）",
+        "unit": "3"
+      },
+      "host/core/state-store.js": {
+        "layer": "core",
+        "unit": "3",
+        "unitPart": "セッションの部分は session プラグインへ（S8）"
+      },
+      "host/layer1/tray.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "host/layer1/ui-settings.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "host/core/vault-backends/electron-safestorage.js": {
+        "layer": "core",
+        "unit": "3"
+      },
+      "host/core/vault-backends/fake.js": {
+        "layer": "core",
+        "note": "試験用の置き場",
+        "unit": "3"
+      },
+      "host/core/vault-backends/index.js": {
+        "layer": "core",
+        "unit": "3"
+      },
+      "host/core/vault-row.js": {
+        "layer": "core",
+        "unit": "3"
+      },
+      "host/core/vault-store-id.js": {
+        "layer": "core",
+        "unit": "3"
+      },
+      "host/core/vault-store-file.js": {
+        "layer": "core",
+        "note": "金庫の既定の置き場（K6 C3）。差し替え口 vault-store@1 の核の実装",
+        "unit": "3"
+      },
+      "host/core/vault.js": {
+        "layer": "core",
+        "unit": "3"
+      },
+      "main.js": {
+        "layer": "layer1",
+        "note": "起動（Electron なしの node main.js）",
+        "unit": "3"
+      },
+      "ui/a11y.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "ui/api-client.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "ui/core/theme.js": {
+        "layer": "layer1",
+        "note": "V8: テーマの値を CSSOM だけで当てる画面の枠の部品",
+        "unit": "3"
+      },
+      "ui/pair.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "ui/plugin-host.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "ui/preload.js": {
+        "layer": "layer1",
+        "note": "窓に出す口の一覧。足すときは IPC_PERMISSIONS（host/core/api.js）と揃える",
+        "unit": "3"
+      },
+      "host/core/owners.js": {
+        "layer": "core",
+        "unit": "3",
+        "note": "計画 X: 名乗り（owns・category・for・tags）の表と検査"
+      },
+      "host/layer1/manifest-claims.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "計画 X: 名乗り（owns・category・for・tags）の表と検査"
+      },
+      "host/layer1/api/index.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/api.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/app.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/approval.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/broadcast.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/chat.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/clients.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/destination.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/devmode.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/diagnostics.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/engine.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/features.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/home.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/hub.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/index.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/layout.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/migration.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/modes.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/obs.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/plugin.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/plugins.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/secrets.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/settings.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/sites.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/ui.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/ns/vault.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/api/rules.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8a: 旧 host/core/api.js を機械的に割ったもの（名前空間ごと）"
+      },
+      "host/layer1/fanout-gate.js": {
+        "layer": "layer1",
+        "note": "K3: タイマーの自動送信の確認の門。核が一度確認した予約（fanoutAck と送り先の控え）の範囲だけ送る。confirmed の印は判定の結果として付ける / Opus（A2）: 判定は本体。fanout-input と orchestrator の門を host/core/fanout-gate.js にまとめる / S7: fanout-input.js を吸収して名前を fanout-gate に",
+        "unit": "3"
+      },
+      "host/layer1/port-lock.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S7（A5）: 窓口のポートの固定と禁止。capture-receiver から分けた"
+      },
+      "host/layer1/registry/context.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8b: 旧 host/core/plugin-registry.js を機械的に割ったもの"
+      },
+      "host/layer1/registry/ctx-ports.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "C5: makeCtx の口の名前。needs と表はここだけ"
+      },
+      "host/layer1/registry/discover.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8b: 旧 host/core/plugin-registry.js を機械的に割ったもの"
+      },
+      "host/layer1/registry/gates.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8b: 旧 host/core/plugin-registry.js を機械的に割ったもの"
+      },
+      "host/layer1/registry/lifecycle.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8b: 旧 host/core/plugin-registry.js を機械的に割ったもの"
+      },
+      "host/layer1/registry/manifest.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8b: 旧 host/core/plugin-registry.js を機械的に割ったもの"
+      },
+      "host/layer1/registry/reload.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8b: 旧 host/core/plugin-registry.js を機械的に割ったもの"
+      },
+      "host/layer1/registry/wiring.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8b: 旧 host/core/plugin-registry.js を機械的に割ったもの"
+      },
+      "host/layer1/gateway/http-util.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8b: 旧 host/core/gateway.js を機械的に割ったもの"
+      },
+      "host/layer1/gateway/index.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8b: 旧 host/core/gateway.js を機械的に割ったもの"
+      },
+      "host/layer1/gateway/plugin-serve.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8b: 旧 host/core/gateway.js を機械的に割ったもの"
+      },
+      "host/layer1/gateway/sockets.js": {
+        "layer": "layer1",
+        "unit": "3",
+        "note": "S8b: 旧 host/core/gateway.js を機械的に割ったもの"
+      },
+      "host/layer1/shell-pick.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "ui/fallback.js": {
+        "layer": "layer1",
+        "unit": "3"
+      },
+      "ui/core-strings.js": {
+        "layer": "layer1",
+        "unit": "3"
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "intervalMs": 2000,
+  "consecutiveSamples": 3,
+  "degradedCongestion": 0.5,
+  "badCongestion": 0.9,
+  "degradedSkippedRate": 0.02
+}

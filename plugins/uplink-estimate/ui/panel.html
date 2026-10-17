@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>回線の余裕</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <h1>回線の余裕</h1>
+  <p class="hint">使う予定の配信先のビットレートを OBS から読んで足し、あなたの回線の上りの速さと比べます。OBS 本体の配信（丸ストの配信先に入っていないもの）は数えていません。丸ストは外の測定サイトへ自分ではつながりません。速さは、下のサイトなどで自分で測って入れてください。</p>
+  <div class="setup">
+    <label>上りの速さ（Mbps） <input id="uplink-mbps" type="number" min="0" max="100000" step="1"></label>
+    <button id="uplink-save" type="button">保存</button>
+  </div>
+  <p class="hint">速さを測るサイト（外のサイトです。お使いのブラウザで開いてください）: fast.com / speedtest.net</p>
+  <details>
+    <summary>判定の割合（上りに対する % ）</summary>
+    <div class="setup">
+      <label>ぎりぎりになる割合 <input id="uplink-tight" type="number" min="10" max="100"></label>
+      <label>足りなくなる割合 <input id="uplink-short" type="number" min="10" max="100"></label>
+    </div>
+  </details>
+  <div class="actions"><button id="uplink-run" type="button" class="primary">計算する</button></div>
+  <p class="hint" id="uplink-status" aria-live="polite"></p>
+  <div id="uplink-result"></div>
+  <script src="bridge.js"></script>
+  <script src="panel.js"></script>
+</body>
+</html>

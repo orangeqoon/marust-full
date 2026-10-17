@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OBS に丸スト用プラグインを入れる方法</title>
+  <link rel="stylesheet" href="guide.css" />
+</head>
+<body>
+<main>
+  <h1>OBS に丸スト用プラグインを入れる方法</h1>
+  <p>丸ストは、OBS に入れる専用のプラグイン（<code>obs-multi-rtmp</code> の丸スト用の版）を使って、複数のサイトへ同時に配信します。丸ストの初回の画面の「OBS にプラグインを入れる」ボタンを押すと、入ります（OBS を閉じてから）。ボタンを押さないかぎり、丸ストが自動で入れることはありません。ここは、<b>手で入れたいとき</b>の手順です。5 分ほどです。</p>
+
+  <h2>1. 用意するもの</h2>
+  <ul>
+    <li>Windows 版の OBS Studio（64 ビット）。</li>
+    <li>丸スト用プラグインのファイル（<code>obs-multi-rtmp.dll</code> と、<code>data\locale</code> フォルダの 2 つの言語ファイル）。配布場所は、<a href="https://github.com/orangeqoon/marust/releases" target="_blank" rel="noopener noreferrer">丸ストの配布ページ（GitHub Releases）</a>です（一般公開の準備中）。作者から直接受け取った場合は、そのフォルダを使ってください。</li>
+  </ul>
+  <div class="note">すでに「obs-multi-rtmp」を入れている場合は、同じ名前のプラグインを上書きします。上書きする前に、今のフォルダを<b>別の場所（デスクトップなど）にコピーして控え</b>を取ってください。OBS のプラグインのフォルダの中に控えを置くと、二重に読み込まれて困ることがあります。</div>
+
+  <h2>2. OBS を完全に閉じる</h2>
+  <p>配信中なら先に配信を止めます。OBS を終了します（画面右下の通知領域に残っていないか確かめてください）。</p>
+
+  <h2>3. プラグインのフォルダを開く</h2>
+  <ol>
+    <li>エクスプローラーを開き、アドレス欄に次を貼り付けて Enter を押します。<br /><code>C:\ProgramData\obs-studio\plugins</code><br />（<code>ProgramData</code> は隠しフォルダです。アドレス欄に貼り付ければ開けます。）</li>
+    <li><code>obs-multi-rtmp</code> というフォルダがあればその中へ、無ければ新しく <code>obs-multi-rtmp</code> フォルダを作ります。</li>
+    <li>その中に <code>bin</code> フォルダ、さらにその中に <code>64bit</code> フォルダがあることを確かめます（無ければ作ります）。</li>
+  </ol>
+
+  <h2>4. ファイルをコピーする</h2>
+  <ol>
+    <li><code>obs-multi-rtmp.dll</code> を <code>C:\ProgramData\obs-studio\plugins\obs-multi-rtmp\bin\64bit\</code> へコピーします（古いものがあれば上書き）。管理者の確認が出たら許可します。</li>
+    <li><code>data\locale</code> フォルダの <code>ja-JP.ini</code> と <code>en-US.ini</code> を <code>C:\ProgramData\obs-studio\plugins\obs-multi-rtmp\data\locale\</code> へコピーします。</li>
+  </ol>
+
+  <h2>5. OBS を起動して確かめる</h2>
+  <ol>
+    <li>OBS を起動します。画面に、見慣れない赤い「非常停止」のボタンのような部品が出ることがあります（丸ストの非常停止です）。</li>
+    <li>OBS のメニュー「ツール」→「WebSocket サーバー設定」で、「WebSocket サーバーを有効にする」にチェックを入れ、表示されるポートとパスワードを控えます。</li>
+    <li>丸ストの「OBS とつなぐ」（初回の案内の 1 つめ）にポートとパスワードを入れて「つないでみる」を押し、続けて「丸スト用の OBS プラグインの確認」の「確かめる」を押します。「入っています」と出れば完了です。</li>
+  </ol>
+
+  <h2>うまくいかないとき</h2>
+  <ul>
+    <li><b>「入っていません」と出る</b>: dll を置いた場所が違います。<code>bin\64bit</code> の中に直接 <code>obs-multi-rtmp.dll</code> があるか確かめ、OBS を再起動してください。</li>
+    <li><b>「古いです」と出る</b>: 丸スト用の新しい dll に入れ替えてください。</li>
+    <li><b>OBS が起動しない・おかしい</b>: 控えを取ったフォルダを元の場所へ戻せば、元の状態に戻ります。</li>
+    <li><b>つながらない</b>: OBS の「WebSocket サーバー設定」が有効か、ポートとパスワードが合っているかを確かめてください。</li>
+  </ul>
+  <p>（この手順は、画像つきの説明に作り直す予定です。）</p>
+</main>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>Rumble</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <h1>Rumble</h1>
+  <h2>題名</h2>
+  <dl>
+    <dt>設定</dt>
+    <dd id="configured">-</dd>
+    <dt>最後の更新</dt>
+    <dd id="result" aria-live="polite">-</dd>
+    <dt>時刻</dt>
+    <dd id="at">-</dd>
+  </dl>
+  <p class="actions">
+    <button id="refresh" type="button">更新</button>
+  </p>
+  <h2>枠の確保</h2>
+  <dl>
+    <dt>モード</dt>
+    <dd id="slot-mode">-</dd>
+    <dt>最後の操作</dt>
+    <dd id="slot-op">-</dd>
+    <dt>時刻</dt>
+    <dd id="slot-at">-</dd>
+    <dt>Live Stream API</dt>
+    <dd id="slot-api">-</dd>
+    <dt>Cookie</dt>
+    <dd id="slot-cookies">-</dd>
+  </dl>
+  <p class="actions">
+    <button id="slot-refresh" type="button">枠の確保を更新</button>
+  </p>
+  <script src="theme-apply.js"></script>
+  <script src="panel.js"></script>
+  <script src="panel-slot.js"></script>
+</body>
+</html>

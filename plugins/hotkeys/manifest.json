@@ -1,0 +1,60 @@
+{
+  "id": "hotkeys",
+  "name": "ホットキー",
+  "category": "tool",
+  "tags": [
+    "ホットキー",
+    "キー"
+  ],
+  "version": "1.1.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "ui",
+  "feature": {
+    "label": "ホットキー",
+    "hint": "キーを押して、配信の開始・停止や非常停止などを呼べます（丸ストが後ろにあっても効きます）",
+    "level": "standard",
+    "activation": "live",
+    "group": "hotkeys",
+    "order": 90,
+    "openPanel": "plugin:hotkeys:main"
+  },
+  "provides": [
+    "ui.panel@1"
+  ],
+  "panels": [
+    {
+      "name": "main",
+      "title": "ホットキー",
+      "file": "ui/panel.html",
+      "aliases": [
+        "hotkeys"
+      ]
+    }
+  ],
+  "ui": {
+    "relay": [
+      "hotkeys.save"
+    ]
+  },
+  "defaultMode": "legacy",
+  "audience": "public",
+  "stability": "stable",
+  "needs": [
+    "keys",
+    "api.register",
+    "events.subscribe"
+  ],
+  "subscribes": [
+    "modes.changed",
+    "plugin.reloaded"
+  ],
+  "api": {
+    "namespaces": [
+      "hotkeys"
+    ]
+  },
+  "coreApi": 2
+}

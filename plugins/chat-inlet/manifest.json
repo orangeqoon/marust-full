@@ -1,0 +1,34 @@
+{
+  "id": "chat-inlet",
+  "name": "コメントの受け口",
+  "category": "comment",
+  "for": [
+    "*"
+  ],
+  "tags": [
+    "受信",
+    "わんコメ"
+  ],
+  "owns": {
+    "events": [
+      "chat.message"
+    ]
+  },
+  "version": "1.0.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "integration",
+  "defaultMode": "live",
+  "audience": "public",
+  "stability": "stable",
+  "provides": [
+    "chat.inlet@1"
+  ],
+  "coreApi": 2,
+  "needs": [
+    "events.emit",
+    "pluginStates"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "_about": "OBS 側 DLL（streaming/obs-multi-rtmp ブランチ k4-thin。master に入れたらコミットを書く）の vendor API「obs-multi-rtmp」の契約の写し。名前・引数・答えの形だけ。apiVersion は 3。DLL 側を変えたらここも変える（test/k4-obs-contract.test.js が丸ストの使う名前と突き合わせ、DLL のソースが隣にあれば kRequests とも突き合わせる）。",
+  "vendor": "obs-multi-rtmp",
+  "apiVersion": 3,
+  "events": ["target_state_changed", "emergency_stop"],
+  "tiers": {
+    "read": ["list_capabilities", "get_api_version", "get_snapshot", "list_targets", "get_target_status", "get_target_config"],
+    "write": ["start_target", "stop_target", "set_target_enabled", "set_target_service_settings", "create_target", "delete_target"],
+    "emergency": ["stop_all_targets"],
+    "neverFromMarust": ["start_all_targets"]
+  },
+  "requests": {
+    "list_capabilities": { "params": [], "answer": ["vendor", "docs", "apiVersion", "pluginVersion", "events", "requests"], "description": "Lists every vendor request this plugin registers, with a one-line description of each. Includes apiVersion and pluginVersion." },
+    "get_api_version": { "params": [], "answer": ["apiVersion", "pluginVersion"], "description": "Returns apiVersion (integer) and pluginVersion (string)." },
+    "get_snapshot": { "params": [], "answer": ["apiVersion", "pluginVersion", "observedAt", "headless", "targets"], "targetAnswer": ["id", "name", "enabled", "state", "reconnects", "lastError", "service"], "description": "No params (reveal_secrets is ignored/rejected). One-shot reconcile snapshot: apiVersion, pluginVersion, observedAt (UTC), headless, and targets without secrets." },
+    "list_targets": { "params": [], "answer": ["targets"], "targetAnswer": ["id", "name", "protocol", "state", "enabled", "sync_start", "sync_stop"], "description": "List every target with its id, name, protocol, state, enabled flag, and sync flags." },
+    "get_target_status": { "params": ["id"], "answer": ["id", "name", "protocol", "state", "enabled", "sync_start", "sync_stop", "last_error_code", "duration_ms", "bitrate_bps", "fps"], "description": "Params: id. Live status (state, duration, bitrate, fps, last error) for one target." },
+    "get_target_config": { "params": ["id", "reveal_secrets"], "answer": ["id", "name", "protocol", "state", "enabled", "sync_start", "sync_stop", "service_settings", "output_settings"], "description": "Params: id, reveal_secrets (default false). Full saved config for one target; service_settings fields matching key/token/password/secret are redacted unless reveal_secrets is true." },
+    "start_target": { "params": ["id"], "answer": ["success"], "description": "Params: id. Starts one target (no-op if disabled or already running)." },
+    "stop_target": { "params": ["id"], "answer": ["success"], "description": "Params: id. Force-stops one target immediately, no confirmation dialog." },
+    "start_all_targets": { "params": [], "answer": ["success", "count"], "description": "Starts every enabled target." },
+    "stop_all_targets": { "params": [], "answer": ["success", "count"], "description": "Force-stops every target." },
+    "set_target_service_settings": { "params": ["id", "settings", "merge", "restart_if_active", "dry_run"], "answer": ["success"], "description": "Params: id, settings, merge (default true), restart_if_active (default true), dry_run (default false). Updates a target's server/key etc.; dry_run validates without applying." },
+    "set_target_enabled": { "params": ["id", "enabled"], "answer": ["success"], "description": "Params: id, enabled. Enables/disables a target; disabling a live target force-stops it." },
+    "create_target": { "params": ["name", "protocol", "service_settings", "output_settings", "sync_start", "sync_stop", "enabled", "dry_run"], "answer": ["success", "id"], "description": "Params: name, protocol, service_settings, output_settings, sync_start, sync_stop, enabled (default false), dry_run (default false). Adds a new target; disabled by default until you explicitly enable it." },
+    "delete_target": { "params": ["id", "confirm"], "answer": ["success"], "description": "Params: id, confirm (must be true). Deletes a target; refused if it's currently live (stop_target it first)." }
+  },
+  "errors": ["target_not_found", "confirmation_required", "target_is_live", "invalid_protocol", "settings_must_be_an_object"],
+  "states": ["stopped", "connecting", "live", "reconnecting", "error"]
+}

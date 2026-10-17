@@ -1,0 +1,52 @@
+{
+  "id": "diagnostics",
+  "name": "診断",
+  "category": "tool",
+  "tags": [
+    "診断"
+  ],
+  "version": "1.0.0",
+  "tier": "advanced",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "ui",
+  "defaultMode": "live",
+  "audience": "public",
+  "stability": "stable",
+  "provides": [
+    "ui.panel@1"
+  ],
+  "panels": [
+    {
+      "name": "main",
+      "title": "診断",
+      "file": "ui/panel.html",
+      "aliases": [
+        "diagnostics"
+      ]
+    }
+  ],
+  "ui": {
+    "menu": [
+      {
+        "label": "診断",
+        "openPanel": "main"
+      }
+    ]
+  },
+  "api": {
+    "namespaces": [
+      "diagnostics"
+    ],
+    "modeGated": true,
+    "calls": [
+      "diagnostics.facts"
+    ]
+  },
+  "coreApi": 2,
+  "needs": [
+    "api.call",
+    "api.register"
+  ]
+}

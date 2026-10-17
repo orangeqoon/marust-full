@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>見本オーバーレイ</title>
+  <style>
+    body { margin: 0; font: 24px sans-serif; color: #fff; background: transparent; }
+  </style>
+</head>
+<body>
+  <div id="title"></div>
+  <div id="note"></div>
+  <script>
+    const title = document.getElementById('title');
+    const note = document.getElementById('note');
+    const source = new EventSource('/overlay/sample-v2/clock/events');
+    source.onmessage = (event) => {
+      let data = {};
+      try { data = JSON.parse(event.data); } catch (err) { return; }
+      title.textContent = data.title || '';
+      note.textContent = data.note || '';
+    };
+  </script>
+</body>
+</html>

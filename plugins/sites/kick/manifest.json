@@ -1,0 +1,92 @@
+{
+  "id": "kick",
+  "name": "Kick",
+  "category": "destination",
+  "version": "0.1.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "secrets": [
+    "kick.oauth"
+  ],
+  "roles": {
+    "site": {
+      "main": "site.js",
+      "provides": [
+        "stream.site@1",
+        "ui.panel@1"
+      ],
+      "secrets": [
+        "kick.oauth"
+      ],
+      "timeouts": {
+        "updateMetadata": 30000,
+        "getStatus": 20000
+      },
+      "defaultMode": "legacy",
+      "actions": {
+        "getStatus": "read"
+      },
+      "panels": [
+        {
+          "name": "status",
+          "title": "Kick",
+          "file": "ui/panel.html"
+        }
+      ],
+      "needs": [
+        "secrets"
+      ]
+    },
+    "sink": {
+      "name": "Kick コメント送信",
+      "main": "sink.js",
+      "provides": [
+        "chat.sink@1"
+      ],
+      "secrets": [
+        "kick.oauth"
+      ],
+      "timeouts": {
+        "sendComment": 30000,
+        "getStatus": 20000
+      },
+      "defaultMode": "legacy",
+      "actions": {
+        "getStatus": "read"
+      },
+      "needs": [
+        "secrets"
+      ]
+    }
+  },
+  "audience": "public",
+  "stability": "experimental",
+  "site": {
+    "id": "kick",
+    "name": "Kick",
+    "order": 5,
+    "tier": "extra",
+    "ingest": [
+      {
+        "label": "ダッシュボードの Stream URL（rtmps）",
+        "url": null,
+        "helpUrl": "https://help.kick.com/en/articles/7066931-how-to-stream-on-kick-com"
+      }
+    ],
+    "keyHelpUrl": "https://help.kick.com/en/articles/7066931-how-to-stream-on-kick-com",
+    "tosUrl": null,
+    "login": {
+      "type": "oauth",
+      "needed": "optional",
+      "for": [
+        "題名"
+      ]
+    },
+    "apiHosts": [
+      "api.kick.com",
+      "id.kick.com"
+    ]
+  },
+  "coreApi": 2
+}

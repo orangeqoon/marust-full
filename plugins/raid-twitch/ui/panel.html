@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>Twitch レイド</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <h1>Twitch レイド</h1>
+  <dl>
+    <dt>モード</dt>
+    <dd id="mode">-</dd>
+    <dt>ログイン情報</dt>
+    <dd id="configured">-</dd>
+    <dt>次の候補</dt>
+    <dd id="candidates">-</dd>
+    <dt>最後の結果</dt>
+    <dd id="last" aria-live="polite">-</dd>
+    <dt>時刻</dt>
+    <dd id="at">-</dd>
+  </dl>
+  <p id="error" aria-live="polite"></p>
+  <p class="actions">
+    <button id="refresh" type="button">更新</button>
+  </p>
+  <script src="theme-apply.js"></script>
+  <script src="panel.js"></script>
+</body>
+</html>

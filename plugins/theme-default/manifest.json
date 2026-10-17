@@ -1,0 +1,37 @@
+{
+  "id": "theme-default",
+  "name": "標準（暗い）",
+  "version": "1.0.0",
+  "tier": "basic",
+  "manifestVersion": 2,
+  "kind": "theme",
+  "audience": "public",
+  "stability": "stable",
+  "isDefault": true,
+  "description": "今の丸ストの見た目（暗い色）。",
+  "theme": {
+    "label": "標準（暗い）",
+    "colorScheme": "dark",
+    "font": "default",
+    "fontScale": 1,
+    "vars": {
+      "bg": "#0e1117",
+      "panel": "#161b26",
+      "panel-2": "#222b3d",
+      "line": "#283042",
+      "line-2": "#3a4660",
+      "text": "#e6eaf2",
+      "muted": "#a0aabd",
+      "accent": "#7aa2ff",
+      "ok": "#6bcf8e",
+      "warn": "#e0b35a",
+      "skip": "#8b93a7",
+      "danger": "#ff8f8f",
+      "input-bg": "#0d1118",
+      "tab-bar-bg": "#121722",
+      "tab-active-bg": "#1f2840",
+      "tab-inactive-bg": "#1a2133"
+    }
+  },
+  "coreApi": 2
+}

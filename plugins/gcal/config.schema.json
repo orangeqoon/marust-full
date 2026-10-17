@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "gcal",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "mergeGapMinutes": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1440,
+      "default": 10,
+      "description": "同じ題名で、前の予定の終了からこの分数以内なら結合する。境界は含む。"
+    },
+    "minEventSeconds": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 86400,
+      "default": 60,
+      "description": "確定時の最短の長さ（秒）。"
+    },
+    "provisionalCountupSeconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 86400,
+      "default": 3600,
+      "description": "plannedSec が無いときの仮の長さ（秒）。"
+    },
+    "calendarId": {
+      "type": "string",
+      "default": "primary"
+    },
+    "recordSources": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": ["timer"],
+      "description": "記録する session.source。空配列は何も記録しない。"
+    },
+    "defaultTitle": {
+      "type": "string",
+      "default": "丸スト"
+    },
+    "description": {
+      "type": "string",
+      "default": "Recorded by NeonTimer Compact"
+    }
+  }
+}

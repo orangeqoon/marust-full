@@ -1,0 +1,106 @@
+{
+  "id": "rumble",
+  "name": "Rumble",
+  "category": "destination",
+  "version": "0.2.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "secrets": [
+    "cookies.rumble-main",
+    "capture.rumble-main.rumble-save",
+    "rumble.livestream-api"
+  ],
+  "roles": {
+    "site": {
+      "main": "site.js",
+      "provides": [
+        "stream.site@1",
+        "ui.panel@1"
+      ],
+      "secrets": [
+        "cookies.rumble-main",
+        "capture.rumble-main.rumble-save"
+      ],
+      "defaultMode": "legacy",
+      "actions": {
+        "getStatus": "read"
+      },
+      "panels": [
+        {
+          "name": "status",
+          "title": "Rumble",
+          "file": "ui/panel.html"
+        }
+      ],
+      "needs": [
+        "secrets"
+      ]
+    },
+    "slot": {
+      "name": "Rumble の枠",
+      "main": "slot.js",
+      "provides": [
+        "stream.slot@1"
+      ],
+      "secrets": [
+        "rumble.livestream-api",
+        "cookies.rumble-main"
+      ],
+      "timeouts": {
+        "prepareBroadcast": 90000,
+        "verifyLive": 15000
+      },
+      "configSchema": "config.schema.json",
+      "dataDirId": "rumble-slot",
+      "defaultMode": "legacy",
+      "actions": {
+        "getStatus": "read",
+        "prepareSlot": "write"
+      },
+      "api": {
+        "calls": [
+          "destination.list",
+          "destination.setKey"
+        ]
+      },
+      "needs": [
+        "api.call",
+        "secrets",
+        "storage",
+        "destinations"
+      ]
+    }
+  },
+  "audience": "public",
+  "stability": "experimental",
+  "site": {
+    "id": "rumble",
+    "name": "Rumble",
+    "order": 9,
+    "tier": "extra",
+    "ingest": [
+      {
+        "label": "配信を作ったあとの Stream URL",
+        "url": null,
+        "helpUrl": "https://rumble.support/help/how-to-setup-a-livestream"
+      }
+    ],
+    "keyHelpUrl": "https://rumble.support/help/how-to-setup-a-livestream",
+    "addHint": "配信を作るたびに「GET THE STREAMER CONFIGURATION」で URL とキーを確かめてください。固定のキーは Rumble Studio の Direct RTMP にあります。",
+    "tosUrl": null,
+    "login": {
+      "type": "cookie",
+      "needed": "optional",
+      "for": [
+        "題名"
+      ]
+    },
+    "apiHosts": [
+      "rumble.com",
+      "web27.rumble.com",
+      "web7.rumble.com"
+    ]
+  },
+  "coreApi": 2
+}

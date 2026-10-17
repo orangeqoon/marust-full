@@ -1,0 +1,60 @@
+{
+  "manifestVersion": 2,
+  "id": "signal-monitor",
+  "name": "回線の見張り",
+  "category": "tool",
+  "tags": [
+    "回線",
+    "見張り"
+  ],
+  "version": "0.1.0",
+  "tier": "advanced",
+  "kind": "integration",
+  "runtime": "inproc",
+  "defaultMode": "legacy",
+  "configSchema": "config.json",
+  "needs": [
+    "obs.read",
+    "events.emit"
+  ],
+  "feature": {
+    "label": "回線の見張り",
+    "hint": "配信の回線が悪くなったら知らせます（読むだけ）",
+    "level": "advanced",
+    "activation": "shadow",
+    "group": "uplink",
+    "order": 80,
+    "needs": [
+      "obs"
+    ]
+  },
+  "provides": [
+    "ui.panel@1"
+  ],
+  "subscribes": [
+    "signal.stateChanged",
+    "slot.switching",
+    "modes.changed"
+  ],
+  "audience": "public",
+  "stability": "stable",
+  "actions": {
+    "getStatus": "read"
+  },
+  "panels": [
+    {
+      "name": "signal",
+      "title": "回線の見張り",
+      "file": "ui/panel.html",
+      "menu": {
+        "key": "signal",
+        "title": "回線の見張り",
+        "desc": "配信中、OBS が落としたフレームや再接続を見て、回線の状態を出します。",
+        "order": 800,
+        "min": "advanced",
+        "orDev": true
+      }
+    }
+  ],
+  "coreApi": 2
+}

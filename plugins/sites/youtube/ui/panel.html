@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>YouTube</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <h1>YouTube</h1>
+  <h2>題名とカテゴリ</h2>
+  <dl>
+    <dt>モード</dt>
+    <dd id="mode">-</dd>
+    <dt>設定</dt>
+    <dd id="configured">-</dd>
+    <dt>最後の更新</dt>
+    <dd id="op">-</dd>
+    <dt>時刻</dt>
+    <dd id="at">-</dd>
+  </dl>
+  <h2>コメント送信</h2>
+  <dl>
+    <dt>モード</dt>
+    <dd id="sink-mode">-</dd>
+    <dt>設定</dt>
+    <dd id="sink-configured">-</dd>
+    <dt>最後の送信</dt>
+    <dd id="sink-op">-</dd>
+    <dt>時刻</dt>
+    <dd id="sink-at">-</dd>
+  </dl>
+  <p class="actions">
+    <button id="refresh" type="button">更新</button>
+  </p>
+  <h2>自動枠取り</h2>
+  <dl>
+    <dt>モード</dt><dd id="slot-mode">-</dd>
+    <dt>OBS</dt><dd id="slot-obs">-</dd>
+    <dt>今の枠</dt><dd id="slot-broadcast">-</dd>
+    <dt>最後の動き</dt><dd id="slot-op">-</dd>
+    <dt>ログイン</dt><dd id="slot-login">-</dd>
+    <dt>きょうの使用量</dt><dd id="slot-usage">-</dd>
+  </dl>
+  <p class="actions">
+    <button id="slot-refresh" type="button">自動枠取りを更新</button>
+    <button id="slot-test" type="button">テスト枠を作る</button>
+  </p>
+  <p class="note" id="slot-testnote">テスト枠は非公開の枠を 1 つ作ってストリームに結ぶだけです（live モードのときだけ。本物の YouTube に書きます）。</p>
+  <form id="slot-config">
+    <label for="slot-threshold">切り替えまでの秒数</label>
+    <input id="slot-threshold" type="number" min="600" max="43200" step="60">
+    <label for="slot-streamid">ストリーム id</label>
+    <input id="slot-streamid" type="text" maxlength="80" placeholder="空なら自動で選びます">
+    <label for="slot-prefix">題名の先頭</label>
+    <input id="slot-prefix" type="text" maxlength="60">
+    <label for="slot-desc">説明文</label>
+    <textarea id="slot-desc" rows="3" maxlength="5000"></textarea>
+    <span></span>
+    <span><button id="slot-save" type="submit">設定を保存</button> <span id="slot-saved"></span></span>
+  </form>
+  <p class="note">前の枠があれば、その題名と説明文を引き継ぎます。ここの題名・説明は前の枠が無いときだけ使います。</p>
+  <script src="theme-apply.js"></script>
+  <script src="panel.js"></script>
+  <script src="panel-sink.js"></script>
+  <script src="panel-slot.js"></script>
+</body>
+</html>

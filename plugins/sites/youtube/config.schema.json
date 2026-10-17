@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "slot-youtube",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "streamId": {
+      "type": "string",
+      "maxLength": 80,
+      "default": "",
+      "description": "再利用するストリームの id。空なら YouTube から自動で選ぶ。"
+    },
+    "thresholdSec": {
+      "type": "integer",
+      "minimum": 600,
+      "maximum": 43200,
+      "default": 42600,
+      "description": "この秒数だけ配信したら次の枠へ切り替える（既定は 11 時間 50 分）。"
+    },
+    "titlePrefix": {
+      "type": "string",
+      "maxLength": 60,
+      "default": "ライブ配信",
+      "description": "前の枠が無いときの題名の先頭（あとに月日と時刻がつく）。"
+    },
+    "defaultDescription": {
+      "type": "string",
+      "maxLength": 5000,
+      "default": "",
+      "description": "前の枠が無いときの説明文。"
+    }
+  }
+}

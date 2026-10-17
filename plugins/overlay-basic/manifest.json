@@ -1,0 +1,69 @@
+{
+  "id": "overlay-basic",
+  "name": "基本オーバーレイ",
+  "category": "look",
+  "tags": [
+    "オーバーレイ"
+  ],
+  "version": "0.1.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "ui",
+  "feature": {
+    "label": "基本のオーバーレイ",
+    "hint": "題名と、配信中のサイトを OBS の画面に重ねます",
+    "activation": "live",
+    "group": "overlay",
+    "order": 70,
+    "openPanel": "plugin:overlay-basic:main"
+  },
+  "provides": [
+    "ui.panel@1"
+  ],
+  "panels": [
+    {
+      "name": "main",
+      "title": "オーバーレイ",
+      "file": "ui/panel.html",
+      "aliases": [
+        "overlays"
+      ],
+      "menu": {
+        "key": "overlays",
+        "title": "オーバーレイ",
+        "desc": "配信画面（OBS）に重ねる表示の一覧と、その URL です。",
+        "order": 900
+      }
+    }
+  ],
+  "subscribes": [
+    "session.*",
+    "engine.target.changed",
+    "modes.changed"
+  ],
+  "defaultMode": "legacy",
+  "overlays": [
+    {
+      "name": "title",
+      "file": "overlay/title.html",
+      "fields": [
+        "title"
+      ]
+    },
+    {
+      "name": "live-sites",
+      "file": "overlay/live-sites.html",
+      "fields": [
+        "sites"
+      ]
+    }
+  ],
+  "coreApi": 2,
+  "needs": [
+    "destinations",
+    "overlay",
+    "sessions"
+  ]
+}

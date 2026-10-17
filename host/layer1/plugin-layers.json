@@ -1,0 +1,41 @@
+{
+  "layer1": [
+    "fc2",
+    "kick",
+    "kukulu",
+    "niconico",
+    "picarto",
+    "rumble",
+    "soop",
+    "theme-default",
+    "theme-light-large",
+    "twitcasting",
+    "twitch",
+    "update-check",
+    "youtube"
+  ],
+  "layer2": [
+    "backup",
+    "bulk-title",
+    "chat-inlet",
+    "comment-send",
+    "hotkeys",
+    "kukulu-port",
+    "kukulu-sleep",
+    "set-youtube",
+    "site-login",
+    "uplink-estimate"
+  ],
+  "siteIds": [
+    "fc2",
+    "kick",
+    "kukulu",
+    "niconico",
+    "picarto",
+    "rumble",
+    "soop",
+    "twitcasting",
+    "twitch",
+    "youtube"
+  ]
+}

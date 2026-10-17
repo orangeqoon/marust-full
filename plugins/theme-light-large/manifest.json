@@ -1,0 +1,36 @@
+{
+  "id": "theme-light-large",
+  "name": "明るい・大きい字",
+  "version": "1.0.0",
+  "tier": "basic",
+  "manifestVersion": 2,
+  "kind": "theme",
+  "audience": "public",
+  "stability": "stable",
+  "description": "明るい色で、字を大きくした見本。",
+  "theme": {
+    "label": "明るい・大きい字",
+    "colorScheme": "light",
+    "font": "gothic",
+    "fontScale": 1.2,
+    "vars": {
+      "bg": "#f4f6fb",
+      "panel": "#ffffff",
+      "panel-2": "#e8ecf5",
+      "line": "#d5dbe8",
+      "line-2": "#b9c2d6",
+      "text": "#1b2130",
+      "muted": "#4d5870",
+      "accent": "#1d4ed8",
+      "ok": "#15803d",
+      "warn": "#92600a",
+      "skip": "#5f6b82",
+      "danger": "#b42318",
+      "input-bg": "#ffffff",
+      "tab-bar-bg": "#e3e8f2",
+      "tab-active-bg": "#ffffff",
+      "tab-inactive-bg": "#eef1f8"
+    }
+  },
+  "coreApi": 2
+}

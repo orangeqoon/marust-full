@@ -1,0 +1,43 @@
+{
+  "id": "tips",
+  "name": "中級機能の紹介",
+  "category": "tool",
+  "tags": [
+    "紹介"
+  ],
+  "version": "1.0.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "integration",
+  "provides": [
+    "tips.source@1"
+  ],
+  "defaultMode": "live",
+  "audience": "public",
+  "stability": "stable",
+  "subscribes": [
+    "stream.started",
+    "stream.stopped",
+    "feature.toggled"
+  ],
+  "api": {
+    "namespaces": [
+      "tips"
+    ],
+    "modeGated": true,
+    "calls": [
+      "ui.getSettings",
+      "hub.getState",
+      "sites.loginStates"
+    ]
+  },
+  "coreApi": 2,
+  "needs": [
+    "api.call",
+    "api.register",
+    "events.subscribe",
+    "storage"
+  ]
+}

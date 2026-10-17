@@ -1,0 +1,54 @@
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI", sans-serif;
+  background: var(--bg, #141820);
+  color: var(--text, #e7ecf5);
+}
+
+body {
+  margin: 16px;
+}
+
+h1 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: 14em 1fr;
+  gap: 6px 12px;
+  margin: 0;
+}
+
+dt {
+  color: var(--muted, #9aa6bd);
+}
+
+dd {
+  margin: 0;
+}
+
+.state-ok {
+  color: #8fe3a1;
+}
+
+.state-degraded {
+  color: #ffd479;
+}
+
+.state-bad {
+  color: var(--danger, #ff8f8f);
+}
+
+.note {
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--muted, #9aa6bd);
+}
+
+:focus-visible {
+  outline: 2px solid var(--text, #f4f7ff);
+  outline-offset: 2px;
+}

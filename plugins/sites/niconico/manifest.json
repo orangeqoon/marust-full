@@ -1,0 +1,134 @@
+{
+  "id": "niconico",
+  "name": "ニコ生",
+  "category": "destination",
+  "version": "0.2.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "secrets": [
+    "cookies.niconico-main"
+  ],
+  "roles": {
+    "site": {
+      "main": "site.js",
+      "provides": [
+        "stream.site@1",
+        "ui.panel@1"
+      ],
+      "subscribes": [
+        "auth.updated"
+      ],
+      "secrets": [
+        "cookies.niconico-main"
+      ],
+      "timeouts": {
+        "updateTitle": 20000,
+        "updateMetadata": 20000
+      },
+      "defaultMode": "legacy",
+      "actions": {
+        "getStatus": "read"
+      },
+      "panels": [
+        {
+          "name": "status",
+          "title": "ニコ生",
+          "file": "ui/panel.html"
+        }
+      ],
+      "needs": [
+        "secrets"
+      ]
+    },
+    "sink": {
+      "name": "ニコ生送信",
+      "main": "sink.js",
+      "provides": [
+        "chat.sink@1"
+      ],
+      "secrets": [
+        "cookies.niconico-main"
+      ],
+      "defaultMode": "legacy",
+      "actions": {
+        "getStatus": "read"
+      },
+      "needs": [
+        "secrets"
+      ]
+    },
+    "slot": {
+      "name": "ニコ生の自動枠取り",
+      "main": "slot.js",
+      "feature": {
+        "label": "ニコ生の自動枠取り",
+        "hint": "配信のたびに、ニコ生の枠を自動で取ります（ログインが必要）",
+        "activation": "guide",
+        "group": "autocast",
+        "order": 10,
+        "needs": [
+          "login:niconico"
+        ],
+        "openPanel": "plugin:site-niconico:status",
+        "tip": "ニコ生の配信の枠を、OBS で配信を始めたときに丸ストが自動で作れます（延長も自動）。使いますか？"
+      },
+      "provides": [
+        "stream.slot@1"
+      ],
+      "needs": [
+        "obs.read",
+        "events.emit",
+        "secrets",
+        "storage"
+      ],
+      "secrets": [
+        "cookies.niconico-main"
+      ],
+      "timeouts": {
+        "prepareBroadcast": 5000,
+        "verifyLive": 20000,
+        "endBroadcast": 5000
+      },
+      "configSchema": "config.schema.json",
+      "defaultMode": "legacy",
+      "actions": {
+        "getStatus": "read",
+        "setConfig": "write",
+        "createTestSlot": "write"
+      }
+    }
+  },
+  "audience": "public",
+  "stability": "stable",
+  "site": {
+    "id": "niconico",
+    "name": "ニコ生",
+    "order": 4,
+    "autoSlot": true,
+    "tier": "core",
+    "ingest": [
+      {
+        "label": "放送ページに出る URL",
+        "url": null,
+        "helpUrl": "https://live.nicovideo.jp/"
+      }
+    ],
+    "keyHelpUrl": "https://live.nicovideo.jp/",
+    "tosUrl": "https://site.nicovideo.jp/term/",
+    "login": {
+      "type": "cookie",
+      "needed": "optional",
+      "for": [
+        "題名",
+        "コメント送信"
+      ]
+    },
+    "apiHosts": [
+      "live2.nicovideo.jp",
+      "live.nicovideo.jp",
+      "public-api.commons.nicovideo.jp"
+    ]
+  },
+  "coreApi": 2
+}

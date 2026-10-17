@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>ニコ生</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <h1>ニコ生</h1>
+  <h2>題名とカテゴリ</h2>
+  <dl>
+    <dt>設定</dt>
+    <dd id="configured">-</dd>
+    <dt>最後の更新</dt>
+    <dd id="result" aria-live="polite">-</dd>
+    <dt>時刻</dt>
+    <dd id="at">-</dd>
+  </dl>
+  <h2>コメント送信</h2>
+  <dl>
+    <dt>設定</dt>
+    <dd id="sink-configured">-</dd>
+    <dt>最後の送信</dt>
+    <dd id="sink-result" aria-live="polite">-</dd>
+    <dt>時刻</dt>
+    <dd id="sink-at">-</dd>
+  </dl>
+  <p class="actions">
+    <button id="refresh" type="button">更新</button>
+  </p>
+  <h2>自動枠取り</h2>
+  <dl>
+    <dt>自動枠取り</dt><dd id="slot-mode">-</dd>
+    <dt>OBS</dt><dd id="slot-obs">-</dd>
+    <dt>今の枠</dt><dd id="slot-program">-</dd>
+    <dt>最後の動き</dt><dd id="slot-op">-</dd>
+    <dt>ログイン</dt><dd id="slot-login">-</dd>
+  </dl>
+  <p class="actions">
+    <button id="slot-refresh" type="button">更新</button>
+    <button id="slot-test" type="button">テスト枠を作る</button>
+  </p>
+  <p class="note" id="slot-testnote">テスト枠は、枠を 1 つ作るだけです（開始・延長はしません。自動枠取りを「使う」にしているときだけ。本物のニコ生に書きます）。OBS が配信していないときだけ作れます（配信中だと、この枠をそのまま本番として開始してしまうため）。要らなければニコ生の画面から終了してください。配信を始めると、自動枠取りはこの枠を引き継いで開始します。</p>
+  <h3>番組の設定（枠を作るときのひな形）</h3>
+  <p class="note" id="slot-templatenote">丸ストが新しい枠を作るとき、ここに書いた題名・カテゴリ・タグ・説明文を使います。最初は空に近い状態で、ほかの人の設定は入っていません。あなたの番組に合わせて書いてください。</p>
+  <form id="slot-config">
+    <label for="slot-title">題名</label>
+    <input id="slot-title" type="text" maxlength="100">
+    <label for="slot-category">カテゴリ</label>
+    <input id="slot-category" type="text" maxlength="40">
+    <label for="slot-tags">タグ（カンマ区切り）</label>
+    <input id="slot-tags" type="text" maxlength="500">
+    <label for="slot-desc">説明文</label>
+    <textarea id="slot-desc" rows="4" maxlength="5000"></textarea>
+    <label for="slot-autoclose">OBS が止まってから終了までの分</label>
+    <input id="slot-autoclose" type="number" min="1" max="120">
+    <label for="slot-next">自然終了のあと次の枠を作る</label>
+    <input id="slot-next" type="checkbox">
+    <label for="slot-extend">作ったあと上限まで延長する</label>
+    <input id="slot-extend" type="checkbox">
+    <label for="slot-monetize">収益化の指定を入れる</label>
+    <input id="slot-monetize" type="checkbox">
+    <label for="slot-cruise">「クルーズ待ち」に入れる</label>
+    <input id="slot-cruise" type="checkbox">
+    <span></span>
+    <span><button id="slot-save" type="submit">設定を保存</button> <span id="slot-saved"></span></span>
+  </form>
+  <p class="note">前の枠があれば、その題名を引き継ぎます。ここの題名は前の枠が無いときだけ使います（{part} は通し番号）。ニコ生のストリームキーは OBS の配信先に最初に 1 回入れておいてください（キーはアカウントで固定です）。ログインは、ブラウザ拡張でニコニコにログインしておくと使えます。</p>
+  <script src="theme-apply.js"></script>
+  <script src="panel.js"></script>
+  <script src="panel-sink.js"></script>
+  <script src="panel-slot.js"></script>
+</body>
+</html>

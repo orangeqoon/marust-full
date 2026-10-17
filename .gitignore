@@ -1,0 +1,18 @@
+# 丸スト（公開リポジトリ）。秘密・利用者のデータ・作業の出力を git に入れない。
+node_modules/
+dist/
+dist-author/
+dev-state/
+plugins-author/
+*.log
+*.log.*
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*-cookies.json
+*_captured.json
+marust-modes.json
+*.bak

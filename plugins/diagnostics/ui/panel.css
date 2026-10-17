@@ -1,0 +1,13 @@
+:root { color-scheme: dark; font-family: "Segoe UI", sans-serif; background: var(--bg, #141820); color: var(--text, #e7ecf5); }
+body { margin: 16px; }
+h1 { margin: 0 0 12px; font-size: 18px; font-weight: 600; }
+button { font: inherit; color: inherit; background: var(--input-bg, #0d1118); border: 1px solid var(--line, #2a3140); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+button:focus-visible { outline: 2px solid var(--accent, #7aa2ff); outline-offset: 2px; }
+.hint { color: var(--muted, #9aa6bd); min-height: 1.2em; }
+.empty { color: var(--muted, #9aa6bd); }
+.actions { margin: 10px 0; display: flex; gap: 8px; }
+.diag-list { list-style: none; margin: 8px 0 0; padding: 0; }
+.diag-list li { margin: 4px 0; }
+.diag-ok { color: var(--ok, #6fd08c); }
+.diag-warn { color: #f0c36d; }
+.diag-error { color: var(--danger, #ff8f8f); }

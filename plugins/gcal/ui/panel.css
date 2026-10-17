@@ -1,0 +1,58 @@
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI", sans-serif;
+  background: var(--bg, #141820);
+  color: var(--text, #e7ecf5);
+}
+
+body {
+  margin: 16px;
+}
+
+h1 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: 8em 1fr;
+  gap: 6px 12px;
+  margin: 0;
+}
+
+dt {
+  color: var(--muted, #9aa6bd);
+}
+
+dd {
+  margin: 0;
+}
+
+#error.is-bad {
+  color: var(--danger, #ff8f8f);
+}
+
+.actions {
+  margin-top: 16px;
+}
+
+button {
+  margin-right: 8px;
+  padding: 6px 12px;
+  border: 1px solid var(--line-2, #3c465c);
+  border-radius: 6px;
+  background: var(--panel-2, #232a38);
+  color: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--text, #f4f7ff);
+  outline-offset: 2px;
+}

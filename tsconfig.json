@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "commonjs",
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "types/**/*.d.ts",
+    "host/**/*.js",
+    "cli/**/*.js",
+    "plugins/**/*.js",
+    "mcp/**/*.js"
+  ]
+}

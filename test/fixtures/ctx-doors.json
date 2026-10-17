@@ -1,0 +1,374 @@
+{
+  "b-plain": {
+    "keys": [
+      "app",
+      "audit",
+      "bus",
+      "chat",
+      "core",
+      "dataDir",
+      "destinations",
+      "emit",
+      "events",
+      "id",
+      "log",
+      "logger",
+      "manifest",
+      "mode",
+      "overlay",
+      "peers",
+      "pluginDir",
+      "redact",
+      "secrets",
+      "sessions",
+      "ui"
+    ],
+    "doors": [
+      "core",
+      "app"
+    ],
+    "legacySession": false
+  },
+  "b-keys": {
+    "keys": [
+      "app",
+      "audit",
+      "bus",
+      "chat",
+      "core",
+      "dataDir",
+      "destinations",
+      "emit",
+      "events",
+      "id",
+      "keys",
+      "log",
+      "logger",
+      "manifest",
+      "mode",
+      "overlay",
+      "peers",
+      "pluginDir",
+      "redact",
+      "secrets",
+      "sessions",
+      "ui"
+    ],
+    "doors": [
+      "keys",
+      "core",
+      "app"
+    ],
+    "legacySession": false
+  },
+  "b-open": {
+    "keys": [
+      "app",
+      "audit",
+      "bus",
+      "chat",
+      "core",
+      "dataDir",
+      "destinations",
+      "emit",
+      "events",
+      "external",
+      "id",
+      "log",
+      "logger",
+      "manifest",
+      "mode",
+      "overlay",
+      "peers",
+      "pluginDir",
+      "redact",
+      "secrets",
+      "sessions",
+      "ui"
+    ],
+    "doors": [
+      "external",
+      "core",
+      "app"
+    ],
+    "legacySession": false
+  },
+  "b-session": {
+    "keys": [
+      "app",
+      "audit",
+      "bus",
+      "chat",
+      "core",
+      "dataDir",
+      "destinations",
+      "emit",
+      "events",
+      "id",
+      "log",
+      "logger",
+      "manifest",
+      "mode",
+      "overlay",
+      "peers",
+      "pluginDir",
+      "redact",
+      "secrets",
+      "sessions",
+      "ui"
+    ],
+    "doors": [
+      "core",
+      "app"
+    ],
+    "legacySession": false
+  },
+  "b-inlet": {
+    "keys": [
+      "app",
+      "audit",
+      "bus",
+      "chat",
+      "core",
+      "dataDir",
+      "destinations",
+      "emit",
+      "events",
+      "id",
+      "log",
+      "logger",
+      "manifest",
+      "mode",
+      "overlay",
+      "peers",
+      "pluginDir",
+      "pluginStates",
+      "redact",
+      "secrets",
+      "sessions",
+      "ui"
+    ],
+    "doors": [
+      "pluginStates",
+      "core",
+      "app"
+    ],
+    "legacySession": false
+  },
+  "b-obs": {
+    "keys": [
+      "app",
+      "audit",
+      "bus",
+      "chat",
+      "core",
+      "dataDir",
+      "destinations",
+      "emit",
+      "events",
+      "id",
+      "log",
+      "logger",
+      "manifest",
+      "mode",
+      "obs",
+      "overlay",
+      "peers",
+      "pluginDir",
+      "redact",
+      "secrets",
+      "sessions",
+      "ui"
+    ],
+    "doors": [
+      "obs",
+      "core",
+      "app"
+    ],
+    "legacySession": false
+  },
+  "b-api": {
+    "keys": [
+      "api",
+      "app",
+      "audit",
+      "bus",
+      "chat",
+      "core",
+      "dataDir",
+      "destinations",
+      "emit",
+      "events",
+      "id",
+      "log",
+      "logger",
+      "manifest",
+      "mode",
+      "overlay",
+      "peers",
+      "pluginDir",
+      "redact",
+      "secrets",
+      "sessions",
+      "ui"
+    ],
+    "doors": [
+      "core",
+      "app",
+      "api"
+    ],
+    "legacySession": false
+  },
+  "a-plain": {
+    "keys": [
+      "app",
+      "audit",
+      "bus",
+      "chat",
+      "core",
+      "dataDir",
+      "destinations",
+      "emit",
+      "events",
+      "id",
+      "log",
+      "logger",
+      "manifest",
+      "mode",
+      "overlay",
+      "peers",
+      "pluginDir",
+      "redact",
+      "secrets",
+      "sessions",
+      "ui"
+    ],
+    "doors": [
+      "core",
+      "app"
+    ],
+    "legacySession": false
+  },
+  "a-keys": {
+    "keys": [
+      "app",
+      "audit",
+      "bus",
+      "chat",
+      "core",
+      "dataDir",
+      "destinations",
+      "emit",
+      "events",
+      "id",
+      "log",
+      "logger",
+      "manifest",
+      "mode",
+      "overlay",
+      "peers",
+      "pluginDir",
+      "redact",
+      "secrets",
+      "sessions",
+      "ui"
+    ],
+    "doors": [
+      "core",
+      "app"
+    ],
+    "legacySession": false
+  },
+  "e-plain": {
+    "keys": [
+      "app",
+      "audit",
+      "bus",
+      "chat",
+      "core",
+      "dataDir",
+      "destinations",
+      "emit",
+      "events",
+      "id",
+      "log",
+      "logger",
+      "manifest",
+      "mode",
+      "overlay",
+      "peers",
+      "pluginDir",
+      "redact",
+      "secrets",
+      "sessions",
+      "ui"
+    ],
+    "doors": [
+      "core",
+      "app"
+    ],
+    "legacySession": false
+  },
+  "e-keys": {
+    "keys": [
+      "app",
+      "audit",
+      "bus",
+      "chat",
+      "core",
+      "dataDir",
+      "destinations",
+      "emit",
+      "events",
+      "id",
+      "log",
+      "logger",
+      "manifest",
+      "mode",
+      "overlay",
+      "peers",
+      "pluginDir",
+      "redact",
+      "secrets",
+      "sessions",
+      "ui"
+    ],
+    "doors": [
+      "core",
+      "app"
+    ],
+    "legacySession": false
+  },
+  "e-api": {
+    "keys": [
+      "api",
+      "app",
+      "audit",
+      "bus",
+      "chat",
+      "core",
+      "dataDir",
+      "destinations",
+      "emit",
+      "events",
+      "id",
+      "log",
+      "logger",
+      "manifest",
+      "mode",
+      "overlay",
+      "peers",
+      "pluginDir",
+      "redact",
+      "secrets",
+      "sessions",
+      "ui"
+    ],
+    "doors": [
+      "core",
+      "app",
+      "api"
+    ],
+    "legacySession": false
+  }
+}

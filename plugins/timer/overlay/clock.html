@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>タイマー</title>
+  <style>
+    html, body {
+      margin: 0;
+      background: transparent;
+      overflow: hidden;
+    }
+    #display {
+      font: 700 96px/1 Consolas, "Cascadia Mono", monospace;
+      color: #7af6ff;
+      text-shadow: 0 0 8px #14d4ff, 0 0 22px #6a4bff;
+      transition: color 0.2s, text-shadow 0.2s;
+    }
+    #display.time-up {
+      color: #ff4500;
+      text-shadow: 0 0 10px #ff4500, 0 0 25px #ff2200, 0 0 40px #ff0000;
+    }
+    #title {
+      margin-top: 8px;
+      min-height: 1em;
+      font: 600 28px/1.2 "Segoe UI", sans-serif;
+      color: #ffe38a;
+      text-shadow: 0 0 8px #ff4fd8, 0 0 18px #ff9a3c;
+    }
+  </style>
+</head>
+<body>
+  <div id="display">00:00:00</div>
+  <div id="title"></div>
+  <script>
+    const display = document.getElementById('display');
+    const title = document.getElementById('title');
+    const source = new EventSource('/overlay/timer/clock/events');
+    source.onmessage = (event) => {
+      let data = {};
+      try { data = JSON.parse(event.data); } catch (err) { return; }
+      if (typeof data.display === 'string') display.textContent = data.display;
+      if (typeof data.title === 'string') title.textContent = data.title;
+      if (data.mode === 'countup' || (typeof data.remainingSec === 'number' && data.remainingSec <= 0 && data.state === 'running')) {
+        display.classList.add('time-up');
+      } else {
+        display.classList.remove('time-up');
+      }
+    };
+  </script>
+</body>
+</html>

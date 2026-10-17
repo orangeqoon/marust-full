@@ -1,0 +1,85 @@
+{
+  "id": "comment-send",
+  "name": "コメント送信",
+  "category": "comment",
+  "for": [
+    "*"
+  ],
+  "tags": [
+    "コメント送信"
+  ],
+  "version": "1.0.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "ui",
+  "feature": {
+    "label": "コメントを送る",
+    "hint": "丸ストから、サイトのチャットへコメントを書き込めます（まとめて送ることもできます。受け取りは今までどおりわんコメです）",
+    "level": "standard",
+    "activation": "live",
+    "group": "comment",
+    "order": 40,
+    "openPanel": "plugin:comment-send:main",
+    "tip": "丸ストから、サイトのチャットへコメントを書き込めます（コメントを受け取るのは今までどおりわんコメです）。使いますか？",
+    "tipAliases": [
+      "bulk-send"
+    ]
+  },
+  "provides": [
+    "ui.panel@1"
+  ],
+  "panels": [
+    {
+      "name": "main",
+      "title": "コメント",
+      "file": "ui/panel.html",
+      "aliases": [
+        "chat"
+      ],
+      "dock": [
+        "standard",
+        "advanced"
+      ],
+      "dockOrder": 20,
+      "menu": {
+        "key": "comment",
+        "title": "コメント（送信と受信）",
+        "desc": "コメントを流す・送る窓です。サイトごとの状態の表は、上の「ツール」メニューにあります。",
+        "order": 20
+      }
+    }
+  ],
+  "subscribes": [
+    "chat.message",
+    "modes.changed"
+  ],
+  "ui": {
+    "relay": [
+      "sites.setCommentSend"
+    ]
+  },
+  "actions": {
+    "send": "write"
+  },
+  "defaultMode": "legacy",
+  "audience": "public",
+  "stability": "stable",
+  "api": {
+    "namespaces": [
+      "chat"
+    ]
+  },
+  "peers": {
+    "methods": [
+      "sendComment"
+    ]
+  },
+  "coreApi": 2,
+  "needs": [
+    "api.register",
+    "events.emit",
+    "peers"
+  ]
+}

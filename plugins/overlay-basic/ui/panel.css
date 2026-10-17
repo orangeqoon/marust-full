@@ -1,0 +1,13 @@
+:root { color-scheme: dark; font-family: "Segoe UI", sans-serif; background: var(--bg, #141820); color: var(--text, #e7ecf5); }
+body { margin: 16px; }
+h1 { margin: 0 0 12px; font-size: 18px; font-weight: 600; }
+input, button { font: inherit; color: inherit; background: var(--input-bg, #0d1118); border: 1px solid var(--line, #2a3140); border-radius: 8px; padding: 6px 10px; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent, #7aa2ff); outline-offset: 2px; }
+.hint { color: var(--muted, #9aa6bd); }
+.empty { color: var(--muted, #9aa6bd); }
+.overlay-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.overlay-item { display: grid; grid-template-columns: 1fr auto; gap: 6px 8px; align-items: center; }
+.overlay-title { grid-column: 1 / -1; font-weight: 600; }
+.overlay-url { min-width: 0; }
+.overlay-preview { grid-column: 1 / -1; width: 100%; height: 120px; border: 1px solid var(--line, #2a3140); border-radius: 8px; background: #000; }

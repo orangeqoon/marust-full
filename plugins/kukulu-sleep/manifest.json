@@ -1,0 +1,44 @@
+{
+  "id": "kukulu-sleep",
+  "audience": "dev",
+  "name": "kukulu の睡眠",
+  "category": "tool",
+  "version": "0.1.0",
+  "manifestVersion": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "integration",
+  "provides": [
+    "ui.panel@1"
+  ],
+  "subscribes": [
+    "session.started",
+    "session.retitled",
+    "stream.metadata.changed"
+  ],
+  "secrets": [
+    "kukulu.config"
+  ],
+  "timeouts": {
+    "onEvent": 20000
+  },
+  "configSchema": "config.schema.json",
+  "defaultMode": "legacy",
+  "actions": {
+    "getStatus": "read"
+  },
+  "panels": [
+    {
+      "name": "status",
+      "title": "kukulu の睡眠",
+      "file": "ui/panel.html"
+    }
+  ],
+  "coreApi": 2,
+  "needs": [
+    "secrets",
+    "sessions",
+    "storage"
+  ],
+  "tier": "advanced"
+}

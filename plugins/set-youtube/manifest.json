@@ -1,0 +1,26 @@
+{
+  "id": "set-youtube",
+  "name": "YouTube セット",
+  "version": "1.0.0",
+  "tier": "standard",
+  "manifestVersion": 2,
+  "kind": "set",
+  "audience": "public",
+  "stability": "stable",
+  "description": "YouTube で配信するときに使う機能（自動枠取り・題名とカテゴリ・コメント送信）をまとめて入れる／切ります。",
+  "for": [
+    "youtube"
+  ],
+  "tags": [
+    "YouTube"
+  ],
+  "set": {
+    "label": "YouTube セット",
+    "members": [
+      "slot-youtube",
+      "bulk-title",
+      "comment-send"
+    ]
+  },
+  "coreApi": 2
+}

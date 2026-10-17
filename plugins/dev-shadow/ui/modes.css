@@ -1,0 +1,11 @@
+.mode { font-weight: 600; }
+.actions { margin: 10px 0; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.modes-warn { color: var(--warn, #e0b050); min-height: 1.2em; }
+.modes-met { color: var(--ok, #6fd08c); }
+.modes-unmet { color: var(--warn, #e0b050); }
+.modes-table-wrap { overflow-x: auto; }
+.modes-table { border-collapse: collapse; width: 100%; font-size: 13px; }
+.modes-table th, .modes-table td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--line, #2a3140); }
+.modes-group td { background: var(--input-bg, #0d1118); font-weight: 600; }
+
+button:focus-visible, select:focus-visible { outline: 2px solid var(--accent, #7aa2ff); outline-offset: 2px; }

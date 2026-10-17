@@ -1,0 +1,6 @@
+@import url("panel-common.css");
+.shadow-report-days { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.shadow-report-days input[type="number"] { width: 5rem; }
+table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+th, td { text-align: left; vertical-align: top; padding: 4px 8px 4px 0; border-bottom: 1px solid var(--line, #2a3140); }
+:focus-visible { outline: 2px solid var(--accent, #7aa2ff); outline-offset: 2px; }

@@ -1,0 +1,15 @@
+/* 案内ページ共通の見た目。丸ストの窓口は style-src 'self' なので、<style> ではなくこのファイルから読む。 */
+body { font-family: "Segoe UI", "Yu Gothic UI", "Meiryo", sans-serif; background: #0e1117; color: #e6eaf2; line-height: 1.8; margin: 0; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 20px 60px; }
+h1 { font-size: 1.4rem; }
+h2 { font-size: 1.1rem; margin-top: 2em; color: #7aa2ff; }
+code { background: #1d2330; padding: 1px 6px; border-radius: 4px; word-break: break-all; }
+.note { background: #1d2330; border-left: 4px solid #e0b35a; padding: 8px 12px; margin: 1em 0; }
+.todo { color: #a0aabd; }
+table { border-collapse: collapse; margin: 1em 0; }
+th, td { border: 1px solid #2c3446; padding: 6px 10px; text-align: left; vertical-align: top; }
+li { margin-bottom: 0.6em; }
+a { color: #7aa2ff; }
+nav a { margin-right: 1em; }
+
+#guide { white-space: pre-wrap; word-break: break-word; user-select: all; padding: 12px; border: 1px solid #8884; border-radius: 6px; font-size: 14px; line-height: 1.6; }

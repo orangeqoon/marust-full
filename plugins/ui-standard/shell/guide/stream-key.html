@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>配信キーの場所（サイトごと）</title>
+  <link rel="stylesheet" href="guide.css" />
+</head>
+<body>
+<main>
+  <h1>配信キーの場所（サイトごと）</h1>
+  <p>丸ストでサイトを足すとき、<b>配信の送り先（サーバー URL）</b>と<b>配信キー（人に見せない合言葉）</b>の 2 つを、そのサイトの配信設定のページから写して貼ります。ここでは、それぞれのサイトで<b>どこを見るか</b>を案内します。</p>
+  <div class="note"><b>配信キーは、人に見せないでください。</b>知られると、あなたのかわりに配信されてしまいます。画面を人に見せる配信中は、キーを表示しないでください。もし見せてしまったら、サイトの設定でキーを作り直せます。</div>
+  <p>サイトの画面の名前や並びは、サイト側の都合で変わることがあります。見つからないときは、サイトのヘルプで「配信キー」「ストリームキー」を探してください。（画像つきの説明は、あとで足します。）</p>
+  <nav>
+    <a href="#youtube">YouTube</a><a href="#niconico">ニコ生</a><a href="#twitch">Twitch</a><a href="#twitcasting">ツイキャス</a><a href="#kick">Kick</a><a href="#rumble">Rumble</a><a href="#soop">SOOP</a><a href="#fc2">FC2</a><a href="#kukulu">kukulu</a><a href="#picarto">Picarto</a><a href="#others">そのほか</a>
+  </nav>
+
+  <h2 id="youtube">YouTube</h2>
+  <ol>
+    <li>YouTube Studio（<a href="https://studio.youtube.com/" target="_blank" rel="noopener noreferrer">studio.youtube.com</a>）を開き、右上の「作成」から「ライブ配信を開始」を選びます。</li>
+    <li>「ストリーム」の画面に、<b>ストリーム URL</b>（サーバー URL）と<b>ストリームキー</b>が出ます。</li>
+    <li>ストリームキーの「コピー」を押して、丸ストの「サイトを足す」に貼ります。</li>
+  </ol>
+  <p>公式の説明: <a href="https://support.google.com/youtube/answer/10364924" target="_blank" rel="noopener noreferrer">YouTube ヘルプ</a>。画面の名前は変わることがあります。はじめてライブ配信を使うときは、サイト側で本人確認とライブ配信の有効化（反映まで時間がかかることがあります）が要ります。</p>
+
+  <h2 id="niconico">ニコ生（ニコニコ生放送）</h2>
+  <ol>
+    <li>はじめだけ、ニコ生で番組（枠）を作り、その配信の画面で、外部の配信ソフト（OBS など）向けの<b>サーバー URL</b>と<b>ストリームキー</b>を探して写します。</li>
+    <li>調べた範囲では、キーは<b>アカウントごとに決まっていて、枠を作り直しても同じ</b>です。変わったときだけ入れ直してください。</li>
+    <li>丸ストの自動枠取り（中級の機能。ログインが要ります）は、枠の作成と延長を代わりに行います。キーには触りません。</li>
+  </ol>
+  <p>入口: <a href="https://live.nicovideo.jp/" target="_blank" rel="noopener noreferrer">ニコニコ生放送</a>。画面の名前は変わることがあります。</p>
+
+  <h2 id="twitch">Twitch</h2>
+  <ol>
+    <li><a href="https://dashboard.twitch.tv/settings/stream" target="_blank" rel="noopener noreferrer">Twitch のクリエイターダッシュボード（設定 → 配信）</a>を開きます。</li>
+    <li>「プライマリーストリームキー」の「コピー」を押します。</li>
+    <li>送り先（サーバー URL）は、丸ストの欄が空のままのことがあります。そのときは、Twitch の<a href="https://dev.twitch.tv/docs/video-broadcast/" target="_blank" rel="noopener noreferrer">配信の案内ページ</a>に出ている推奨のサーバー（よく使われるのは <code>rtmp://live.twitch.tv/app</code>）を貼ります。</li>
+  </ol>
+  <p class="todo">（画面の名前は変わることがあります。）</p>
+
+  <h2 id="twitcasting">ツイキャス</h2>
+  <p>配信画面の左にある「ツール配信」のページ（<a href="https://twitcasting.tv/mybroadcastertool.php" target="_blank" rel="noopener">ツール配信</a>）に、「RTMP URL」と「ストリームキー」が出ます。くわしくは<a href="https://twitcasting.tv/helpcenter.php?pid=HELP_OBS_INDEX" target="_blank" rel="noopener">ツイキャスの公式の案内</a>を見てください。</p>
+
+  <h2 id="kick">Kick</h2>
+  <p>ダッシュボード（dashboard.kick.com/stream）の「Channel」にある「Stream URL」（rtmps）と「Stream Key」を使います。キーは固定で、「Reset」で作り直せます。くわしくは<a href="https://help.kick.com/en/articles/7066931-how-to-stream-on-kick-com" target="_blank" rel="noopener">Kick の公式の案内</a>を見てください。</p>
+
+  <h2 id="rumble">Rumble</h2>
+  <p>配信を作る手順の最後の「GET THE STREAMER CONFIGURATION」に「Stream URL」とキーが出ます。配信を作るたびに確かめてください。固定のキーを使うなら Rumble Studio の「Direct RTMP」です。くわしくは<a href="https://rumble.support/help/how-to-setup-a-livestream" target="_blank" rel="noopener">Rumble の公式の案内</a>と<a href="https://rumble.support/help/how-to-use-rumble-studios-direct-rtmp-feature" target="_blank" rel="noopener">Direct RTMP の案内</a>を見てください。</p>
+
+  <h2 id="soop">SOOP</h2>
+  <p>サーバー: <code>rtmp://stream.soop.live/app/</code>（OBS の一覧と同じ）。ストリームキーはサイトの配信の設定の画面で探してください。</p>
+
+  <h2 id="fc2">FC2 ライブ</h2>
+  <p>公式の案内が見つかっていません。サイトの配信の設定の画面で、サーバーの URL とストリームキーを探してください。</p>
+
+  <h2 id="kukulu">kukulu</h2>
+  <p>公式の案内が見つかっていません。サイトの配信の設定の画面で、サーバーの URL とストリームキーを探してください。</p>
+
+  <h2 id="picarto">Picarto</h2>
+  <p>サーバー: <code>rtmp://live.us.picarto.tv/golive</code>（OBS の一覧と同じ。Picarto は地域ごとに 6 つあり、ふつうは自動）。ストリームキーはサイトの配信の設定の画面で探してください。</p>
+
+  <h2 id="others">そのほか（一覧にないサイト）</h2>
+  <p>どのサイトも、<b>配信の設定のページに「サーバー URL」と「ストリームキー」がある</b>形なら、丸ストの「サイトを足す」で同じように足せます。一覧にないサイトは「その他のサイト」を選び、2 つを貼ってください（映像の配信だけ使えます）。</p>
+  <p class="todo">（サイトごとの詳しい手順は、確かめられたものから足していきます。）</p>
+</main>
+</body>
+</html>

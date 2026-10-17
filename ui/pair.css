@@ -1,0 +1,59 @@
+/* ペアリングは核の画面（shell が無くても読める）。使う色は hub の既定に合わせた最小限。 */
+:root {
+  color-scheme: dark;
+  --bg: #0e1117;
+  --panel: #161b26;
+  --panel-2: #222b3d;
+  --line: #283042;
+  --line-2: #3a4660;
+  --text: #e6eaf2;
+  --muted: #a0aabd;
+  --accent: #7aa2ff;
+  --input-bg: #0d1118;
+  --font-ui: "Segoe UI", "Yu Gothic UI", "Meiryo", sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+header {
+  padding: 20px 24px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+h1 { margin: 0; font-size: 1.55rem; font-weight: 700; }
+.slash { opacity: .7; font-weight: 500; }
+.sub { margin: 6px 0 0; color: var(--muted); font-size: 0.92rem; }
+main { padding: 16px 24px 28px; }
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.card h2 { margin: 0 0 10px; font-size: 1rem; color: var(--accent); }
+label { display: block; margin: 0 0 10px; }
+input[type="text"] {
+  font: inherit;
+  color: var(--text);
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-width: 16rem;
+}
+button.timer-btn {
+  font: inherit;
+  color: var(--text);
+  background: var(--panel-2);
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+button.timer-btn.primary { background: #2f4f9e; border-color: var(--accent); color: #ffffff; }
+.timer-hint { color: var(--muted); font-size: 0.88rem; margin: 0; }

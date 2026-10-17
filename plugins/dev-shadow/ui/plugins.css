@@ -1,0 +1,8 @@
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--line, #2a3140); }
+.status-running { color: var(--ok, #6fd08c); }
+.status-listed-not-started { color: var(--muted, #9aa6bd); }
+.status-accepted { color: var(--accent, #7aa2ff); }
+.status-other { color: var(--warn, #e0b050); }
+
+button:focus-visible { outline: 2px solid var(--accent, #7aa2ff); outline-offset: 2px; }
