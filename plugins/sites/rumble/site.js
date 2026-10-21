@@ -369,8 +369,14 @@ function createSiteRumble(deps) {
     return result.value;
   }
 
+  // 足りない物を種類だけで答える（値は返さない）。isConfigured はこれの ready と同じ答え
+  async function loginNeeds() {
+    if (cookieHeader(await readSecret(COOKIE))) return { ready: true, need: null, how: 'extension' };
+    return { ready: false, need: 'cookies', how: 'extension' };
+  }
+
   async function isConfigured() {
-    return !!cookieHeader(await readSecret(COOKIE));
+    return (await loginNeeds()).ready;
   }
 
   async function updateMetadata(input, meta) {
@@ -504,6 +510,7 @@ function createSiteRumble(deps) {
     destroy: destroy,
     health: health,
     isConfigured: isConfigured,
+    loginNeeds: loginNeeds,
     updateMetadata: updateMetadata,
     getStatus: getStatus,
     actions: { getStatus: panelStatus }

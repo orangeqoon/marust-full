@@ -64,8 +64,8 @@ test('持ち出し: ファイルメニューは「バックアップと引っ越
   assert.ok(hub.includes('金庫の秘密（キー・トークン・OBS の接続設定）') && hub.includes('合言葉で暗号化'));
   const backupHtml = fs.readFileSync(path.join(__dirname, '..', 'plugins', 'backup', 'ui', 'panel.html'), 'utf8');
   assert.ok(backupHtml.includes('秘密は入りません'));
-  // NeonTimer の取り込みは開発者モードだけ（今のまま）
-  assert.ok(hub.includes('importBox.hidden = !devMode'));
+  // 旧いアプリの取り込みは本体の画面に無い（dev-legacy-import の自分のパネルが出す）
+  assert.ok(!hub.includes('secret-import'));
 });
 
 test('セッションとタイマー: 一般の画面は「配信の経過時間」1 つ。細かい設定はタイマーの窓（中級）', () => {

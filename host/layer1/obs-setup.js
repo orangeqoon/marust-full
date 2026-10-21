@@ -3,7 +3,7 @@
 /**
  * 「OBS とつなぐ」画面の裏側（R3）。
  * 接続設定（host・port・password）は金庫の obs.websocket に JSON で持つ。
- * 読む順番: 金庫 → <STATE_DIR>/services/obs-config.json → NeonTimer の場所（開発者モードだけ）。
+ * 読む順番: 金庫 → <STATE_DIR>/services/obs-config.json → 旧いアプリの場所（開発者モードだけ）。
  * 答えにパスワードは入れない（あるかどうかだけ）。ログにも出さない。
  * testConnection は使い捨ての接続で、読み取りの 3 つ（GetVersion・get_api_version・list_capabilities）しか呼ばない。
  * OBS の配信開始・停止はしない。改造プラグインは自動では入れない。

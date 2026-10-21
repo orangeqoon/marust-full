@@ -21,11 +21,14 @@ function freePort() {
     });
   });
 }
+let lastBody = '';
 function request(url) {
   return new Promise((resolve, reject) => {
     const req = http.get(url, (res) => {
-      res.resume();
-      res.on('end', () => resolve(res.statusCode));
+      let text = '';
+      res.setEncoding('utf8');
+      res.on('data', (c) => { text += c; });
+      res.on('end', () => { lastBody = text; resolve(res.statusCode); });
     });
     req.on('error', reject);
   });
@@ -145,6 +148,25 @@ async function main() {
     assert.ok(!JSON.stringify(result).includes('new-access-token'));
   });
 
+  for (const pair of [['invalid_client', 'invalid-client'], ['invalid_grant', 'invalid-grant'], ['redirect_uri_mismatch', 'redirect-mismatch'], ['whatever', 'unauthorized']]) {
+    await test('token exchange refused with ' + pair[0] + ' -> ' + pair[1], async () => {
+      const port = await freePort();
+      const vault = {
+        get: async () => ({ ok: true, value: JSON.stringify({ client_id: 'client-id', client_secret: 'client-secret', redirect_uri: 'http://127.0.0.1:' + port + '/oauth/callback' }) }),
+        set: async () => ({ ok: true })
+      };
+      const auth = createOauthReauth({
+        secrets: vault,
+        openExternal: async (url) => {
+          const parsed = new URL(url);
+          await request(parsed.searchParams.get('redirect_uri') + '?state=' + encodeURIComponent(parsed.searchParams.get('state')) + '&code=good');
+        },
+        fetch: async () => ({ status: 400, json: async () => ({ error: pair[0], error_description: 'x' }) })
+      });
+      await assert.rejects(() => auth.reauth('twitch'), (err) => err.code === pair[1]);
+    });
+  }
+
   await test('three minute timer always closes the listener', async () => {
     let timerFn;
     const timers = [];
@@ -186,6 +208,8 @@ async function main() {
     const state = new URL(opened).searchParams.get('state');
     const status = await request('http://127.0.0.1:' + port + '/oauth/callback?state=' + state + '&code=good');
     assert.strictEqual(status, 200);
+    // N5: 交換の前に返す文言なので「完了」とは言わない。結果は丸ストの画面で確かめてもらう
+    assert.ok(/丸ストに戻って結果を確かめて/.test(lastBody) && !/完了しました/.test(lastBody), lastBody);
     assert.deepStrictEqual(await pending, { ok: true, site: 'twitch' });
     assert.strictEqual(saved[0].name, 'twitch.oauth');
     assert.strictEqual(await connect('127.0.0.1', port), false, '127.0.0.1 must be closed');

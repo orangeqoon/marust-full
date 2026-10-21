@@ -2,7 +2,7 @@
   "id": "youtube",
   "name": "YouTube",
   "category": "destination",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "tier": "standard",
   "manifestVersion": 2,
   "runtime": "inproc",

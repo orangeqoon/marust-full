@@ -62,3 +62,21 @@ a:focus-visible,
 #sink-result.is-bad {
   color: var(--danger, #ff8f8f);
 }
+
+.help {
+  margin: 8px 0;
+}
+
+.help summary {
+  cursor: pointer;
+}
+
+.help li {
+  margin: 4px 0;
+}
+
+.help .copy {
+  width: 22em;
+  max-width: 100%;
+  font: inherit;
+}

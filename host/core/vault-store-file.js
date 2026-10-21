@@ -13,16 +13,7 @@ const { hasValueField, normalizeEntry, sortedRows } = require('./vault-row');
 function stampOf(date) {
   const d = date instanceof Date ? date : new Date();
   const pad = (n, w) => String(n).padStart(w || 2, '0');
-  return (
-    String(d.getFullYear()) +
-    pad(d.getMonth() + 1) +
-    pad(d.getDate()) +
-    'T' +
-    pad(d.getHours()) +
-    pad(d.getMinutes()) +
-    pad(d.getSeconds()) +
-    pad(d.getMilliseconds(), 3)
-  );
+  return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}${pad(d.getMilliseconds(), 3)}`;
 }
 
 function createFileStore(options) {
@@ -36,81 +27,79 @@ function createFileStore(options) {
   const filePath = path.join(stateDir, 'services', 'marust-vault.json');
   let rows = new Map();
   let loaded = false;
+  let loadError = null;
 
   function quarantine(file) {
     const dest = file + '.broken-' + stampOf(now());
     const target = fs.existsSync(dest) ? dest + '-' + process.pid : dest;
-    try {
-      fs.renameSync(file, target);
-    } catch (_) {
-      try { fs.renameSync(file, target + '-1'); } catch (_) { /* start empty anyway */ }
-    }
+    let ok = false;
+    try { fs.renameSync(file, target); ok = true; }
+    catch (_) { try { fs.renameSync(file, target + '-1'); ok = true; } catch (_) { ok = false; } }
     warn('vault load failed count=1');
+    return ok;
   }
 
   function persist() {
+    if (loadError) throw new Error('vault-store-protected: ' + loadError);
     writeJson(filePath, { schemaVersion: 1, entries: sortedRows(rows) });
   }
 
   function load() {
     rows = new Map();
     loaded = true;
-    if (!fs.existsSync(filePath)) return;
+    loadError = null;
+    let exists = false;
+    try { exists = fs.existsSync(filePath); } catch (_) { loadError = 'read-error'; warn('vault load failed count=1'); return; }
+    if (!exists) return;
+    let text;
+    try { text = fs.readFileSync(filePath, 'utf8'); }
+    catch (err) { if (err?.code !== 'ENOENT') { loadError = 'read-error'; warn('vault load failed count=1'); } return; }
     let parsed;
-    try {
-      const text = fs.readFileSync(filePath, 'utf8').replace(/^﻿/, '');
-      parsed = JSON.parse(text);
-    } catch (_) {
-      quarantine(filePath);
+    try { parsed = JSON.parse(text.replace(/^\uFEFF/, '')); }
+    catch (_) { if (!quarantine(filePath)) loadError = 'quarantine-failed'; return; }
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) || parsed.schemaVersion !== 1 || !Array.isArray(parsed.entries) || parsed.entries.some(hasValueField)) {
+      if (!quarantine(filePath)) loadError = 'quarantine-failed';
       return;
-    }
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      quarantine(filePath);
-      return;
-    }
-    if (parsed.schemaVersion !== 1 || !Array.isArray(parsed.entries)) {
-      quarantine(filePath);
-      return;
-    }
-    for (let i = 0; i < parsed.entries.length; i += 1) {
-      if (hasValueField(parsed.entries[i])) {
-        rows = new Map();
-        quarantine(filePath);
-        return;
-      }
     }
     const next = new Map();
     let skipped = 0;
     for (let i = 0; i < parsed.entries.length; i += 1) {
       const row = normalizeEntry(parsed.entries[i]);
-      if (!row) {
-        skipped += 1;
-        continue;
-      }
+      if (!row) { skipped += 1; continue; }
       next.set(row.name, row);
     }
     rows = next;
     if (skipped) {
-      try { persist(); } catch (_) { warn('vault load failed count=1'); }
+      let backedUp = false;
+      try {
+        const damaged = filePath + '.damaged-' + stampOf(now());
+        fs.copyFileSync(filePath, fs.existsSync(damaged) ? damaged + '-' + process.pid : damaged);
+        backedUp = true;
+      } catch (_) { backedUp = false; }
+      if (backedUp) {
+        try { persist(); } catch (_) { warn('vault load failed count=1'); }
+      } else {
+        loadError = 'backup-failed';
+        warn('vault load failed count=1');
+      }
     }
   }
 
   function list() {
     load();
-    return { ok: true, rows: sortedRows(rows) };
+    return loadError ? { ok: false, error: 'unavailable', rows: [] } : { ok: true, rows: sortedRows(rows) };
   }
 
   function put(row) {
     if (!loaded) load();
+    if (loadError) return { ok: false, error: 'unavailable' };
     const clean = normalizeEntry(row);
     if (!clean) return { ok: false, error: 'bad-row' };
     const previous = rows.get(clean.name);
     rows.set(clean.name, clean);
-    try {
-      persist();
-    } catch (_) {
-      if (previous) rows.set(clean.name, previous);
-      else rows.delete(clean.name);
+    try { persist(); }
+    catch (_) {
+      if (previous) rows.set(clean.name, previous); else rows.delete(clean.name);
       return { ok: false, error: 'unavailable' };
     }
     return { ok: true };
@@ -118,12 +107,12 @@ function createFileStore(options) {
 
   function remove(name) {
     if (!loaded) load();
+    if (loadError) return { ok: false, error: 'unavailable' };
     if (!rows.has(name)) return { ok: true };
     const previous = rows.get(name);
     rows.delete(name);
-    try {
-      persist();
-    } catch (_) {
+    try { persist(); }
+    catch (_) {
       rows.set(name, previous);
       return { ok: false, error: 'unavailable' };
     }

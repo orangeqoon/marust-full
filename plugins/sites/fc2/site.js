@@ -311,6 +311,12 @@ function createSiteFc2(deps) {
       body: qs.stringify({ mode: 'get', streamid: channel, type: 'json' })
     });
     const current = parseJson(getText);
+    if (current && current.status === 0) {
+      const msg = Array.isArray(current.msg) ? current.msg.join(' ') : String(current.msg || '');
+      if (/ログイン|login/i.test(msg)) {
+        throw fail('unauthorized');
+      }
+    }
     if (!current || current.status !== 1 || !current.data || typeof current.data !== 'object' || Array.isArray(current.data)) {
       throw fail('settings-unavailable');
     }
@@ -329,6 +335,10 @@ function createSiteFc2(deps) {
       body: qs.stringify(setPayload(channel, title, current.data, token))
     });
     const saved = parseJson(setText);
+    if (saved && saved.status === 0) {
+      const msg = Array.isArray(saved.msg) ? saved.msg.join(' ') : String(saved.msg || '');
+      if (/ログイン|login/i.test(msg)) throw fail('unauthorized');
+    }
     if (!saved || (saved.status !== 1 && saved.status !== 2)) throw fail('http');
   }
 
@@ -371,10 +381,17 @@ function createSiteFc2(deps) {
     return job;
   }
 
-  async function isConfigured() {
-    if (modeOf(ctx) === 'legacy') return false;
+  // 足りない物を種類だけで答える（値・チャンネル ID は返さない）。isConfigured はこれの ready と同じ答え
+  async function loginNeeds() {
+    if (modeOf(ctx) === 'legacy') return { ready: false, need: 'mode', how: 'toggle' }; // 送信オフ。ログインの不足ではない
     const auth = await loadAuth(ctx);
-    return auth.configured === true;
+    if (Object.keys(auth.cookies).length === 0) return { ready: false, need: 'cookies', how: 'extension' };
+    if (!auth.channel) return { ready: false, need: 'channel', how: 'extension' };
+    return { ready: true, need: null, how: 'extension' };
+  }
+
+  async function isConfigured() {
+    return (await loginNeeds()).ready;
   }
 
   async function getStatus(params, passed) {
@@ -416,6 +433,7 @@ function createSiteFc2(deps) {
     onEvent() {},
     health() { return { ok: true, detail: 'site-fc2' }; },
     isConfigured: isConfigured,
+    loginNeeds: loginNeeds,
     getStatus: getStatus,
     updateMetadata: updateMetadata,
     updateTitle: updateTitle,

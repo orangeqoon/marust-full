@@ -68,6 +68,14 @@ function isKnownEvent(name) {
   return EVENT_NAMES.has(name);
 }
 
+function registerKnownEvent(name) {
+  if (typeof name === 'string' && name.trim()) {
+    EVENT_NAMES.add(name.trim());
+    return true;
+  }
+  return false;
+}
+
 function eventVersion() {
   return EVENT_VERSION;
 }
@@ -80,5 +88,6 @@ module.exports = {
   EVENT_NAMES,
   EVENT_VERSION,
   isKnownEvent,
+  registerKnownEvent,
   eventVersion
 };

@@ -127,8 +127,14 @@ function createGateway(options) {
           sendJson(res, 400, { ok: false, error: 'name' });
           return;
         }
-        const code = data && typeof data.code === 'string' ? data.code : '';
-        const result = clients.redeem(code, { kind: 'extension', name: name, extensionId: extensionId });
+        const rawCode = data && typeof data.code === 'string' ? data.code.trim() : '';
+        const isAuto = !rawCode || data.auto === true;
+        let result;
+        if (isAuto && typeof clients.issueExtension === 'function') {
+          result = clients.issueExtension({ name: name, extensionId: extensionId });
+        } else {
+          result = clients.redeem(rawCode, { kind: 'extension', name: name, extensionId: extensionId });
+        }
         if (!result.ok) {
           const error = result.error || 'bad-code';
           const status = error === 'name' ? 400 : (error === 'origin' ? 403 : 401);
@@ -353,6 +359,28 @@ function createGateway(options) {
     });
   }
 
+  function close() {
+    try {
+      for (const set of sockets.values()) {
+        for (const ws of set) {
+          try { ws.terminate(); } catch (_) {}
+        }
+      }
+      sockets.clear();
+    } catch (_) {}
+    try {
+      if (wss && typeof wss.close === 'function') wss.close();
+    } catch (_) {}
+    try {
+      if (server && typeof server.closeAllConnections === 'function') {
+        server.closeAllConnections();
+      }
+      if (server && typeof server.close === 'function') {
+        server.close();
+      }
+    } catch (_) {}
+  }
+
   return {
     server: server,
     listen: listen,
@@ -360,7 +388,8 @@ function createGateway(options) {
     layouts: layouts,
     closeClient: closeClient,
     broadcast: broadcast,
-    searchOf: searchOf
+    searchOf: searchOf,
+    close: close
   };
 }
 

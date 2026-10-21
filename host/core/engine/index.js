@@ -30,29 +30,38 @@ function createEngineRegistry() {
   }
 
   async function emergencyStop(ctx) {
-    const results = [];
-    for (const [id, engine] of map) {
+    const timeoutMs = (ctx && Number.isFinite(ctx.timeoutMs)) ? ctx.timeoutMs : 5000;
+    const tasks = Array.from(map.entries()).map(async ([id, engine]) => {
       let caps = {};
+      try { caps = typeof engine?.capabilities === 'function' ? engine.capabilities() : {}; } catch (_) {}
+      if (!caps || caps.emergencyStop !== true || typeof engine?.stopAll !== 'function') {
+        return { id, ok: false, accepted: false, verified: false, error: 'no-emergency' };
+      }
+      let timer = null;
       try {
-        caps = engine && typeof engine.capabilities === 'function' ? engine.capabilities() : {};
+        const p = Promise.resolve().then(() => engine.stopAll(ctx || {}));
+        p.catch(() => {});
+        const res = await Promise.race([p, new Promise((r) => { timer = setTimeout(() => r('__to'), timeoutMs); })]);
+        if (timer) clearTimeout(timer);
+        if (res === '__to') return { id, ok: false, accepted: true, verified: false, error: 'emergency-stop-timeout' };
+        const o = (res && typeof res === 'object') ? res : { ok: true };
+        const isOk = o.ok !== false;
+        return Object.assign({ id, accepted: true, verified: Boolean(isOk) }, o, { ok: isOk });
       } catch (_) {
-        caps = {};
+        if (timer) clearTimeout(timer);
+        return { id, ok: false, accepted: true, verified: false, error: 'failed' };
       }
-      if (!caps || caps.emergencyStop !== true || typeof engine.stopAll !== 'function') {
-        results.push({ id: id, ok: false, error: 'no-emergency' });
-        continue;
-      }
-      try {
-        const result = await engine.stopAll(ctx || {});
-        results.push(Object.assign({ id: id }, result && typeof result === 'object' ? result : { ok: true }));
-      } catch (_) {
-        results.push({ id: id, ok: false, error: 'failed' });
-      }
-    }
-    return { ok: results.length > 0 && results.every((row) => row.ok !== false), results: results };
+    });
+    const results = await Promise.all(tasks);
+    return { ok: results.length > 0 && results.every((row) => row.ok !== false), results };
   }
 
-  return { register, get, list, only, emergencyStop };
+  function resolveForDestination(dest) {
+    const req = dest?.engine?.id && typeof dest.engine.id === 'string' ? dest.engine.id.trim() : '';
+    return req ? get(req) : (get('obs-local') || only());
+  }
+
+  return { register, get, list, only, resolveForDestination, emergencyStop };
 }
 
 function createDefaultRegistry(deps) {
@@ -60,6 +69,9 @@ function createDefaultRegistry(deps) {
   const { createObsLocalEngine } = require('./obs-local');
   const engine = createObsLocalEngine(deps || {});
   registry.register(engine.id || 'obs-local', engine);
+  if (deps && deps.core && typeof deps.core.attachEngine === 'function') {
+    deps.core.attachEngine(engine);
+  }
   return { registry, engine };
 }
 

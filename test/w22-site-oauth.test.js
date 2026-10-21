@@ -488,7 +488,7 @@ async function main() {
     assertClean(JSON.stringify(result), secrets);
     assertClean(JSON.stringify(panel), secrets);
     assertClean(bag.logs.join('\n'), secrets);
-    assert.deepStrictEqual(Object.keys(panel).sort(), ['configured', 'lastAt', 'lastError', 'mode', 'lastOk', 'ok'].sort());
+    assert.deepStrictEqual(Object.keys(panel).sort(), ['configured', 'lastAt', 'lastError', 'mode', 'lastOk', 'ok', 'lastStage', 'lastStatusError', 'lastStatusAt', 'statusStage', 'credentialsState', 'credentialsError'].sort());
     assert.strictEqual(panel.configured, true);
     assert.strictEqual(panel.lastOk, false);
     assert.strictEqual(panel.lastError, result.error);

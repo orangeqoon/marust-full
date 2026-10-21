@@ -9,7 +9,7 @@ const SITES = Object.freeze({
     authorize: 'https://accounts.google.com/o/oauth2/v2/auth',
     token: 'https://oauth2.googleapis.com/token',
     scope: 'https://www.googleapis.com/auth/youtube.force-ssl',
-    // NeonTimer の credentials.json（web タイプ）に登録済みの戻り先。取り込みは redirect_uri を運ばないので既定にする。
+    // Google の web タイプの鍵に登録済みの戻り先。取り込んだログインは redirect_uri を運ばないので既定にする。
     defaultRedirect: 'http://localhost:3000/oauth2callback'
   },
   // タイマーの記録を残す Google カレンダー（サイトではない）。YouTube とは別の鍵・別のトークンで持つ。
@@ -26,7 +26,7 @@ const SITES = Object.freeze({
     token: 'https://id.twitch.tv/oauth2/token',
     // user:read:chat（コメントの受信）は今は使わない。将来の受信のために、キーを作るときだけ含めておく（2026-10-07 ユーザー決定）。
     scope: 'channel:manage:broadcast user:write:chat user:read:chat channel:manage:raids user:read:follows moderator:read:followers',
-    // 金庫に redirect_uri が無いときの既定値。NeonTimer（get-twitch-token.js）と同じ。
+    // 金庫に redirect_uri が無いときの既定値。
     defaultRedirect: 'http://localhost:3000'
   },
   kick: {
@@ -34,7 +34,7 @@ const SITES = Object.freeze({
     authorize: 'https://id.kick.com/oauth/authorize',
     token: 'https://id.kick.com/oauth/token',
     scope: 'channel:write chat:write user:read channel:read',
-    // NeonTimer の kick-config.json と同じ。取り込みは redirect_uri を運ばないので、金庫に無いときの既定にする。
+    // 取り込んだログインは redirect_uri を運ばないので、金庫に無いときの既定にする。
     defaultRedirect: 'http://localhost:3000/oauth2callback'
   }
 });
@@ -132,7 +132,15 @@ function createOauthReauth(options) {
         redirect: 'manual'
       });
     } catch (_) { throw fail('network'); }
-    if (!response || response.status < 200 || response.status >= 300) throw fail('unauthorized');
+    if (!response || response.status < 200 || response.status >= 300) {
+      // サイトが返したエラー名（invalid_client など。決まった形の名前だけ）で原因を分ける。値は読まない
+      let name = '';
+      try { const err = await response.json(); name = err && typeof err.error === 'string' ? err.error : ''; } catch (_) { name = ''; }
+      if (name === 'invalid_client') throw fail('invalid-client');
+      if (name === 'invalid_grant') throw fail('invalid-grant');
+      if (name === 'redirect_uri_mismatch') throw fail('redirect-mismatch');
+      throw fail('unauthorized');
+    }
     let json;
     try { json = await response.json(); } catch (_) { throw fail('unauthorized'); }
     const access = safeText(json && json.access_token);
@@ -241,7 +249,7 @@ function createOauthReauth(options) {
           finish(fail('unauthorized'));
           return;
         }
-        callbackResponse(res, 200, '認証が完了しました。このタブを閉じてください。');
+        callbackResponse(res, 200, '認証の応答を受け取りました。丸ストに戻って結果を確かめてください。このタブは閉じて構いません。');
         try {
           const token = await exchange(site, config, authCode, code.verifier);
           const next = Object.assign({}, config, {

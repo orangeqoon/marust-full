@@ -2,7 +2,7 @@
 
 /**
  * marust（丸スト）Electron メインプロセス。
- * NeonTimer とは別ウィンドウ／別プロセス。:18766 は触らない。
+ * 旧いアプリとは別ウィンドウ／別プロセス。:18766 は触らない。
  * 起動時にプラグインを load し、同じ registry で orchestrator を 1 つ作る。
  * 画面は api.call だけ。OBS はエンジン登録表経由。初回同期のあとでセッションを復旧する。
  * タイマーは v2 プラグインとして起動する。終了時に各プラグインの destroy を呼ぶ。
@@ -14,7 +14,7 @@
 const fs = require('fs');
 const path = require('path');
 const { app, BrowserWindow, session, globalShortcut, Tray, Menu, nativeImage, dialog, shell } = require('electron');
-const { createCore, isAuthorBuild: coreIsAuthorBuild } = require('./host/core');
+const { createCore } = require('./host/core');
 const { createLogRetention } = require('./host/layer1/log-retention');
 const { createRegistry } = require('./host/layer1/plugin-registry');
 const { createObsStreamControl } = require('./host/core');
@@ -90,7 +90,7 @@ function currentTier() {
   } catch (_) { stored = ''; maxStored = ''; }
   let dev = false;
   try { dev = getDevMode().get().devMode === true; } catch (_) { dev = false; }
-  const cur = resolveUiLevel(stored, { devMode: dev, authorBuild: isAuthorBuild() });
+  const cur = resolveUiLevel(stored, { devMode: dev });
   return maxStored ? maxTier(cur, maxStored) : cur;
 }
 
@@ -244,13 +244,10 @@ function getUiSettings() {
   return uiSettings;
 }
 
-// 作者用の配り物か（build-info.json の distribution が author、またはソース起動で plugins-author がある。決め方は host/core/set-dirs.js）。配る版では自動ペアリングを作らない
-function isAuthorBuild() { try { return coreIsAuthorBuild(__dirname); } catch (_) { return false; } }
-
 // 開発中の自動ペアリング（host/core/dev-autopair.js）。開発者モードのオン・オフに合わせて、CLI と AI（MCP）の合言葉を作る／取り消す。
 function syncAutoPair() {
   try {
-    return devAutopair.sync({ clients: clients, servicesDir: settingsCore.SERVICES_DIR, authorBuild: isAuthorBuild(), devModeOn: () => getDevMode().get().devMode === true });
+    return devAutopair.sync({ clients: clients, servicesDir: settingsCore.SERVICES_DIR, devModeOn: () => getDevMode().get().devMode === true });
   } catch (err) {
     console.error('[marust] auto-pair failed');
     return null;
@@ -384,7 +381,7 @@ async function buildHubState() {
     notes: [
       '題名とカテゴリは、この画面の送信ボタンから現在のモードで扱います。legacy では送りません。',
       'shadow はドライランで、送るはずだった内容を logs/marust に残します。モードはプラグインごとの legacy / shadow / live で、パネル「モード」で切り替えます。',
-      'Cookie とキャプチャの受信は 127.0.0.1:18770 だけです。18766 は NeonTimer のままです。',
+      'Cookie とキャプチャの受信は 127.0.0.1:18770 だけです。18766 は旧いアプリのままです。',
       'OBS への書き込みは、プラグイン obs-engine が live のときだけです。非常停止はモードに関係なく使えます。'
     ]
   };
@@ -616,6 +613,13 @@ function shutdownEngine() {
   }
 }
 
+function shutdownGateway() {
+  if (gateway && typeof gateway.close === 'function') {
+    try { gateway.close(); } catch (_) { /* 停止に失敗しても終了は続ける */ }
+    gateway = null;
+  }
+}
+
 async function startGateway() {
   const receiver = createCaptureReceiver({
     core: settingsCore,
@@ -795,11 +799,12 @@ async function boot() {
         return done;
       }
     },
-    aiAutoPair: () => devAutopair.enabled({ authorBuild: isAuthorBuild(), devModeOn: () => getDevMode().get().devMode === true }),
+    aiAutoPair: () => devAutopair.enabled({ devModeOn: () => getDevMode().get().devMode === true }),
     obsSetup: obsSetup,
     pluginInstaller: createPluginInstaller(),
     siteConfig: createSiteConfig({
       secrets: secrets,
+      extensionPaired: () => !!clients && clients.list().some((c) => c && c.kind === 'extension'),
       // 読んでよいのは、サイトの manifest が宣言した名前だけ
       reader: secrets.coreReader('site-config', (name) => /\.config$/.test(name) && (registry ? registry.snapshot() : []).map(summarizePlugin)
         .some((p) => p.site && Array.isArray(p.site.secretNames) && p.site.secretNames.indexOf(name) !== -1)),
@@ -950,15 +955,47 @@ app.on('before-quit', (event) => {
   }
   if (hotkeys) hotkeys.unregisterAll();
   shutdownEngine();
-  if (!registry || typeof registry.getRunning !== 'function') return;
+  if (typeof shutdownGateway === 'function') shutdownGateway();
+  if (!registry || typeof registry.getRunning !== 'function') {
+    try {
+      if (typeof settingsCore !== 'undefined' && settingsCore && typeof settingsCore.close === 'function') {
+        settingsCore.close().catch(() => {});
+      }
+    } catch (_) {}
+    if (typeof app.exit === 'function' && !isHeadless()) {
+      setImmediate(() => { try { app.exit(0); } catch (_) {} });
+    }
+    return;
+  }
   event.preventDefault();
-  destroyPlugins().catch(() => {}).then(() => {
+  destroyPlugins().catch(() => {}).then(async () => {
+    if (typeof shutdownGateway === 'function') shutdownGateway();
+    try {
+      if (typeof settingsCore !== 'undefined' && settingsCore && typeof settingsCore.close === 'function') {
+        await settingsCore.close();
+      }
+    } catch (_) {}
     app.quit();
+    if (typeof app.exit === 'function' && !isHeadless()) {
+      setImmediate(() => { try { app.exit(0); } catch (_) {} });
+    }
   });
 });
 
-app.on('window-all-closed', () => {
-  if (quitting || isHeadless()) return; // 明示的な画面なし起動は SIGINT・SIGTERM で終了する。
+app.on('window-all-closed', async () => {
+  if (isHeadless()) return; // 明示的な画面なし起動は SIGINT・SIGTERM で終了する。
+  if (typeof shutdownGateway === 'function') shutdownGateway();
+  try {
+    if (typeof settingsCore !== 'undefined' && settingsCore && typeof settingsCore.close === 'function') {
+      await settingsCore.close();
+    }
+  } catch (_) {}
+  if (quitting) {
+    if (typeof app.exit === 'function') {
+      try { app.exit(0); } catch (_) {}
+    }
+    return;
+  }
   app.quit();
 });
 

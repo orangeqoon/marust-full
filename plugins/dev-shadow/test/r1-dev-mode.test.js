@@ -87,7 +87,7 @@ test('api: dev mode off returns dev-only for dev APIs', async () => {
   assert.strictEqual((await a.call('modes.setDefault', { mode: 'shadow' }, win)).error, 'dev-only');
   assert.strictEqual((await a.call('shadow.report', {}, win)).error, 'dev-only');
   assert.strictEqual((await a.call('golive.check', { site: 'twitch' }, win)).error, 'dev-only');
-  // NeonTimer の取り込みは開発者プラグイン dev-legacy-import の legacyImport.*（本体には無い。dev-only の確かめは v6-legacy-import.test.js）
+  // 旧いアプリの取り込みは開発者プラグイン dev-legacy-import の legacyImport.*（本体には無い。dev-only の確かめは v6-legacy-import.test.js）
   assert.strictEqual((await a.call('secrets.importScan', {}, win)).error, 'unknown-method');
   assert.strictEqual((await a.call('secrets.importRun', { names: [] }, win)).error, 'unknown-method');
   assert.strictEqual(fs.existsSync(path.join(t.core.SERVICES_DIR, 'marust-modes.json')), false);

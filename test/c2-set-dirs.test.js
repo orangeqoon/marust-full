@@ -9,7 +9,7 @@ const path = require('path');
 const { createCore } = require('../host/core/core-bridge');
 const { createRegistry } = require('../host/layer1/plugin-registry');
 const { createEventBus } = require('../host/core/event-bus');
-const { resolveSetDirs, isAuthorBuild } = require('../host/core');
+const { resolveSetDirs } = require('../host/core');
 
 let failed = 0;
 async function test(name, fn) {
@@ -79,19 +79,7 @@ async function main() {
     if (fs.existsSync(path.join(repo, 'plugins-author'))) assert.ok(got.dirs.some((d) => d.dir === path.join(repo, 'plugins-author') && d.author === true));
   });
 
-  await test('作者の版か: build-info の distribution で決める（置き場が今あるかで決めない）。環境変数の置き場の名前には左右されない', () => {
-    const { exeDir, appRoot } = packagedLayout();
-    try {
-      assert.strictEqual(isAuthorBuild(appRoot), false, '配る形・build-info なし');
-      fs.writeFileSync(path.join(appRoot, 'build-info.json'), JSON.stringify({ distribution: 'author', setDirs: ['/no/such/dir'] }));
-      assert.strictEqual(isAuthorBuild(appRoot), true, '作者の exe はリポジトリを見失っても作者の版');
-      // 見失った作者の exe は、黙って別の保存場所で起動しない（MARUST_STATE を付けたときだけ許す）
-      const stateEnv = tmp('marust-c2-st-');
-      try {
-        const lost = () => createCore({ authorBuild: isAuthorBuild(appRoot), locator: null, local: { env: {}, isPackaged: true, appData: stateEnv } });
-        assert.throws(lost, (err) => err && err.code === 'MARUST_SCRIPTS_CORE_NOT_FOUND');
-      } finally { rm(stateEnv); }
-    } finally { rm(exeDir); }
+  await test('置き場の author 印はフォルダ名だけ。環境変数の置き場の名前は印になるが、版の判定には使わない', () => {
     const { exeDir: exe2, appRoot: app2 } = packagedLayout();
     try {
       const base = tmp('marust-c2-envname-');
@@ -99,7 +87,7 @@ async function main() {
       fs.mkdirSync(named);
       const got = resolveSetDirs({ appRoot: app2, env: { MARUST_SET_DIR: named } });
       assert.ok(got.dirs[0].author === true, '名前の印は rec.author 用');
-      assert.strictEqual(isAuthorBuild(app2), false, '配る形では環境変数で作者の版にならない');
+      assert.strictEqual(require('../host/core').isAuthorBuild, undefined, '作者の版かの判定は本体に無い');
       rm(base);
     } finally { rm(exe2); }
   });

@@ -1,0 +1,55 @@
+{
+  "id": "grok-control",
+  "name": "Grok で操作",
+  "category": "connect",
+  "tags": [
+    "Grok",
+    "AI",
+    "音声",
+    "声で操作"
+  ],
+  "version": "0.1.0",
+  "tier": "advanced",
+  "manifestVersion": 2,
+  "coreApi": 2,
+  "runtime": "inproc",
+  "main": "index.js",
+  "kind": "integration",
+  "provides": [
+    "ui.panel@1"
+  ],
+  "defaultMode": "legacy",
+  "timeouts": {
+    "getStatus": 10000,
+    "command": 14000
+  },
+  "actions": {
+    "getStatus": "read",
+    "command": "read",
+    "intents": "read",
+    "history": "read",
+    "clearHistory": "write",
+    "ping": "read"
+  },
+  "api": {
+    "calls": [
+      "broadcast.status",
+      "broadcast.preflight",
+      "engine.status",
+      "destination.list"
+    ]
+  },
+  "panels": [
+    {
+      "name": "status",
+      "title": "Grok で操作",
+      "file": "ui/panel.html"
+    }
+  ],
+  "needs": [
+    "api.call",
+    "storage"
+  ],
+  "audience": "public",
+  "stability": "experimental"
+}

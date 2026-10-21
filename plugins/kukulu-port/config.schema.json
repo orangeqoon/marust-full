@@ -15,7 +15,7 @@
         "sleeping",
         "nap"
       ],
-      "description": "睡眠判定の語。kukulu-sleep と同じ規則。省略時は NeonTimer と同じ並び。"
+      "description": "睡眠判定の語。kukulu-sleep と同じ規則。省略時は既定の並び。"
     }
   }
 }

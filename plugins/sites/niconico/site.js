@@ -242,10 +242,16 @@ function createSiteNiconico(deps) {
     return job;
   }
 
-  async function isConfigured() {
-    if (modeOf(ctx) === 'legacy') return false;
+  // 足りない物を種類だけで答える（値は返さない）。isConfigured はこれの ready と同じ答え
+  async function loginNeeds() {
+    if (modeOf(ctx) === 'legacy') return { ready: false, need: 'mode', how: 'toggle' }; // 送信オフ。ログインの不足ではない
     const auth = await loadAuth(ctx);
-    return auth.configured === true;
+    if (!auth.configured) return { ready: false, need: 'cookies', how: 'extension' };
+    return { ready: true, need: null, how: 'extension' };
+  }
+
+  async function isConfigured() {
+    return (await loginNeeds()).ready;
   }
 
   async function getStatus(params, passed) {
@@ -287,6 +293,7 @@ function createSiteNiconico(deps) {
     onEvent() {},
     health() { return { ok: true, detail: 'site-niconico' }; },
     isConfigured: isConfigured,
+    loginNeeds: loginNeeds,
     getStatus: getStatus,
     updateMetadata: updateMetadata,
     updateTitle: updateTitle,

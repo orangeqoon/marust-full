@@ -52,7 +52,7 @@ const specs = {
   },
   'sites.loginStates': {
     permission: 'read',
-    description: 'サイトごとのログイン状態だけ { <サイト>: none / keys-only / logged-in / expired } を返す。プラグイン（tips など）も呼べる。値は返さない',
+    description: 'サイトごとのログイン状態だけ { <サイト>: none / keys-only / logged-in / expired / incomplete } を返す。プラグイン（tips など）も呼べる。値は返さない',
     params: {}
   },
   'sites.setConfig': {

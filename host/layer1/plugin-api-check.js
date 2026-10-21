@@ -20,7 +20,7 @@ const CALL_DENIED_NAMESPACES = Object.freeze(['clients', 'approval', 'modes', 'd
 const CALL_DENIED_METHODS = Object.freeze(['hub.fanout', 'hub.forceLegacy', 'app.restart']);
 const API_CALLS_MAX = 30;
 // ctx.peers（V2-10）: 内蔵プラグインが、ほかのプラグイン（サイト）の中身へ届く決まったメソッドだけ。増やすときは Opus に聞く
-const PEER_METHODS = Object.freeze(['updateMetadata', 'updateStream', 'updateTitle', 'updateCategory', 'isConfigured', 'suggestCategories', 'sendComment']);
+const PEER_METHODS = Object.freeze(['updateMetadata', 'updateStream', 'updateTitle', 'updateCategory', 'isConfigured', 'loginNeeds', 'suggestCategories', 'sendComment']);
 
 function pluginParamRules(params) {
   if (params == null) return {};

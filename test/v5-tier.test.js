@@ -244,12 +244,12 @@ const runningIds = (t) => t.registry.getRunning().map((r) => r.id).sort();
     } finally { t.done(); }
   });
 
-  await test('resolveUiLevel: 保存した値が先。無ければ開発者モード／作者用の配り物は上級・そうでなければ初級', () => {
+  await test('resolveUiLevel: 保存した値が先。無ければ開発者モードは上級・そうでなければ初級', () => {
     assert.strictEqual(resolveUiLevel('standard', { devMode: true }), 'standard');
     assert.strictEqual(resolveUiLevel('', {}), 'basic');
     assert.strictEqual(resolveUiLevel(undefined, undefined), 'basic');
     assert.strictEqual(resolveUiLevel('', { devMode: true }), 'advanced');
-    assert.strictEqual(resolveUiLevel('', { authorBuild: true }), 'advanced');
+    assert.strictEqual(resolveUiLevel('', { authorBuild: true }), 'basic', '作者の版かどうかでは決めない');
     assert.strictEqual(resolveUiLevel('nope', { devMode: false }), 'basic');
   });
 })().then(() => {
@@ -303,13 +303,13 @@ async function runApiTests() {
     assert.strictEqual((await t.api.call('ui.getSettings', {}, win)).uiLevel, 'basic');
   });
 
-  await test('ui.getSettings: 保存が無くて開発者モードなら上級。作者用の配り物（plugins-author がある）も上級', async () => {
+  await test('ui.getSettings: 保存が無くて開発者モードなら上級。置き場に plugins-author があっても初級のまま', async () => {
     const t = apiSetup({ devMode: true });
     assert.strictEqual((await t.api.call('ui.getSettings', {}, win)).uiLevel, 'advanced');
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'v5-author-'));
     try {
       const a = apiSetup({ authorRoot: dir });
-      assert.strictEqual((await a.api.call('ui.getSettings', {}, win)).uiLevel, 'advanced');
+      assert.strictEqual((await a.api.call('ui.getSettings', {}, win)).uiLevel, 'basic');
     } finally { fs.rmSync(dir, { recursive: true, force: true }); }
   });
 

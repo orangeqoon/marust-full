@@ -52,7 +52,11 @@
     <input id="slot-tags" type="text" maxlength="500">
     <label for="slot-desc">説明文</label>
     <textarea id="slot-desc" rows="4" maxlength="5000"></textarea>
-    <label for="slot-autoclose">OBS が止まってから終了までの分</label>
+    <label for="slot-autoclose-obs">OBS配信停止時に自動で枠を閉じる</label>
+    <input id="slot-autoclose-obs" type="checkbox">
+    <label for="slot-autoclose-delay">OBS停止後の枠閉じ猶予（秒、0で即時）</label>
+    <input id="slot-autoclose-delay" type="number" min="0" max="7200" value="0">
+    <label for="slot-autoclose">OBS切断時のタイムアウト（分）</label>
     <input id="slot-autoclose" type="number" min="1" max="120">
     <label for="slot-next">自然終了のあと次の枠を作る</label>
     <input id="slot-next" type="checkbox">

@@ -33,7 +33,7 @@ const LOGIN = Object.freeze({
 });
 
 const UNKNOWN = '判定できない';
-const IMPORT_HINT = 'NeonTimer から取り込む';
+const IMPORT_HINT = 'ログインを金庫に入れてください';
 
 function isSite(site) {
   return typeof site === 'string' && SITES.indexOf(site) !== -1;
@@ -207,23 +207,6 @@ async function modesStep(site, facts) {
   return step('modes', 'todo', 'modes-legacy', detail);
 }
 
-function neontimerStep(site) {
-  if (site === 'rumble') {
-    return step(
-      'neontimer',
-      'todo',
-      'neontimer-manual',
-      'live にしたあと、NeonTimer 側の Rumble 処理を止める。二重に枠を取らないため。この画面では案内だけで、NeonTimer のファイルは変えない。'
-    );
-  }
-  return step(
-    'neontimer',
-    'todo',
-    'neontimer-manual',
-    'NeonTimer 側の同じ処理を止めるかどうかはユーザーの判断。この画面では案内だけ。NeonTimer のファイルは変えない。'
-  );
-}
-
 async function check(site, deps) {
   if (!isSite(site)) return { ok: false, error: 'unknown-site' };
   const bag = deps && typeof deps === 'object' ? deps : {};
@@ -241,7 +224,6 @@ async function check(site, deps) {
   steps.push(await preflightStep(bag, destination.ids));
   steps.push(await shadowStep(site, bag));
   steps.push(await modesStep(site, facts));
-  steps.push(neontimerStep(site));
   return { ok: true, site: site, steps: steps };
 }
 

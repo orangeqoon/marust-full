@@ -18,7 +18,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { run, defaultLogger, resolveSetDirs, isAuthorBuild } = require('../core');
+const { run, defaultLogger, resolveSetDirs } = require('../core');
 const { cleanText, cleanError } = require('./plugin-errors');
 const { createOverlayHub } = require('./overlay-hub');
 const { createUnavailableProvider } = require('../core');
@@ -295,7 +295,7 @@ function createRegistry(options) {
     overlayHub,
     isLoaded: () => st.loaded,
     events,
-    paths: { builtinRoot, authorRoot, communityRoot, externalRoot, setDirs: setRoots.map((r) => r.dir), authorBuild: typeof opts.authorBuild === 'boolean' ? opts.authorBuild : (explicitRoots ? !!authorRoot && fs.existsSync(authorRoot) : isAuthorBuild(opts.appRoot)) }
+    paths: { builtinRoot, authorRoot, communityRoot, externalRoot, setDirs: setRoots.map((r) => r.dir) }
   };
 }
 

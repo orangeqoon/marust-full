@@ -7,7 +7,7 @@
  *   3. exe の横の plugins/（配る版。appRoot が resources/app のとき、exe のフォルダの plugins）
  *   4. ソースから起動したとき: リポジトリの plugins・隣の marust-plugins/plugins・plugins-author（今までどおり）
  * 配る版（resources/app）で 1〜3 のどれも見つからないときは空（核だけで起動）。リポジトリの置き場は探さない。
- * 返す行: { dir, source: 'set', author, community }。author は作者用の置き場の印（作者の版かどうかの判定に使う）、community はみんなのプラグインの置き場（三層目）。
+ * 返す行: { dir, source: 'set', author, community }。author は置き場の印（フォルダ名 plugins-author。版の判定や守りには使わない）、community はみんなのプラグインの置き場（三層目）。
  */
 
 const fs = require('fs');
@@ -41,19 +41,6 @@ function readBuildSetDirs(appRoot) {
   } catch (_) { return []; }
 }
 
-/**
- * 作者の版か。置き場が今あるかではなく、build-info.json の distribution === 'author'（作者の build が書く）か、
- * ソース起動（resources/app でない）で appRoot/plugins-author があるか、で決める。リポジトリを見失った作者の exe を
- * 配る版と取り違えて、黙って別の保存場所で起動しないため（計画 C・C2 評価 Must 1）。環境変数の置き場の名前には左右されない。
- */
-function isAuthorBuild(appRoot) {
-  try {
-    const info = JSON.parse(fs.readFileSync(path.join(appRoot, 'build-info.json'), 'utf8'));
-    if (info && info.distribution === 'author') return true;
-  } catch (_) { /* build-info が無い・読めない */ }
-  return !isPackagedRoot(appRoot) && isDir(path.join(appRoot, 'plugins-author'));
-}
-
 function resolveSetDirs(opts) {
   const appRoot = opts.appRoot;
   const env = opts.env || process.env;
@@ -83,4 +70,4 @@ function resolveSetDirs(opts) {
   return { from: 'source', dirs, envMissing };
 }
 
-module.exports = { resolveSetDirs, isAuthorBuild, isPackagedRoot };
+module.exports = { resolveSetDirs, isPackagedRoot };

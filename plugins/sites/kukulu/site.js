@@ -130,9 +130,14 @@ function createSiteKukulu(deps) {
     return { status: status, text: text };
   }
 
-  async function isConfigured() {
+  // 足りない物を種類だけで答える（値は返さない）。isConfigured はこれの ready と同じ答え
+  async function loginNeeds() {
     const config = await readConfig();
-    return !!config;
+    return config ? { ready: true, need: null, how: 'paste' } : { ready: false, need: 'config', how: 'paste' };
+  }
+
+  async function isConfigured() {
+    return (await loginNeeds()).ready;
   }
 
   async function updateMetadata(input, meta) {
@@ -235,6 +240,7 @@ function createSiteKukulu(deps) {
     destroy: destroy,
     health: health,
     isConfigured: isConfigured,
+    loginNeeds: loginNeeds,
     updateMetadata: updateMetadata,
     getStatus: getStatus,
     actions: { getStatus: panelStatus }

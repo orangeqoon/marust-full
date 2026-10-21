@@ -13,6 +13,9 @@ const { defaultLogger } = require('../safe-runner');
 const VENDOR_NAME = 'obs-multi-rtmp';
 const VENDOR_BIT = 1 << 9;
 const RECONNECT_MS = 30000;
+const CONNECT_TIMEOUT_MS = 15000;
+const SYNC_TIMEOUT_MS = 30000;
+const DISCONNECT_TIMEOUT_MS = 5000;
 
 const READ_REQUESTS = new Set(['GetStreamStatus', 'GetVersion']);
 const READ_VENDOR = new Set([
@@ -47,7 +50,7 @@ const DEFAULT_CONFIG = Object.freeze({ host: 'localhost', port: 4455, password: 
 
 /**
  * ファイルから読む。{ config, source } を返す。source は 'file'（丸スト用の場所）／'default'。
- * NeonTimer の場所は見ない（引き継ぎは開発者プラグイン dev-legacy-import で金庫へ取り込む）。
+ * 旧いアプリの場所は見ない（引き継ぎは開発者プラグイン dev-legacy-import で金庫へ取り込む）。
  */
 function readObsConfigFile(core) {
   const defaults = Object.assign({}, DEFAULT_CONFIG);
@@ -115,13 +118,14 @@ function createObsConnection(options) {
   const logger = opts.logger || defaultLogger;
   const reconnectMs = Number.isFinite(opts.reconnectMs) ? opts.reconnectMs : RECONNECT_MS;
   // 金庫の obs.websocket（{host,port,password}）を返す口。無ければ null。読む順番は 金庫 → ファイル。
+  const connectTimeoutMs = Number.isFinite(opts.connectTimeoutMs) ? opts.connectTimeoutMs : CONNECT_TIMEOUT_MS;
+  const syncTimeoutMs = Number.isFinite(opts.syncTimeoutMs) ? opts.syncTimeoutMs : SYNC_TIMEOUT_MS;
   const getStored = typeof opts.getStored === 'function' ? opts.getStored : null;
   const setTimer = opts.setTimeoutFn || setTimeout;
   const clearTimer = opts.clearTimeoutFn || clearTimeout;
   let client = opts.client || null;
   let connected = false;
   let stopped = false;
-  let starting = false;
   let timer = null;
   const status = { connected: false, detail: '未接続' };
   const vendorHandlers = [];
@@ -192,59 +196,59 @@ function createObsConnection(options) {
     return readObsConfigFile(core);
   }
 
-  /** 設定を変えたあとに、今の接続を切ってつなぎ直す。 */
+  /** 決着しないかもしれない待ちに期限をつける。期限が来たら code つきのエラーで落とす。 */
+  function withTimeout(promise, ms, code) {
+    let handle = null;
+    const limit = new Promise((_, reject) => {
+      handle = setTimeout(() => {
+        const err = new Error('timeout');
+        err.code = code;
+        reject(err);
+      }, ms);
+    });
+    return Promise.race([Promise.resolve(promise), limit]).finally(() => clearTimeout(handle));
+  }
+
+  function dropClient() {
+    if (client && typeof client.disconnect === 'function') {
+      Promise.resolve().then(() => client.disconnect()).catch(() => {});
+    }
+  }
+
+  let inflight = null;
+  // 世代番号。reconnect / stop で進め、古い試みの結果は捨てる。
+  let generation = 0;
+
+  /** 設定を変えたあとに、今の接続を切ってつなぎ直す。つなぎ中で止まった試みは待たずに捨てる。 */
   async function reconnect() {
     if (stopped) return getStatus();
+    generation += 1;
+    inflight = null;
     if (timer) clearTimer(timer);
     timer = null;
-    if (client && typeof client.disconnect === 'function') {
-      connected = false;
-      try { await client.disconnect(); } catch (_) { /* 切れていてもよい */ }
-      if (timer) clearTimer(timer);
-      timer = null;
-    }
     connected = false;
     status.connected = false;
-    if (inflight) {
-      // つなぎ中だった: 古い設定での試みが終わったら、新しい設定でもう一度つなぐ
-      again = true;
-      return inflight;
+    if (client && typeof client.disconnect === 'function') {
+      try { await withTimeout(client.disconnect(), DISCONNECT_TIMEOUT_MS, 'DISCONNECT_TIMEOUT'); } catch (_) { /* 切れていてもよい */ }
+      if (timer) clearTimer(timer);
+      timer = null;
     }
     return connect();
   }
 
-  let inflight = null;
-  let again = false;
-
   async function connect() {
     if (stopped || connected) return getStatus();
     if (inflight) return inflight;
-    inflight = (async () => {
-      try {
-        let result = await connectOnce();
-        while (again && !stopped) {
-          again = false;
-          if (connected && client && typeof client.disconnect === 'function') {
-            // 古い設定でつながってしまった: 切って、新しい設定でつなぎ直す
-            connected = false;
-            try { await client.disconnect(); } catch (_) { /* 切れていてもよい */ }
-            if (timer) clearTimer(timer);
-            timer = null;
-          }
-          result = await connectOnce();
-        }
-        return result;
-      } finally {
-        inflight = null;
-        again = false;
-      }
-    })();
-    return inflight;
+    const mine = connectOnce(generation).finally(() => {
+      if (inflight === mine) inflight = null;
+    });
+    inflight = mine;
+    return mine;
   }
 
-  async function connectOnce() {
-    if (stopped || connected || starting) return getStatus();
-    starting = true;
+  async function connectOnce(gen) {
+    if (stopped || connected) return getStatus();
+    const stale = () => stopped || gen !== generation;
     try {
       let EventSubscription = opts.EventSubscription || null;
       if (!client) {
@@ -255,27 +259,30 @@ function createObsConnection(options) {
       }
       bind(client);
       const cfg = (await resolveConfig()).config;
+      if (stale()) return getStatus();
       if (typeof client.connect !== 'function') throw new Error('no-connect');
-      await client.connect('ws://' + cfg.host + ':' + cfg.port, cfg.password, {
+      await withTimeout(client.connect('ws://' + cfg.host + ':' + cfg.port, cfg.password, {
         eventSubscriptions: subscriptionBits(EventSubscription)
-      });
+      }), connectTimeoutMs, 'CONNECT_TIMEOUT');
+      if (stale()) return getStatus();
       connected = true;
       status.connected = true;
       status.detail = '接続中';
       if (typeof opts.onConnected === 'function') {
-        try { await opts.onConnected(); }
-        catch (_) { warn('OBS 接続後の同期に失敗しました'); }
+        try { await withTimeout(opts.onConnected(), syncTimeoutMs, 'SYNC_TIMEOUT'); }
+        catch (_) { logger('warn', 'OBS 接続後の同期に失敗しました'); /* 接続は生きている。状態は変えず、同期は poll がやり直す */ }
       }
       return getStatus();
     } catch (err) {
+      if (stale()) return getStatus();
       connected = false;
+      // 期限切れで放った接続が、あとから成功して居座らないよう切っておく。
+      if (err && err.code === 'CONNECT_TIMEOUT') dropClient();
       // 原因の切り分け用に、エラーの番号と種類だけ残す（メッセージ本文は出さない。パスワードを含みうるため）。
       const code = err && err.code != null ? String(err.code).replace(/[^\w.-]/g, '').slice(0, 40) : '';
       warn('OBS 接続失敗' + (code ? '(' + code + ')' : '') + '。30秒後に再接続します');
       schedule();
       return getStatus();
-    } finally {
-      starting = false;
     }
   }
 
@@ -330,6 +337,8 @@ function createObsConnection(options) {
 
   function stop() {
     stopped = true;
+    generation += 1;
+    inflight = null;
     if (timer) clearTimer(timer);
     timer = null;
     connected = false;
@@ -337,6 +346,17 @@ function createObsConnection(options) {
     status.detail = '停止';
     if (client && typeof client.disconnect === 'function') {
       Promise.resolve().then(() => client.disconnect()).catch(() => {});
+    }
+  }
+
+  async function disconnect() {
+    stop();
+    if (client && typeof client.disconnect === 'function') {
+      try {
+        await client.disconnect();
+      } catch (_) {
+        // 切断エラーは握りつぶす
+      }
     }
   }
 
@@ -349,6 +369,7 @@ function createObsConnection(options) {
     reconnect,
     resolveConfig,
     stop,
+    disconnect,
     call,
     controlStream,
     getStatus,

@@ -36,13 +36,6 @@ test('build（配る用）: exe は核だけ（plugins・plugins-author・dist �
   assert.ok(pkg.scripts.build.includes('node cli/pack-plugins.js --set dist/marust-win32-x64/plugins'), 'build の最後にセットを exe の横へ置く');
 });
 
-test('build:author: exe は核だけ（plugins・plugins-author・みんなのも入れない。置き場は build-info.json が指す）・dist 系も入れない', () => {
-  const ig = ignoreArgs(pkg.scripts['build:author:pack']);
-  for (const p of ['/plugins/bulk-title/manifest.json', '/plugins-author/x/manifest.json', '/dist', '/dist-core/a', '/dist-plugins/a']) assert.ok(matchesAny(ig, p), p);
-  for (const p of ['/host/core/api.js', '/ui/hub.html', '/electron-main.js']) assert.ok(!matchesAny(ig, p), p);
-  assert.ok(!pkg.scripts['build:author:pack'].includes('pack-plugins.js --set'), '作者の版は横に plugins/ を置かない');
-});
-
 test('build:core: plugins・plugins-author を入れない。host・ui・node_modules は入る', () => {
   const list = CORE_IGNORE.slice();
   for (const p of ['/plugins/bulk-title/manifest.json', '/plugins/sites/twitch/site.js', '/plugins-author/x/index.js', '/dist', '/dist-author/a', '/docs/x.md', '/test/a.js']) assert.ok(matchesAny(list, p), p);
@@ -64,13 +57,13 @@ function readZip(file) {
   });
 }
 
-test('pack:plugins: 内蔵 29 個が 1 つずつ zip になり（直下に manifest.json）、index の SHA-256 と tier が合う', async () => {
+test('pack:plugins: 内蔵 30 個が 1 つずつ zip になり（直下に manifest.json）、index の SHA-256 と tier が合う', async () => {
   const out = fs.mkdtempSync(path.join(os.tmpdir(), 'v5-pack-'));
   try {
     const index = packAll(out);
-    assert.strictEqual(index.length, 29); // L9a で chat-* 6本が plugins-author へ移り、kukulu-port が plugins へ移った（33 - 6 + 1 = 28）
+    assert.strictEqual(index.length, 30); // L9a で chat-* 6本が plugins-author へ移り、kukulu-port が plugins へ移った（33 - 6 + 1 = 28）
     const doc = JSON.parse(fs.readFileSync(path.join(out, 'plugins-index.json'), 'utf8'));
-    assert.strictEqual(doc.plugins.length, 29);
+    assert.strictEqual(doc.plugins.length, 30);
     for (const row of index) {
       const buf = fs.readFileSync(path.join(out, row.file));
       assert.strictEqual(crypto.createHash('sha256').update(buf).digest('hex'), row.sha256, row.id);
@@ -125,7 +118,7 @@ test('plugins-author も本体への直 require 0。plugins・plugins-author に
   ['plugins', 'plugins-author'].forEach((top) => {
     const base = path.join(root, top);
     if (!fs.existsSync(base)) return;
-    walk(base, []).filter((f) => !/dev-storage-locator/.test(f)).forEach((f) => {
+    walk(base, []).filter((f) => !/dev-storage-locator|_neon-vendor/.test(f)) /* どちらも作者専用で、scripts_core の場所を locator で決める */.forEach((f) => {
       const src = fs.readFileSync(f, 'utf8');
       assert.ok(!/require\(['"](\.\.\/)+(host|lib)\//.test(src), f + ' が本体を直接 require している');
       assert.ok(!/process\.cwd\(\)/.test(src), f + ' が process.cwd() を使っている');

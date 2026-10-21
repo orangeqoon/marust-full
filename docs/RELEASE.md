@@ -4,7 +4,7 @@
 
 ## 1. 置き場: GitHub Releases に zip を 1 つ
 1. `streaming/marust` で `npm run build`（**配る版**）。`dist/marust-win32-x64/` ができる。**exe の中（`resources/app`）は核だけ**で、プラグインのセットは **exe の横の `plugins/`**（`dist/marust-win32-x64/plugins/`）に置かれる（`node cli/pack-plugins.js --set` が最後に作る。`plugins-author/`・みんなのプラグインは入らない）。
-2. 作者の日常用（`build:author`）の zip は**配らない**。作者のプラグイン・パスが入っているため。
+2. 作者の日常は全入り版を `cli/start-author.cmd`（`MARUST_SET_DIR` で `plugins-author` を足す）で起動する。作者用の配り物（`build:author`・`dist-author`）は無い。
 3. `dist/marust-win32-x64` を `marust-<版>-win32-x64.zip` に固める。中身:
    - `marust.exe` ほかアプリ一式と、その横の `plugins/`（セット）
    - OBS 用の改造プラグイン（`obs-multi-rtmp.dll` と `data\locale` の 2 つ）は**別の zip**（`marust-obs-plugin-<版>.zip`）。アプリの zip には混ぜない（丸ストが OBS に自動で入れない決まりのため。`plugins/ui-standard/shell/guide/obs-plugin.html` が入れ方を案内する）。

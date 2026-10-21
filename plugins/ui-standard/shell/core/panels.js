@@ -23,8 +23,6 @@ function noteDevMode(state) {
   devModeKnown = true;
   if (state.devMode === devMode && !firstTime) return;
   devMode = state.devMode;
-  var importBox = document.getElementById('secret-import');
-  if (importBox) importBox.hidden = !devMode; // NeonTimer の取り込みは開発者モードだけ
   var mcpBtn = document.getElementById('pair-mcp');
   if (mcpBtn) mcpBtn.hidden = !devMode;
   dropDevPanels();

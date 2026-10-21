@@ -227,12 +227,12 @@ function createLifecycle(S) {
     return out;
   }
 
-  // 読み直しの単位はサイト: 同じサイトの役目（同じフォルダ）は、全部止めてから、まとめて読み直す。
-  async function reloadGroup(id) {
+  // 個別指定はその役目だけ。一括読み直しは同じサイトの役目をまとめて入れ替える。
+  async function reloadGroup(id, options) {
     if (!st.loaded) await loadAll();
     const rec = byId.get(id) || records.find((row) => row && row.id === id && row.source === 'set') || records.find((row) => row && row.id === id);
     if (!rec) return [{ id, result: 'skip', message: 'unknown-id' }];
-    const group = rec.siteId
+    const group = rec.siteId && !(options && options.single)
       ? records.filter((row) => row.siteId === rec.siteId && row.dir === rec.dir && byId.get(row.id) === row)
       : [rec];
     for (const row of group) await teardown(row);

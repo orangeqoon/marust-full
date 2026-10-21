@@ -3,7 +3,8 @@
 /**
  * サイトのログイン状態と、ログインの準備（R5）。
  * 2 段: ① キーだけ（ログインなし）／② ログインする（題名・カテゴリの一斉反映、コメント送信）。
- * 状態は none / keys-only（アプリの鍵はあるが、まだログインしていない）/ logged-in / expired だけ返す。
+ * 状態は none / keys-only（アプリの鍵はあるが、まだログインしていない）/ logged-in / expired / incomplete（Cookie などはあるが送るのに足りない物がある。N2）だけ返す。
+ * 行の need / how は「足りない物」と入れ方の種類の言葉だけ（値は出さない）。
  * 値（client_secret・トークン・Cookie・パスワード）は、画面にも答えにもログにも出さない。
  * 保存先は金庫。名前は manifest の secrets に宣言した 4 つ（youtube・google・twitch・kick の .oauth）だけ。
  * （K3 で host/site-login.js から出した。サイトの設定欄 <site>.config と、cookie・config の有無は核の host/core/site-config.js）
@@ -38,7 +39,7 @@ function toMs(value) {
 function oauthState(parsed, nowMs) {
   const doc = asObject(parsed);
   if (!doc) return 'none';
-  // NeonTimer から取り込んだ Twitch は client_secret が無いことがある。トークンがあれば鍵の有無より先に見る。
+  // 取り込んだログインの Twitch は client_secret が無いことがある。トークンがあれば鍵の有無より先に見る。
   if (nonEmpty(doc.refresh_token)) return 'logged-in'; // 期限が切れても自動で更新できる
   if (!nonEmpty(doc.access_token)) return nonEmpty(doc.client_id) && nonEmpty(doc.client_secret) ? 'keys-only' : 'none';
   let expiry = toMs(doc.expiry_date);
@@ -54,6 +55,16 @@ function oauthState(parsed, nowMs) {
 // アプリの鍵を置く金庫の名前（K3: このプラグインが manifest で宣言する固定の 4 つだけ）
 const OAUTH_NAMES = Object.freeze({ youtube: 'youtube.oauth', twitch: 'twitch.oauth', kick: 'kick.oauth', google: GOOGLE_SECRET });
 
+// loginNeeds の答えの形を確かめる。種類の言葉だけ通す
+const CODE_RE = /^[a-z0-9-]{1,40}$/;
+function cleanNeeds(value) {
+  const v = asObject(value);
+  if (!v || typeof v.ready !== 'boolean') return null;
+  if (v.ready) return { ready: true, need: null, how: typeof v.how === 'string' && CODE_RE.test(v.how) ? v.how : null };
+  if (typeof v.need !== 'string' || !CODE_RE.test(v.need)) return null;
+  return { ready: false, need: v.need, how: typeof v.how === 'string' && CODE_RE.test(v.how) ? v.how : null };
+}
+
 function createSiteLogin(options) {
   const opts = options || {};
   // secrets: ctx.secrets と同じ形（get(name) / set(name, value)）。宣言した名前以外は not-declared
@@ -61,6 +72,8 @@ function createSiteLogin(options) {
   // loginFacts(): 核の read API sites.loginFacts の答え { ok, sites: [{ id, type, oauthName, present }] }
   const loginFacts = typeof opts.loginFacts === 'function' ? opts.loginFacts : async () => ({ ok: false, error: 'unavailable' });
   const now = typeof opts.now === 'function' ? opts.now : () => Date.now();
+  // needs(siteId): サイトのプラグインの loginNeeds の答え { ready, need, how } か null（答えられない・未対応）
+  const needs = typeof opts.needs === 'function' ? opts.needs : async () => null;
 
   async function readJson(name) {
     if (!secrets || typeof secrets.get !== 'function') return { ok: false, error: 'unavailable' };
@@ -73,6 +86,11 @@ function createSiteLogin(options) {
     const facts = await loginFacts();
     if (!facts || facts.ok !== true || !Array.isArray(facts.sites)) return { ok: false, error: 'unavailable' };
     const out = [];
+    const answers = new Map();
+    await Promise.all(facts.sites.map(async (site) => {
+      if (!site || typeof site.id !== 'string' || site.type === 'oauth') return;
+      try { answers.set(site.id, cleanNeeds(await needs(site.id))); } catch (_) { /* 答えられないサイトは従来どおり */ }
+    }));
     for (const site of facts.sites) {
       if (!site || typeof site.id !== 'string') continue;
       const row = { id: site.id, type: site.type, state: 'none', hasLayer2: site.hasLayer2 === true };
@@ -85,12 +103,24 @@ function createSiteLogin(options) {
           const read = await readJson(name);
           row.state = read.ok ? oauthState(read.doc, now()) : 'none';
         }
-      } else if (site.present === true) {
-        row.state = 'logged-in';
+        if (row.state === 'none') { row.need = 'client-keys'; row.how = 'keys'; }
+        else if (row.state === 'keys-only' || row.state === 'expired') { row.need = 'login'; row.how = 'oauth'; }
+        else { row.need = null; row.how = 'oauth'; }
+      } else {
+        const ans = answers.get(site.id) || null;
+        if (ans && !ans.ready && ans.need !== 'mode') {
+          // Cookie などがあっても、プラグインが「足りない」と言うなら「ログイン済み」とは言わない
+          row.state = site.present === true ? 'incomplete' : 'none';
+          row.need = ans.need;
+          row.how = ans.how;
+        } else if (site.present === true || (ans && ans.ready)) {
+          row.state = 'logged-in';
+          if (ans && ans.ready) { row.need = null; row.how = ans.how; }
+        }
       }
       out.push(row);
     }
-    return { ok: true, sites: out };
+    return { ok: true, sites: out, extension: { paired: !!(facts.extension && facts.extension.paired === true) } };
   }
 
   /** アプリの鍵（client_id・client_secret・戻り先）を金庫へ。ほかの項目（トークン）は残す。 */

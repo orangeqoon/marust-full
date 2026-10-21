@@ -431,7 +431,7 @@ async function main() {
       assert.strictEqual(body.ok, true);
       assert.strictEqual(body.usable, false);
       assert.strictEqual(body.reason, 'no-backend');
-      assert.deepStrictEqual(Object.keys(body).sort(), ['lost', 'ok', 'readable', 'reason', 'store', 'total', 'unreadable', 'usable']);
+      assert.deepStrictEqual(Object.keys(body).sort(), ['backendMismatch', 'decryptFailures', 'lost', 'ok', 'readable', 'reason', 'store', 'total', 'unreadable', 'usable']);
       assert.deepStrictEqual(await vault.set('google.oauth', SECRET, 'local-window'), { ok: false, error: 'unavailable' });
       const fine = open(tempCore(), {});
       assert.strictEqual((await fine.vault.health()).reason, '');

@@ -16,6 +16,29 @@
     <dt>時刻</dt>
     <dd id="at">-</dd>
   </dl>
+  <h2>トークンを入れる</h2>
+  <p class="hint">下の手順で取ったトークンを貼って「保存」。金庫に入り、画面には出ません。トークンは AI やチャットに貼らず、この欄にだけ入れてください。</p>
+  <details class="help" id="token-help">
+    <summary>Picarto の題名を変えられるようにするには（トークンの取り方）</summary>
+    <ol>
+      <li>アプリを登録する: <input class="copy" readonly value="https://oauth.picarto.tv/client"> を開き「Add client」。
+        <ul>
+          <li>Client Name・Client Description: 何でもよい（例: Title Updater）</li>
+          <li>Redirect URIs: <input class="copy" readonly value="https://api.picarto.tv/api/oauth2-callback"> をそのまま（1 文字でも違うと失敗します）</li>
+          <li>PKCE: Yes のまま →「Add Client」</li>
+        </ul>
+        一覧に出た <b>Client ID</b> を控えます（Client Secret が出たときはそれも。どちらもトークンではありません）。</li>
+      <li>許可を出す: <input class="copy" readonly value="https://api.picarto.tv/"> を開き、右上の「Authorize」。Client ID（あれば Client Secret も）を入れ、scopes は <b>readpriv</b> と <b>write</b> だけに印をつけて「Authorize」。Picarto のログインと許可の画面で許可します。<b>sudo には印をつけない</b>でください（お金のかかる操作まで許してしまいます）。</li>
+      <li>トークンを読む: 同じページの「GET /user」→「Try it out」→「Execute」。下に出る curl の行の <code>Authorization: Bearer</code> の<b>後ろの長い文字列</b>がトークンです。</li>
+      <li>そのトークンを上の欄に貼って「保存」。上の「設定」が「あり」になれば完了です。</li>
+    </ol>
+    <p class="hint">送れなくなったら（トークンが切れた・取り消した）、2〜4 をやり直します。アプリの登録（1）はそのままで使えます。</p>
+  </details>
+  <p class="actions">
+    <input id="token" type="password" autocomplete="off" maxlength="2000" placeholder="トークン">
+    <button id="token-save" type="button">保存</button>
+  </p>
+  <p class="hint" id="token-status" aria-live="polite"></p>
   <h2>コメント送信</h2>
   <dl>
     <dt>設定</dt>

@@ -68,7 +68,7 @@ const specs = {
     permission: 'write',
     devOnly: true,
     noApproval: true,
-    description: 'プラグイン 1 つを止めて読み直す（置いたばかりの外のプラグインも拾う）。答えは result（ok / error / skip）と、失敗なら error.message と error.where（プラグインのフォルダからの相対パス:行）。開発者モードだけ。配信中でも読み直せる（OBS の開始・停止を握る自動枠取りのプラグインだけは streaming-slot で断る）',
+    description: 'プラグイン 1 つを止めて読み直す（置いたばかりの外のプラグインも拾う）。答えは result（ok / error / skip）と、失敗なら error.message と error.where（プラグインのフォルダからの相対パス:行）。開発者モードだけ。役目を単品で読み直す。配信中も可能。OBS を操作する自動枠取りだけは画面で承認してから実行する',
     params: {
       id: { type: 'string', required: true, max: 40, emptyError: 'bad-id', typeError: 'bad-id' }
     }
@@ -121,7 +121,7 @@ function runs(S) {
       if (!installerReady()) return { ok: false, error: 'unavailable' };
       return src.pluginInstaller.list();
     },
-    'plugin.reload': async function (params) { return pluginReload(params.id); },
+    'plugin.reload': async function (params, ctx) { return pluginReload(params.id, ctx); },
     'plugin.logs': async function (params) {
       const reg = src.pluginRegistry;
       if (!reg || typeof reg.logsOf !== 'function') return { ok: false, error: 'unavailable' };

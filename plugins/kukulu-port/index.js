@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Acquire the Kukulu slot the way NeonTimer ensureBroadcastActive does:
+ * Acquire the Kukulu slot the way the earlier broadcast-active routine did:
  * port_get then port_status=1 (kukulu.js lines 57 and 76).
  * Triggers: stream start when the title is not a sleep title, and a change
  * from a sleep title back to a non-sleep title. One acquire per stream start.

@@ -363,6 +363,15 @@ async function main() {
       assert.strictEqual(listed.extensionId, EXT_ID);
       const reuse = await request(port, 'POST', '/pair/extension', { code: started.code, name: 'Marust' }, extHeaders('', EXT_ID));
       assert.strictEqual(reuse.status, 401);
+
+      // 自動ペアリング（code なし または auto: true）の検証
+      const autoPaired = await request(port, 'POST', '/pair/extension', { name: 'Marust', auto: true }, extHeaders('', EXT_ID));
+      assert.strictEqual(autoPaired.status, 200, autoPaired.body);
+      const autoBody = JSON.parse(autoPaired.body);
+      assert.strictEqual(autoBody.ok, true);
+      assert.ok(autoBody.token.length >= 32);
+      const autoStatus = await request(port, 'GET', '/ext/status', null, extHeaders(autoBody.token, EXT_ID));
+      assert.strictEqual(autoStatus.status, 200);
     });
 
     await test('status lists live destinations and drops secrets', async function () {
@@ -389,10 +398,9 @@ async function main() {
 
     await test('cookies and capture are stored without echoing values', async function () {
       const old = await request(port, 'POST', '/soop_auth', { cookies: { example: 'not-a-secret' } });
-      assert.strictEqual(old.status, 200);
+      assert.strictEqual(old.status, 404, '旧い平文の受け口は無い');
       const soopFile = path.join(core.COOKIES_DIR, 'marust', 'soop-cookies.json');
-      const before = fs.readFileSync(soopFile, 'utf8');
-      assert.strictEqual(JSON.parse(before).cookies.example, 'not-a-secret');
+      assert.ok(!fs.existsSync(soopFile));
       const beforeEvents = events.length;
       const posted = await sendExt('POST', '/ext/cookies', {
         site: 'twitcasting',
@@ -432,7 +440,7 @@ async function main() {
       const cap = await secrets.coreReader('twitcasting', () => true).get('capture.twitcasting-main.user-id');
       assert.strictEqual(cap.ok, true);
       assert.strictEqual(JSON.parse(cap.value).user_id, CAPTURE);
-      assert.strictEqual(fs.readFileSync(soopFile, 'utf8'), before);
+      assert.ok(!fs.existsSync(soopFile));
       assert.ok(!fs.existsSync(path.join(core.COOKIES_DIR, 'marust', 'twitcasting-cookies.json')));
       const text = readLogs(dir);
       assert.ok(text.includes('cookies.twitcasting-main'));

@@ -32,7 +32,9 @@ const DEFAULTS = Object.freeze({
   description: '',
   category: '一般(その他)',
   tags: '',
-  autoCloseMin: 5,
+  autoCloseMin: 1,
+  autoCloseOnObsStop: true,
+  autoCloseDelaySec: 60,
   createNextOnNaturalEnd: true,
   extendToMax: true,
   nextDelaySec: 5,
@@ -63,6 +65,8 @@ function normalizeConfig(raw) {
     category: category ? clip(category, 40) : DEFAULTS.category,
     tags: typeof src.tags === 'string' ? clip(src.tags.replace(/[\r\n]/g, ' '), 500) : '',
     autoCloseMin: int(src.autoCloseMin, DEFAULTS.autoCloseMin, 1, 120),
+    autoCloseOnObsStop: bool(src.autoCloseOnObsStop, DEFAULTS.autoCloseOnObsStop),
+    autoCloseDelaySec: int(src.autoCloseDelaySec, DEFAULTS.autoCloseDelaySec, 0, 7200),
     createNextOnNaturalEnd: bool(src.createNextOnNaturalEnd, DEFAULTS.createNextOnNaturalEnd),
     extendToMax: bool(src.extendToMax, DEFAULTS.extendToMax),
     nextDelaySec: int(src.nextDelaySec, DEFAULTS.nextDelaySec, 0, 60),
@@ -436,6 +440,9 @@ function createSlotNiconico(deps) {
     busy = true;
     try {
       const obsActive = await obsState();
+      if (obsActive === true && closeTimer) {
+        cancelCloseTimer('obs-active');
+      }
       if (mode === 'shadow') {
         await shadowObserve(obsActive);
         return;
@@ -491,9 +498,115 @@ function createSlotNiconico(deps) {
     return { ok: true, live: st.status === 'ON_AIR' };
   }
 
-  function endBroadcast(dest, meta) {
-    if (resolveMode(meta) === 'shadow') return { ok: true, dryRun: true };
-    return { ok: true };
+  async function endBroadcast(dest, meta) {
+    if (resolveMode(meta) === 'shadow' || (meta && meta.dryRun === true)) {
+      return { ok: true, dryRun: true };
+    }
+    if (modeOf() !== 'live') return { ok: true };
+    try {
+      let liveId = view.liveId;
+      if (!liveId) {
+        const latest = await client().getLatestProgram();
+        if (latest && latest.ok && latest.data && typeof latest.data.id === 'string') {
+          liveId = latest.data.id;
+        }
+      }
+      if (!liveId) return { ok: true, noProgram: true };
+      const ended = await client().endProgram(liveId, { cpp: config.monetize });
+      if (!ended.ok) {
+        log('warn', 'niconico endBroadcast failed: ' + ended.code);
+        return { ok: false, error: ended.code };
+      }
+      release();
+      note('ended-broadcast');
+      return { ok: true, liveId: liveId };
+    } catch (err) {
+      log('warn', 'niconico endBroadcast error');
+      return { ok: false, error: 'failed' };
+    }
+  }
+
+  let closeTimer = null;
+
+  function cancelCloseTimer(reason) {
+    if (closeTimer) {
+      clearTimeout(closeTimer);
+      closeTimer = null;
+      log('info', 'niconico auto close cancelled: ' + (reason || 'resumed'));
+    }
+  }
+
+  async function handleObsStop(meta) {
+    if (config.autoCloseOnObsStop === false) return { skipped: 'disabled' };
+    if (modeOf() !== 'live') return { skipped: 'not-live' };
+    if (meta && meta.dryRun === true) {
+      log('info', 'niconico auto close dryRun');
+      note('ended-disconnect');
+      return { ok: true, dryRun: true };
+    }
+    const delayMs = Math.max(0, (config.autoCloseDelaySec || 0) * 1000);
+    if (closeTimer) clearTimeout(closeTimer);
+
+    const triggerClose = async () => {
+      closeTimer = null;
+      try {
+        let liveId = view.liveId;
+        if (!liveId) {
+          const existing = await findExisting();
+          if (existing && existing.liveId) liveId = existing.liveId;
+        }
+        if (!liveId) {
+          const latest = await client().getLatestProgram();
+          if (latest.ok && latest.data && typeof latest.data.id === 'string') liveId = latest.data.id;
+        }
+        if (!liveId) return { skipped: 'no-live-id' };
+        log('info', 'niconico closing program on obs stop: ' + liveId);
+        const ended = await client().endProgram(liveId, { cpp: config.monetize });
+        if (ended.ok) {
+          release();
+          note('ended-disconnect');
+          log('info', 'niconico program closed successfully: ' + liveId);
+          return { ok: true, liveId: liveId };
+        } else {
+          log('warn', 'niconico auto close failed: ' + ended.code);
+          note('end-failed');
+          alertOnce('end-failed');
+          return { ok: false, error: ended.code };
+        }
+      } catch (err) {
+        log('warn', 'niconico auto close exception');
+        return { ok: false, error: 'exception' };
+      }
+    };
+
+    if (delayMs === 0) {
+      return await triggerClose();
+    } else {
+      log('info', 'niconico auto close scheduled in ' + config.autoCloseDelaySec + 's');
+      closeTimer = setTimeout(triggerClose, delayMs);
+      if (closeTimer && typeof closeTimer.unref === 'function') closeTimer.unref();
+      return { scheduled: true, delaySec: config.autoCloseDelaySec };
+    }
+  }
+
+  async function onObsEvent(cap, meta) {
+    if (cap === 'obs-stop') {
+      return await handleObsStop(meta);
+    }
+    if (cap === 'obs-start') {
+      cancelCloseTimer('obs-start');
+      return { cancelled: true };
+    }
+  }
+
+  async function onEvent(name, payload) {
+    if (name === 'broadcast.stopped' || name === 'stream.stopped') {
+      return await handleObsStop(payload);
+    }
+    if (name === 'broadcast.started' || name === 'stream.started') {
+      cancelCloseTimer(name);
+      return { cancelled: true };
+    }
   }
 
   // ----- 画面の操作 -----
@@ -563,6 +676,8 @@ function createSlotNiconico(deps) {
 
   function destroy() {
     stop();
+    if (closeTimer) clearTimeout(closeTimer);
+    closeTimer = null;
     ctx = null;
     nico = null;
     dropAuthCache();
@@ -576,6 +691,7 @@ function createSlotNiconico(deps) {
     load, start, stop, destroy, health,
     tick,
     prepareBroadcast, verifyLive, endBroadcast,
+    onObsEvent, onEvent,
     actions: { getStatus: getStatus, setConfig: setConfig, createTestSlot: createTestSlot }
   };
 }

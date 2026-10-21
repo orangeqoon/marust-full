@@ -7,7 +7,6 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { writeSetDir, bareRequires } = require('../cli/pack-plugins');
-const { authorBuildInfo } = require('../cli/build-author');
 const { resolveSetDirs } = require('../host/core');
 
 let failed = 0;
@@ -71,25 +70,6 @@ test('配る版の置き場: 作った plugins/ を exe の横に置くと、res
     assert.strictEqual(got.from, 'exe');
     assert.deepStrictEqual(got.dirs.map((d) => d.dir), [path.join(exeDir, 'plugins')]);
     assert.ok(!fs.existsSync(path.join(appRoot, 'plugins')));
-  } finally { fs.rmSync(exeDir, { recursive: true, force: true }); }
-});
-
-test('作者の版: build-info.json の setDirs はリポジトリの plugins・plugins-author（絶対パス）を指し、exe の外から読める', () => {
-  const info = authorBuildInfo(ROOT);
-  assert.strictEqual(info.distribution, 'author');
-  const dirs = info.setDirs.map((d) => d.dir);
-  assert.ok(dirs.includes(path.resolve(ROOT, 'plugins')));
-  if (fs.existsSync(path.join(ROOT, 'plugins-author'))) assert.ok(info.setDirs.some((d) => d.dir === path.resolve(ROOT, 'plugins-author') && d.author === true));
-  assert.ok(info.setDirs.every((d) => path.isAbsolute(d.dir)));
-  // exe の中の appRoot に書いたものとして読み直す。環境変数が無ければ build-info の置き場になる
-  const exeDir = tmp('marust-c2b-author-');
-  try {
-    const appRoot = path.join(exeDir, 'resources', 'app');
-    fs.mkdirSync(appRoot, { recursive: true });
-    fs.writeFileSync(path.join(appRoot, 'build-info.json'), JSON.stringify(info));
-    const got = resolveSetDirs({ appRoot, env: {} });
-    assert.strictEqual(got.from, 'build-info');
-    assert.deepStrictEqual(got.dirs.map((d) => [d.dir, d.author, d.community]), info.setDirs.map((d) => [d.dir, d.author === true, d.community === true]));
   } finally { fs.rmSync(exeDir, { recursive: true, force: true }); }
 });
 

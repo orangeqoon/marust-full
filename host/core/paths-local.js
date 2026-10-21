@@ -97,10 +97,55 @@ function resolveNewestPath(newPath, legacyPaths) {
   return null;
 }
 
+function attachCoreLifecycle(core) {
+  if (!core || typeof core !== 'object') return core;
+  const closers = [];
+  core.registerCloser = function (fn) {
+    if (typeof fn === 'function') closers.push(fn);
+  };
+  core.attachEngine = function (engine) {
+    if (!engine) return;
+    core.registerCloser(async () => {
+      try {
+        if (typeof engine.close === 'function') await engine.close();
+        else if (typeof engine.shutdown === 'function') engine.shutdown();
+        else if (typeof engine.stop === 'function') await engine.stop();
+      } catch (_) {}
+      try {
+        if (engine.connection && typeof engine.connection.disconnect === 'function') {
+          await engine.connection.disconnect();
+        } else if (engine.connection && typeof engine.connection.stop === 'function') {
+          engine.connection.stop();
+        }
+      } catch (_) {}
+    });
+  };
+  core.close = async function () {
+    while (closers.length > 0) {
+      const fn = closers.pop();
+      try { await fn(); } catch (_) {}
+    }
+    if (core.obsLocal) {
+      try {
+        if (typeof core.obsLocal.close === 'function') await core.obsLocal.close();
+        else if (typeof core.obsLocal.shutdown === 'function') core.obsLocal.shutdown();
+        else if (typeof core.obsLocal.stop === 'function') await core.obsLocal.stop();
+      } catch (_) {}
+    }
+    if (core.obsConnection) {
+      try {
+        if (typeof core.obsConnection.disconnect === 'function') await core.obsConnection.disconnect();
+        else if (typeof core.obsConnection.stop === 'function') core.obsConnection.stop();
+      } catch (_) {}
+    }
+  };
+  return core;
+}
+
 function createLocalCore(options) {
   const state = resolveLocalState(options);
   const dir = state.stateDir;
-  return {
+  const localCore = {
     via: 'local',
     localSource: state.source,
     ROOT_DIR: '',
@@ -114,6 +159,7 @@ function createLocalCore(options) {
     atomicWriteJsonSync: atomicWriteJsonSync,
     atomicWriteFileSync: atomicWriteFileSync
   };
+  return attachCoreLifecycle(localCore);
 }
 
-module.exports = { createLocalCore, resolveLocalState, atomicWriteFileSync, atomicWriteJsonSync, resolveNewestPath };
+module.exports = { createLocalCore, resolveLocalState, atomicWriteFileSync, atomicWriteJsonSync, resolveNewestPath, attachCoreLifecycle };

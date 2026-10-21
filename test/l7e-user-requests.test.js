@@ -93,7 +93,7 @@ async function runAll() {
       clients.ensureWindowClient();
 
       // オンで作成
-      const onRes = autopair.sync({ clients: clients, servicesDir: core.SERVICES_DIR, devModeOn: () => true, env: {} });
+      const onRes = autopair.sync({ clients: clients, servicesDir: core.SERVICES_DIR, devModeOn: () => true, env: { MARUST_DEV_AUTOPAIR: '1' } });
       assert.strictEqual(onRes.on, true);
       assert.strictEqual(onRes.made.length, 2);
 

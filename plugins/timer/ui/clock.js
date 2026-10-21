@@ -160,6 +160,64 @@ function totalSeconds() {
   return hours * 3600 + minutes * 60 + seconds;
 }
 
+const fanoutHintEl = document.getElementById('fanout-hint');
+const SITE_LABELS = {
+  youtube: 'YouTube',
+  twitch: 'Twitch',
+  kick: 'Kick',
+  twitcasting: 'ツイキャス',
+  niconico: 'ニコ生',
+  fc2: 'FC2',
+  soop: 'SOOP',
+  kukulu: 'Kukulu',
+  picarto: 'Picarto',
+  rumble: 'Rumble'
+};
+let draftTimer = null;
+
+function applyTitlePluginState(st) {
+  if (!st || typeof st !== 'object') return;
+  if (!focused(titleInput) && typeof st.title === 'string' && (st.title || !titleInput.value)) {
+    if (titleInput.value !== st.title) {
+      titleInput.value = st.title;
+      call('plugin.timer.setTitle', labels());
+    }
+  }
+  if (!focused(categoryInput) && typeof st.category === 'string' && (st.category || !categoryInput.value)) {
+    if (categoryInput.value !== st.category) {
+      categoryInput.value = st.category;
+      call('plugin.timer.setTitle', labels());
+    }
+  }
+  if (!fanoutHintEl) return;
+  const rows = Array.isArray(st.siteResults) ? st.siteResults.filter((r) => r && r.mode !== 'legacy') : [];
+  if (st.phase === 'sending') {
+    fanoutHintEl.textContent = '【タイトル変更プラグイン】現在、各配信サイトへ題名・カテゴリを送信中です…';
+    return;
+  }
+  if (rows.length > 0) {
+    const parts = rows.map((r) => {
+      const name = SITE_LABELS[r.site] || r.site;
+      if (r.result === 'ok') return name + ':✓反映済';
+      if (r.message === 'not-configured' || r.message === 'not-configured-timeout') return name + ':⚠未設定';
+      if (r.result === 'error') return name + ':×失敗';
+      return name + ':待機中';
+    });
+    fanoutHintEl.textContent = '【タイトル変更プラグイン同期中】 ' + parts.join(' ／ ');
+  } else {
+    fanoutHintEl.textContent = '【タイトル変更プラグイン同期中】ホーム・題名パネルと題名・カテゴリを共有しています。開始すると全サイトへ反映します。';
+  }
+}
+
+function pushDraftToTitlePlugin() {
+  if (draftTimer) clearTimeout(draftTimer);
+  draftTimer = setTimeout(() => {
+    const f = labels();
+    call('plugin.timer.setTitle', f);
+    call('favorites.get', { title: f.title, category: f.category, source: 'timer' });
+  }, 250);
+}
+
 window.addEventListener('message', (event) => {
   if (event.source !== parent) return;
   const msg = event.data;
@@ -169,6 +227,7 @@ window.addEventListener('message', (event) => {
     if (result && Array.isArray(result.titles) && Array.isArray(result.categories)) {
       fillDatalist('fav-titles', result.titles);
       fillDatalist('fav-categories', result.categories);
+      if (result.state) applyTitlePluginState(result.state);
       return;
     }
     apply(result);
@@ -180,6 +239,8 @@ display.addEventListener('click', () => {
   if (running) {
     call('plugin.timer.stop', {});
   } else {
+    const f = labels();
+    call('favorites.get', { title: f.title, category: f.category, source: 'timer' });
     call('plugin.timer.start', labels());
   }
 });
@@ -199,6 +260,8 @@ document.getElementById('duration').addEventListener('submit', (event) => {
 });
 
 document.getElementById('start').addEventListener('click', () => {
+  const f = labels();
+  call('favorites.get', { title: f.title, category: f.category, source: 'timer' });
   call('plugin.timer.start', labels());
 });
 
@@ -210,13 +273,11 @@ document.getElementById('reset').addEventListener('click', () => {
   call('plugin.timer.reset', {});
 });
 
-titleInput.addEventListener('change', () => {
-  call('plugin.timer.setTitle', labels());
-});
+titleInput.addEventListener('input', pushDraftToTitlePlugin);
+titleInput.addEventListener('change', pushDraftToTitlePlugin);
 
-categoryInput.addEventListener('change', () => {
-  call('plugin.timer.setTitle', labels());
-});
+categoryInput.addEventListener('input', pushDraftToTitlePlugin);
+categoryInput.addEventListener('change', pushDraftToTitlePlugin);
 
 function presetLabel(sec) {
   if (sec === 0) return 'SET';
@@ -245,6 +306,7 @@ function paintPresets(values) {
     go.title = presetLabel(sec) + ' で、いますぐ始めます';
     go.addEventListener('click', () => {
       const fields = labels();
+      call('favorites.get', { title: fields.title, category: fields.category, source: 'timer' });
       call('plugin.timer.startPreset', { seconds: sec, title: fields.title, category: fields.category });
     });
 
@@ -360,6 +422,9 @@ if (fontBtn && fontDialog) {
 loadSavedSettings();
 call('favorites.get', {});
 call('plugin.timer.getState', {});
+let tickCount = 0;
 setInterval(() => {
   call('plugin.timer.getState', {});
+  tickCount += 1;
+  if (tickCount % 3 === 0) call('favorites.get', {});
 }, 1000);

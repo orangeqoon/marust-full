@@ -19,7 +19,7 @@
   };
 
   const els = {};
-  ['mode', 'obs', 'program', 'op', 'login', 'refresh', 'test', 'testnote', 'title', 'category', 'tags', 'desc', 'autoclose', 'next', 'extend', 'monetize', 'cruise', 'saved', 'config']
+  ['mode', 'obs', 'program', 'op', 'login', 'refresh', 'test', 'testnote', 'title', 'category', 'tags', 'desc', 'autoclose-obs', 'autoclose-delay', 'autoclose', 'next', 'extend', 'monetize', 'cruise', 'saved', 'config']
     .forEach((name) => { els[name] = document.getElementById('slot-' + name); });
 
   let seq = 0;
@@ -52,11 +52,13 @@
     els.op.className = op.indexOf('失敗') === 0 || r.needsLogin || r.error ? 'is-bad' : '';
     els.login.textContent = r.needsLogin ? '切れています（ブラウザ拡張でニコニコにログインし直してください）' : (r.credentials === true ? 'あり' : (r.credentials === false ? 'なし' : '未確認'));
     const c = r.config || {};
-    const set = (el, value) => { if (document.activeElement !== el) el.value = value; };
+    const set = (el, value) => { if (el && document.activeElement !== el) el.value = value; };
     set(els.title, c.title || '');
     set(els.category, c.category || '');
     set(els.tags, c.tags || '');
     set(els.desc, c.description || '');
+    if (els['autoclose-obs']) els['autoclose-obs'].checked = c.autoCloseOnObsStop !== false;
+    set(els['autoclose-delay'], c.autoCloseDelaySec != null ? c.autoCloseDelaySec : 0);
     set(els.autoclose, c.autoCloseMin || 5);
     els.next.checked = c.createNextOnNaturalEnd !== false;
     els.extend.checked = c.extendToMax !== false;
@@ -96,6 +98,8 @@
       category: els.category.value,
       tags: els.tags.value,
       description: els.desc.value,
+      autoCloseOnObsStop: els['autoclose-obs'] ? els['autoclose-obs'].checked : true,
+      autoCloseDelaySec: els['autoclose-delay'] ? Number(els['autoclose-delay'].value) : 0,
       autoCloseMin: Number(els.autoclose.value),
       createNextOnNaturalEnd: els.next.checked,
       extendToMax: els.extend.checked,

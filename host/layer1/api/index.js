@@ -99,7 +99,7 @@ function safeToken(value) {
 
 function shouldRecord(method, row, ctx) {
   if (!ctx || !row) return false;
-  // 開発者プラグインのウィンドウだけの口（NeonTimer の取り込みなど）は、読むものも書くものも残す（名前だけ。値は入れない）
+  // 開発者プラグインのウィンドウだけの口（旧いアプリの取り込みなど）は、読むものも書くものも残す（名前だけ。値は入れない）
   if (row.pluginId && row.windowOnly === true && ctx.clientId === WINDOW_ID) return true;
   if (method === 'approval.approve' || method === 'approval.deny') {
     return ctx.kind === 'window' || ctx.kind === 'browser' || ctx.kind === 'native' || ctx.clientId === WINDOW_ID;
@@ -334,14 +334,17 @@ function createApi(deps) {
   }
 
   // 1 つのプラグインを読み直す。知らない id で、外の置き場にその名前のフォルダがあれば、新しく置いたものとして拾う。
-  async function pluginReload(id) {
+  async function pluginReload(id, ctx) {
     const reg = src.pluginRegistry;
     if (!reg || typeof reg.reload !== 'function') return { ok: false, error: 'unavailable' };
     if (!ID_RE.test(id)) return { ok: false, error: 'bad-id' };
-    // 配信中でも読み直せる。例外は OBS の開始・停止を握るプラグイン（自動枠取り）だけ
-    // 配信中か分からないときも閉じる（OBS を握るものだけ）
+    // 個別の役目だけを判定する。配信を操作する役目は、配信中・状態不明なら窓で承認してから読み直す。
     const hub = await readHub();
-    if ((!hub.known || hub.liveCount > 0) && holdsObsId(reg, id)) return { ok: false, error: 'streaming-slot' };
+    const controlsObs = typeof reg.holdsObs === 'function' ? reg.holdsObs(id, { single: true }) : true;
+    if ((!hub.known || hub.liveCount > 0) && controlsObs && !(ctx && ctx.approved === true)) {
+      return approvals.hold({ method: 'plugin.reload', params: { id },
+        ctx: plainCtx(ctx, (ctx && ctx.permissions) || []), clientId: (ctx && ctx.clientId) || '', kind: (ctx && ctx.kind) || '' });
+    }
     let row;
     const known = reg.snapshot().some(function (r) { return r.id === id; });
     if (known) {
@@ -775,17 +778,7 @@ function createApi(deps) {
     return { ok: true, id: id, on: on };
   }
 
-  // 作者用の配り物か（plugins-author がある exe）。段階が未設定のとき、作者の日常を初級に落とさない。
-  function authorBuildOn() {
-    try {
-      const paths = src.pluginRegistry && src.pluginRegistry.paths;
-      if (!paths) return false;
-      if (typeof paths.authorBuild === 'boolean') return paths.authorBuild;
-      return !!paths.authorRoot && fs.existsSync(paths.authorRoot);
-    } catch (_) { return false; }
-  }
-
-  // 画面の設定の見せ方。uiLevel が未設定なら、開発者モードか作者用の配り物は advanced（今の画面のまま）、そうでなければ basic。
+  // 画面の設定の見せ方。uiLevel が未設定なら、開発者モードは advanced（今の画面のまま）、そうでなければ basic。
   // テーマ（V8）。検査を通ったデータだけのプラグイン（kind:theme）が選べる。読めない・消えた・壊れたときは同梱の既定の見た目に戻す（画面を壊さない）。
   function listThemes() {
     const rows = typeof src.dataPlugins === 'function' ? src.dataPlugins('theme') : [];
@@ -816,7 +809,7 @@ function createApi(deps) {
     const set = row.uiLevel === 'basic' || row.uiLevel === 'standard' || row.uiLevel === 'advanced';
     return {
       showExperimental: row.showExperimental === true,
-      uiLevel: resolveUiLevel(set ? row.uiLevel : '', { devMode: devModeOn(), authorBuild: authorBuildOn() }),
+      uiLevel: resolveUiLevel(set ? row.uiLevel : '', { devMode: devModeOn() }),
       uiLevelSet: set,
       distribution: src.distribution === 'core' ? 'core' : 'full',
       readable: row.readable !== false,
@@ -843,7 +836,7 @@ function createApi(deps) {
   function currentUiLevel() {
     let stored = '';
     try { stored = src.uiSettings && typeof src.uiSettings.getView === 'function' ? src.uiSettings.getView().uiLevel : ''; } catch (_) { stored = ''; }
-    return resolveUiLevel(stored, { devMode: devModeOn(), authorBuild: authorBuildOn() });
+    return resolveUiLevel(stored, { devMode: devModeOn() });
   }
 
   // 保存されている段階の生の値（未保存なら ''）

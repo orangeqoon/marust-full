@@ -19,6 +19,7 @@ function walkJs(dir, predicate) {
   fs.readdirSync(abs, { withFileTypes: true }).forEach((entry) => {
     const rel = path.join(dir, entry.name).replace(/\\/g, '/');
     if (entry.isDirectory()) {
+      if (entry.name === 'node_modules') return; // 作者専用の _neon-vendor が持つ外の部品は見ない
       if (predicate && !predicate(rel, true)) return;
       out = out.concat(walkJs(rel, predicate));
     } else if (entry.name.endsWith('.js')) {

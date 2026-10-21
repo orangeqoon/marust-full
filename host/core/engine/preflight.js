@@ -31,7 +31,7 @@ function usableId(id) {
 
 function engineApi(engines) {
   if (!engines || typeof engines !== 'object') {
-    return { get: function () { return null; }, list: function () { return []; } };
+    return { get: function () { return null; }, list: function () { return []; }, resolveForDestination: function () { return null; } };
   }
   if (typeof engines.get === 'function') {
     const list = typeof engines.list === 'function'
@@ -39,11 +39,19 @@ function engineApi(engines) {
       : function () { return []; };
     return {
       get: function (id) { return engines.get(id); },
-      list: list
+      list: list,
+      resolveForDestination: function (dest) {
+        if (typeof engines.resolveForDestination === 'function') return engines.resolveForDestination(dest);
+        const id = dest && dest.engine && typeof dest.engine.id === 'string' && dest.engine.id.trim()
+          ? dest.engine.id.trim()
+          : '';
+        if (id) return engines.get(id);
+        return engines.get('obs-local') || (typeof engines.only === 'function' ? engines.only() : null);
+      }
     };
   }
   if (engines.registry && typeof engines.registry === 'object') return engineApi(engines.registry);
-  return { get: function () { return null; }, list: function () { return []; } };
+  return { get: function () { return null; }, list: function () { return []; }, resolveForDestination: function () { return null; } };
 }
 
 function loadDestinations(store) {
@@ -137,9 +145,7 @@ function createPreflight(options) {
   }
 
   // 全体に効く code（OBS 未接続など）。ほかは配信先ごと（destinationId があるとき）。
-  const GLOBAL_CODES = new Set([
-    'broadcast-mode', 'obs-profile-warning', 'engine-disconnected', 'engine-unsupported'
-  ]);
+  const GLOBAL_CODES = new Set(['broadcast-mode', 'obs-profile-warning']);
 
   function run(destinationIds) {
     const items = [];
@@ -149,6 +155,7 @@ function createPreflight(options) {
     let pluginState = null;
     let budgetNoted = false;
     let stopped = false;
+    let targetDestIds = [];
     const started = readClock();
 
     function overBudget() {
@@ -351,15 +358,32 @@ function createPreflight(options) {
       }
     }
 
+    async function hasOtherHealthyEngine(engineId) {
+      for (let i = 0; i < targetDestIds.length; i += 1) {
+        const dest = findDestination(targetDestIds[i]);
+        if (!dest || dest.enabled === false) continue;
+        const ref = engineRef(dest);
+        if (!ref.id || ref.id === engineId) continue;
+        const other = engines.get(ref.id);
+        if (!other) continue;
+        try {
+          const st = await readStatus(ref.id, other);
+          if (st && st.connected === true && st.supported !== false) return true;
+        } catch (_) {}
+      }
+      return false;
+    }
+
     async function checkDisconnected(destinationId, engineId) {
       const engine = engines.get(engineId);
-      if (!engine) {
-        push(makeItem('engine-disconnected', 'error', '', 'エンジンが未接続です', engineId));
-        return;
+      let connected = false;
+      if (engine) {
+        const status = await readStatus(engineId, engine);
+        connected = Boolean(status && status.connected === true);
       }
-      const status = await readStatus(engineId, engine);
-      if (status.connected !== true) {
-        push(makeItem('engine-disconnected', 'error', '', 'エンジンが未接続です', engineId));
+      if (!connected) {
+        const dest = (await hasOtherHealthyEngine(engineId)) ? destinationId : '';
+        push(makeItem('engine-disconnected', 'error', dest, 'エンジンが未接続です', engineId));
       }
     }
 
@@ -367,11 +391,11 @@ function createPreflight(options) {
       const engine = engines.get(engineId);
       if (!engine) return;
       const status = await readStatus(engineId, engine);
-      // 未接続のときは版を見ていないので、非対応にはしない。
       if (status.connected !== true) return;
       const missing = Array.isArray(status.missing) && status.missing.length > 0;
       if (status.supported === false || missing) {
-        push(makeItem('engine-unsupported', 'error', '', 'エンジンが非対応です', engineId));
+        const dest = (await hasOtherHealthyEngine(engineId)) ? destinationId : '';
+        push(makeItem('engine-unsupported', 'error', dest, 'エンジンが非対応です', engineId));
       }
     }
 
@@ -536,19 +560,18 @@ function createPreflight(options) {
       const job = (async function () {
         await attempt('broadcast-mode', '', checkBroadcastMode);
         await attempt('obs-profile', '', checkProfile);
-        let ids = [];
         try {
-          ids = resolveIds(destinationIds);
+          targetDestIds = resolveIds(destinationIds);
         } catch (_) {
           failed('destinations', '');
-          ids = [];
+          targetDestIds = [];
         }
-        for (let i = 0; i < ids.length; i += 1) {
+        for (let i = 0; i < targetDestIds.length; i += 1) {
           if (stopped || overBudget()) {
             noteBudget();
             break;
           }
-          await checkDestination(ids[i]);
+          await checkDestination(targetDestIds[i]);
         }
       })();
       job.then(function () { settle(false); }, function () { settle(true); });

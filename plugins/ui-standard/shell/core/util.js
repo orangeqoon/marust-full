@@ -238,6 +238,14 @@ function attachVaultWarn(root, withOpen) {
     }
     if (!lost) return;
     box.appendChild(mk('span', '', STR.vaultLostWarn));
+    // N4: 入れ直しが要るかもしれないサイト（sites.loginStatus の state から。消す操作は作らない。窓以外では読めないので黙って省く）
+    var sitesLine = mk('div', 'timer-hint');
+    box.appendChild(sitesLine);
+    call('sites.loginStatus', {}).then(function (st) {
+      if (!st || st.ok !== true || typeof reloginSites !== 'function') return;
+      var names = reloginSites(st.sites);
+      sitesLine.textContent = names.length ? STR.vaultLostSites(names) : '';
+    }).catch(function () {});
     if (withOpen) {
       var b = mk('button', 'timer-btn', STR.vaultLostOpen, { type: 'button' });
       b.addEventListener('click', function () { openPanel('secrets'); });
@@ -254,7 +262,7 @@ function attachVaultWarn(root, withOpen) {
   return refresh;
 }
 /**
- * 入力欄に「★ 保存／解除」と「一覧から選ぶ」を付ける（NeonTimer のお気に入りの引き継ぎ）。
+ * 入力欄に「★ 保存／解除」と「一覧から選ぶ」を付ける。
  * kind は 'title' か 'category'。保存は favorites.* API（丸ストの画面だけ書ける）。
  */
 function attachFavorites(input, kind, hooks) {
@@ -305,28 +313,6 @@ function attachFavorites(input, kind, hooks) {
       row.appendChild(del);
       pop.appendChild(row);
     });
-    var imp = mk('button', 'timer-btn fav-import', STR.favImport, { type: 'button' });
-    imp.disabled = !can.write;
-    imp.hidden = !devMode; // NeonTimer の取り込みは開発者プラグイン（開発者モードのときだけ）。一般の人には出さない
-    imp.addEventListener('click', function () {
-      say(STR.favImporting);
-      // 読むのは開発者プラグイン dev-legacy-import（legacyImport.favorites）・足すのは bulk-title（favorites.merge）。画面が橋渡しする
-      call('legacyImport.favorites', {}).then(function (read) {
-        if (!read || read.ok !== true) {
-          if (read && read.error === 'unknown-method') imp.hidden = true;
-          say(read && read.error === 'not-found' ? STR.favImportNone : STR.favImportFailed);
-          return null;
-        }
-        return call('favorites.merge', { titles: read.titles, categories: read.categories }).then(function (res) {
-          if (res && res.ok === true) {
-            apply(res);
-            say(STR.favImportDone(res.titlesAdded, res.categoriesAdded));
-            if (typeof h.onImported === 'function') h.onImported(Object.assign({}, res, { presets: read.presets }));
-          } else say(STR.favImportFailed);
-        });
-      }).catch(function () { say(STR.favImportFailed); });
-    });
-    pop.appendChild(imp);
   }
   function apply(res) {
     // bulk-title を切っている（初級など）と favorites.* は無い。★と一覧を隠す

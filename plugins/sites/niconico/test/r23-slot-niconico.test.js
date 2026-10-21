@@ -227,6 +227,7 @@ const status = (bag) => bag.plugin.actions.getStatus({}, bag.ctx);
 
   await test('live: OBS が止まって N 分で枠を終了。5 分経つ前は終了しない。復帰で数え直す', async () => {
     const bag = boot({ latest: 'lv20', programs: { lv20: onAir(4) } });
+    bag.plugin.actions.setConfig({ autoCloseMin: 5 }, bag.ctx);
     try {
       await bag.plugin.tick();
       assert.strictEqual((await status(bag)).liveId, 'lv20');
@@ -256,6 +257,7 @@ const status = (bag) => bag.plugin.actions.getStatus({}, bag.ctx);
 
   await test('live: OBS に接続できない状態が N 分続いても終了する（Python と同じ）', async () => {
     const bag = boot({ latest: 'lv21', programs: { lv21: onAir(4) } });
+    bag.plugin.actions.setConfig({ autoCloseMin: 5 }, bag.ctx);
     try {
       await bag.plugin.tick();
       bag.state.obs = null;
@@ -403,7 +405,7 @@ const status = (bag) => bag.plugin.actions.getStatus({}, bag.ctx);
       assert.strictEqual((await status(bag)).config.description, '');
       const out = bag.plugin.actions.setConfig({ autoCloseMin: 0, nextDelaySec: 999, tags: 'a, b', title: '  ', category: ' 雑談 ' }, bag.ctx);
       assert.strictEqual(out.ok, true);
-      assert.strictEqual(out.config.autoCloseMin, 5);
+      assert.strictEqual(out.config.autoCloseMin, 1);
       assert.strictEqual(out.config.nextDelaySec, 5);
       assert.strictEqual(out.config.title, 'ライブ配信 第{part}枠');
       assert.strictEqual(out.config.category, '雑談');
@@ -547,7 +549,7 @@ const status = (bag) => bag.plugin.actions.getStatus({}, bag.ctx);
       await fresh.plugin.tick();
       const post = fresh.calls.find((x) => x.method === 'POST' && x.path === '/unama/api/v2/programs');
       assert.ok(post, '枠を作った');
-      assert.ok(!/NeonTimer|config\.yaml/.test(post.body), '作者の設定は入らない');
+      assert.ok(!/config\.yaml/.test(post.body), '作者の設定は入らない');
       assert.strictEqual(JSON.parse(post.body).description, '');
     } finally { cleanup(fresh); }
     const set = boot({ latest: '' });

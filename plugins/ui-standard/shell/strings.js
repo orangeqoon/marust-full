@@ -183,7 +183,7 @@ var STR = {
   loginIntro: '映像は、サイトの「配信キー」だけで全部のサイトへ流れます（ログインは要りません）。題名・カテゴリの一斉反映やコメント送信をしたいときだけ、下の「ログイン」（丸ストにそのサイトを操作させる許可）を設定します。ログインは中級者向けです。',
   loginColumn: 'ログイン',
   loginState: function (state) {
-    var map = { 'none': '未ログイン', 'keys-only': '鍵は入っています（まだログインしていません）', 'logged-in': 'ログイン済み', 'expired': '期限切れ' };
+    var map = { 'none': '未ログイン', 'keys-only': '鍵は入っています（まだログインしていません）', 'logged-in': 'ログイン済み', 'expired': '期限切れ', 'incomplete': '足りない物があります' };
     return Object.prototype.hasOwnProperty.call(map, state) ? map[state] : '—';
   },
   loginSetup: 'ログインの準備',
@@ -213,6 +213,9 @@ var STR = {
       'cancelled': 'あとから別のサイトの結び直しを始めたため、この結び直しは取り消されました。1 つずつ順番にやり直してください',
       'redirect-uri-unsupported': '戻り先が使えない形です。ログインの準備で入れた戻り先を確かめてください',
       'timeout': '認証が時間切れになりました。もう一度やり直してください',
+      'invalid-client': 'クライアント ID かシークレットが違います。ログインの準備で入れた鍵を確かめてください',
+      'invalid-grant': '認可コードが使えませんでした（期限切れか使用済み）。もう一度「結び直す」を押してください',
+      'redirect-mismatch': '戻り先がサイト側の登録と一致しません。ログインの準備の戻り先と、サイト側の登録を揃えてください',
       'unauthorized': 'サイトに認証を断られました。ログインの準備の鍵（クライアント ID・シークレット）が合っているか確かめてください',
       'network': 'サイトにつながりませんでした。回線を確かめて、もう一度やり直してください',
       'unavailable': '結果を丸ストの金庫に保存できませんでした'
@@ -259,7 +262,7 @@ var STR = {
   homeNoDest: '配信先なし',
   homeDestNote: function (count) { return 'OBS の配信先 ' + (Number(count) || 0) + ' 件'; },
   homeLoginFor: function (state) {
-    var map = { 'none': 'ログイン: まだ（あとでよい）', 'keys-only': 'ログイン: 準備中', 'logged-in': 'ログイン: 済み', 'expired': 'ログイン: 期限切れ' };
+    var map = { 'none': 'ログイン: まだ（あとでよい）', 'keys-only': 'ログイン: 準備中', 'logged-in': 'ログイン: 済み', 'expired': 'ログイン: 期限切れ', 'incomplete': 'ログイン: 足りない物があります' };
     return Object.prototype.hasOwnProperty.call(map, state) ? map[state] : '';
   },
   homeLoginGo: 'ログインする',
@@ -1058,7 +1061,7 @@ var STR = {
   uiSecrets1: '<p class="empty">名前はまだありません。</p>',
   uiSecrets2: '>削除</button>',
   uiSecrets3: '結び直しを開始しました。ブラウザで認証してください。',
-  uiSecrets4: '認証用ポートが使用中です。NeonTimerを閉じてからやり直してください。',
+  uiSecrets4: '認証用ポートが使用中です。ほかのアプリがこのポートを使っています。閉じてからやり直してください。',
   uiSecrets5: '戻り先（redirect URI）が使えない形です。http://localhost:ポート番号/… の形で、各サービスの開発者画面に登録した値と同じにしてください。',
   uiSecrets6: '認証が時間切れになりました。もう一度やり直してください。',
   uiSecrets7: 'この操作はmarustのウィンドウだけでできます。',
@@ -1075,6 +1078,9 @@ var STR = {
       'not-configured': '鍵が入っていません（「サイト別の状態」で鍵を入れてください）',
       'port-in-use': '認証用ポートが使用中です',
       'timeout': '時間切れでした',
+      'invalid-client': 'クライアント ID かシークレットが違います',
+      'invalid-grant': '認可コードが使えませんでした',
+      'redirect-mismatch': '戻り先がサイト側の登録と一致しません',
       'unauthorized': '許可されませんでした',
       'redirect-uri-unsupported': '戻り先が使えない形です'
     };
@@ -1083,14 +1089,6 @@ var STR = {
     }).join(' ／ ');
   },
   uiSecrets10:'結び直しが完了しました。',
-  uiSecrets11: '<p class="empty">取り込めるファイルはありません。</p>',
-  uiSecrets12: '金庫にある',
-  uiSecrets13: '金庫にない',
-  uiSecrets14: '<p class="empty">選ばれていません。</p>',
-  uiSecrets15: '選んでください',
-  uiSecrets16: 'NeonTimer の取り込み（開発者プラグイン dev-legacy-import）が入っていません。',
-  uiSecrets18: 'お気に入りは足せませんでした（題名とカテゴリの一括変更が入っていません）',
-  uiSecrets17: function (n) { return n + ' 件を選びました'; },
   uiSession1: '一時停止',
   uiSession2: '進行中',
   uiSession3: '(題名なし)',
@@ -1142,19 +1140,27 @@ var STR = {
   uiSettingsexport45: '反映しました',
   uiSiteadd1: '新規作成: ',
   uiSiteadd2: 'リンク: ',
-  vaultLostWarn: '保存したログインを読めません（暗号鍵が変わりました）。丸ストの鍵の保管場所（金庫）の「NeonTimer から取り込む」で、ログインを入れ直してください。',
+  vaultLostWarn: '保存したログインを読めません（暗号鍵が変わりました）。丸ストの鍵の保管場所（金庫）で、ログインを入れ直してください。',
   vaultLostOpen: '金庫を開く',
+  vaultLostSites: function (names) { return '入れ直しが要るかもしれないサイト（まだ入れていないサイトも含みます）: ' + names.join('、'); },
+  siteLoginTitle: 'サイトのログイン',
+  siteLoginOff: '送信オフ',
+  siteLoginNeed: function (need, how) {
+    var n = { cookies: 'ログイン情報（Cookie）がありません', channel: 'チャンネルが分かりません', token: 'トークンがありません', config: '設定が足りません', 'client-keys': 'ログインの鍵がありません', login: 'ログインが必要です' };
+    var h = { extension: '拡張から届きます。配信管理ページを開いてください', oauth: '「結び直す」を押してください', paste: 'サイトの画面で入れてください', keys: 'サイトの画面の「ログインの準備」で鍵を入れてください' };
+    var t = Object.prototype.hasOwnProperty.call(n, need) ? n[need] : '足りない物があります';
+    return Object.prototype.hasOwnProperty.call(h, how) ? t + '（' + h[how] + '）' : t;
+  },
+  siteLoginPairNotice: '拡張がまだ丸ストとつながっていません。拡張を読み込み、下のコードを拡張に入力してペアリングしてください。そのあと各サイトの配信管理ページを開き直します。自動ではつながりません。',
+  siteLoginPairButton: 'ペアリングコードを出す',
+  siteLoginGoSites: 'サイトの画面を開く',
+  siteLoginEmpty: 'ログインを使うサイトはありません',
   vaultStoreProblem: '秘密（ログイン情報）を保存できない状態です（金庫の置き場の不具合）。ログインの更新が保存されません。丸ストを起動し直してください。直らないときは、金庫の置き場の設定を確かめてください。',
   vaultNoBackend: 'この起動では秘密（ログイン情報）を保存できません（Electron の外で動いています）。丸ストのアプリから起動してください。',
   favSaveTitle: 'お気に入りに入れる／外す',
   favListTitle: 'お気に入りの一覧から選ぶ',
   favEmpty: 'お気に入りはまだありません。★ で入れられます。',
   favRemove: '一覧から外す',
-  favImport: 'NeonTimer から取り込む',
-  favImporting: '取り込み中…',
-  favImportDone: function (a, b) { return '取り込みました（題名 ' + a + ' 件・カテゴリ ' + b + ' 件を追加）'; },
-  favImportNone: 'NeonTimer のお気に入りが見つかりません',
-  favImportFailed: '取り込めませんでした',
   favEnterFirst: '先に入力欄に文字を入れてください',
   favFailed: 'お気に入りを保存できませんでした'
 };

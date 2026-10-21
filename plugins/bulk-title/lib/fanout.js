@@ -74,8 +74,25 @@ function createFanout(options) {
     if (!gate.ok) return skip(id, gate.message);
     const checked = await peers.run(id, 'isConfigured', []);
     if (checked && checked.result === 'timeout') return skip(id, 'not-configured-timeout');
-    if (!checked || checked.result !== 'ok' || !checked.value) return skip(id, 'not-configured');
+    if (!checked || checked.result !== 'ok' || !checked.value) {
+      const row = skip(id, 'not-configured');
+      // 足りない物（N1）。サイトが loginNeeds を持つときだけ、種類の言葉（need / how）を付ける。message は変えない
+      const needs = await askNeeds(id);
+      if (needs) { row.need = needs.need; row.how = needs.how; }
+      return row;
+    }
     return null;
+  }
+
+  // loginNeeds の答えから need / how を取る。timeout・未対応・形が違うときは null（付けない）
+  async function askNeeds(id) {
+    let ran;
+    try { ran = await peers.run(id, 'loginNeeds', []); } catch (_) { return null; }
+    const v = ran && ran.result === 'ok' ? ran.value : null;
+    if (!v || typeof v !== 'object' || Array.isArray(v)) return null;
+    if (typeof v.need !== 'string' || !CODE_RE.test(v.need)) return null;
+    if (typeof v.how !== 'string' || !CODE_RE.test(v.how)) return null;
+    return { need: v.need, how: v.how };
   }
 
   function writeAudit(record) {

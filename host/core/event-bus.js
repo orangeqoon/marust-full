@@ -8,7 +8,7 @@
  */
 
 const crypto = require('crypto');
-const { isKnownEvent, eventVersion, ownerOf } = require('./events');
+const { isKnownEvent, registerKnownEvent, eventVersion, ownerOf } = require('./events');
 const { run, defaultLogger, defaultTimeoutMs } = require('./safe-runner');
 
 const QUEUE_CAP = 1000;
@@ -188,7 +188,7 @@ function createEventBus(options) {
     });
   }
 
-  return { publish, subscribe, flush, QUEUE_CAP };
+  return { publish, subscribe, flush, registerKnownEvent, QUEUE_CAP };
 }
 
-module.exports = { createEventBus, QUEUE_CAP };
+module.exports = { createEventBus, registerKnownEvent, QUEUE_CAP };

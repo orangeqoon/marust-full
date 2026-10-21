@@ -70,7 +70,7 @@ function world(hidden) {
 async function main() {
   const w = world(false);
   w.boot(); await w.tick(100);
-  assert.deepStrictEqual(w.calls.slice().sort(), ['engine.status', 'hub.getState', 'secrets.list'].sort(), 'concurrent display reads shared');
+  assert.deepStrictEqual(w.calls.slice().sort(), ['engine.status', 'hub.getState', 'secrets.list', 'sites.loginStatus'].sort(), 'concurrent display reads shared');
   assert.strictEqual(w.button.textContent, 'Stop');
   assert.strictEqual(Object.keys(w.ctx.displayReads).length, 0, 'responses are not cached after completion');
   const initial = w.calls.length;
@@ -79,7 +79,7 @@ async function main() {
   assert.strictEqual(w.calls.length, initial, 'unrelated events cause no extra requests');
   for (let i = 0; i < 100; i++) w.event('modes.changed');
   await w.tick(100);
-  assert.strictEqual(w.calls.length - initial, 3, 'event burst coalesces');
+  assert.strictEqual(w.calls.length - initial, 4, 'event burst coalesces');
   w.hold(true); w.event('engine.target.changed'); await w.tick(100);
   const busy = w.calls.length;
   for (let i = 0; i < 100; i++) w.event('engine.target.changed');
@@ -92,7 +92,7 @@ async function main() {
   w.event('modes.changed'); await w.tick(15000); await w.tick(100);
   assert.strictEqual(w.calls.length, beforeHidden, 'background has no display API polls');
   w.visibility(false); await w.tick(100);
-  assert.strictEqual(w.calls.length - beforeHidden, 3, 'foreground catches up once');
+  assert.strictEqual(w.calls.length - beforeHidden, 4, 'foreground catches up once');
   w.roots.secrets.offsetParent = null;
   const beforePanel = w.calls.filter(m => m === 'secrets.list').length;
   await w.tick(15000); await w.tick(100);
@@ -118,7 +118,7 @@ async function main() {
   const hidden = world(true); hidden.boot(); await hidden.tick(15100);
   assert.strictEqual(hidden.calls.length, 0, 'initially hidden window does not read');
   hidden.visibility(false); await hidden.tick(100);
-  assert.strictEqual(hidden.calls.length, 3);
+  assert.strictEqual(hidden.calls.length, 4);
   hidden.dispose();
   console.log('P2 display refresh: sharing/burst/filter/inflight/visibility/panel/error/stop/cleanup PASS');
 }

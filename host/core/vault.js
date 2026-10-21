@@ -482,19 +482,22 @@ function createSecretProvider(options) {
       if (healthCache && at - healthCache.at < 60000) return healthCache.body;
       const total = entries.size;
       let readable = 0;
+      let backendMismatch = 0;
+      let decryptFailures = 0;
       if (isUsable()) {
         const current = backendId();
         for (const row of entries.values()) {
-          if (row.backend && current && row.backend !== current) continue;
+          if (row.backend && current && row.backend !== current) { backendMismatch += 1; continue; }
           try {
             const value = await backend.decrypt(row.ciphertext);
             if (typeof value === 'string') readable += 1;
-          } catch (_) { /* 数えるだけ */ }
+            else decryptFailures += 1;
+          } catch (_) { decryptFailures += 1; }
         }
       }
       const usable = isUsable();
       const reason = !backendOk ? 'no-backend' : storeReason !== '' ? storeReason : storeDirty ? 'store-dirty' : '';
-      const body = { ok: true, usable: usable, reason: reason, store: selected.store, total: total, readable: readable, unreadable: total - readable, lost: total > 0 && readable === 0 };
+      const body = { ok: true, usable: usable, reason: reason, store: selected.store, total: total, readable: readable, unreadable: total - readable, lost: total > 0 && readable === 0, backendMismatch: backendMismatch, decryptFailures: decryptFailures };
       healthCache = { at: at, body: body };
       return body;
     });

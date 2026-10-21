@@ -9,8 +9,10 @@
 
 const { createFanout } = require('./lib/fanout');
 const { createFavorites } = require('./lib/favorites');
+const { createTitleState } = require('./lib/title-state');
 
 let fan = null;
+let titleState = null;
 
 function token(value) {
   return typeof value === 'string' && /^[a-z0-9-]{1,40}$/.test(value) ? value : 'failed';
@@ -23,6 +25,10 @@ module.exports = {
       bus: ctx.bus,
       logger: ctx.logger,
       audit: ctx.audit
+    });
+    titleState = createTitleState({
+      dir: ctx.dataDir,
+      bus: ctx.bus
     });
     const favorites = () => createFavorites({ dir: ctx.dataDir });
     const kindRule = { type: 'string', required: true, max: 10, enum: ['title', 'category'], error: 'bad-kind' };
@@ -49,10 +55,21 @@ module.exports = {
         query: { type: 'string', required: true, max: 100 }
       }
     });
-    ctx.api.register('favorites.get', () => favorites().get(), {
+    ctx.api.register('favorites.get', (params) => {
+      if (titleState && params && (typeof params.title === 'string' || typeof params.category === 'string')) {
+        titleState.setDraft(params);
+      }
+      const res = favorites().get();
+      if (titleState) res.state = titleState.getState();
+      return res;
+    }, {
       access: 'read',
-      description: '題名・カテゴリのお気に入りを返す',
-      params: {}
+      description: '題名・カテゴリのお気に入りと現在のタイトル変更プラグイン状態を返す',
+      params: {
+        title: { type: 'string', required: false, max: 200 },
+        category: { type: 'string', required: false, max: 100 },
+        source: { type: 'string', required: false, max: 32 }
+      }
     });
     ctx.api.register('favorites.add', (params) => favorites().add(params.kind, params.value), {
       access: 'write',
@@ -66,7 +83,7 @@ module.exports = {
       description: '題名・カテゴリをお気に入りから外す',
       params: { kind: kindRule, value: { type: 'string', required: true, max: 200 } }
     });
-    // 一覧をまとめて足す。NeonTimer の取り込み（開発者プラグイン dev-legacy-import が読んだ一覧）を画面が渡す。プラグインどうしは呼び合わない
+    // 一覧をまとめて足す。外のプラグインが読んだ一覧（引き継ぎなど）を、画面が渡す。プラグインどうしは呼び合わない
     ctx.api.register('favorites.merge', (params) => favorites().merge(params.titles, params.categories), {
       access: 'write',
       windowOnly: true,
@@ -78,11 +95,15 @@ module.exports = {
     });
   },
   start() {},
-  stop() { fan = null; },
-  destroy() { fan = null; },
+  stop() { fan = null; titleState = null; },
+  destroy() { fan = null; titleState = null; },
   health() { return { ok: true }; },
   // 本体の orchestrator.fanout が呼ぶ（役目 title.fanout@1）
-  fanout(intent) {
-    return fan ? fan.fanout(intent) : Promise.resolve([{ id: '*', result: 'skip', elapsedMs: 0, message: 'no-plugin' }]);
+  async fanout(intent) {
+    if (!fan) return [{ id: '*', result: 'skip', elapsedMs: 0, message: 'no-plugin' }];
+    if (titleState) titleState.markSending(intent);
+    const rows = await fan.fanout(intent);
+    if (titleState) titleState.recordFanout(intent, rows);
+    return rows;
   }
 };

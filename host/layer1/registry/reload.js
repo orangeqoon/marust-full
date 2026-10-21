@@ -46,7 +46,7 @@ function createReload(S) {
 
   async function reload(id) {
     return exclusive({ id, result: 'error', message: 'busy' }, async () => {
-      const results = await reloadGroup(id);
+      const results = await reloadGroup(id, { single: true });
       return results.find((row) => row.id === id) || results[0];
     });
   }
@@ -87,10 +87,10 @@ function createReload(S) {
 
   // OBS の開始・停止を握るか（capabilities に obs-start / obs-stop、slot の役目、needs の obs.streamControl）。
   // 同じサイトのまとまりに 1 つでもあれば true。V7 で manifest の宣言に変えるときはこの関数だけ直す。
-  function holdsObs(id) {
+  function holdsObs(id, options) {
     const me = byId.get(id);
     if (!me || (me.manifest && me.manifest.kind === 'shell')) return false;
-    const group = me.siteId
+    const group = me.siteId && !(options && options.single)
       ? records.filter((row) => row.siteId === me.siteId && row.dir === me.dir && byId.get(row.id) === row)
       : [me];
     return group.some((row) => {

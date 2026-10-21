@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <title>Grok で操作</title>
+  <style>
+    body { font-family: "Segoe UI", "Yu Gothic UI", "Meiryo", sans-serif; background: #161b26; color: #e6eaf2; margin: 12px; }
+    dt { color: #a0aabd; } dd { margin: 0 0 8px; }
+    label { display: block; margin: 8px 0 4px; color: #a0aabd; }
+    input[type="text"] { width: 100%; box-sizing: border-box; padding: 6px; background: #0f131c; color: #e6eaf2; border: 1px solid #39425a; border-radius: 4px; }
+    button { margin: 6px 6px 0 0; padding: 4px 10px; }
+    pre { white-space: pre-wrap; word-break: break-all; background: #0f131c; padding: 8px; border-radius: 4px; max-height: 240px; overflow: auto; }
+    ol { padding-left: 20px; } li { margin-bottom: 4px; }
+    .muted { color: #a0aabd; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Grok で操作</h1>
+  <p class="muted">Grok に話した頼みを、丸ストの操作に直します。読むだけの操作はここで答えます。題名を送る・配信を始める／止めるは、このプラグインでは動かさず、丸ストの承認を通して行います。</p>
+  <dl>
+    <dt>状態</dt>
+    <dd id="mode">-</dd>
+    <dt>最後の結果</dt>
+    <dd id="last">-</dd>
+  </dl>
+  <label for="text">試しに言ってみる</label>
+  <input id="text" type="text" maxlength="500" placeholder="例: ステータス教えて／タイトルを雑談にして">
+  <p>
+    <button id="parse" type="button">直すだけ</button>
+    <button id="run" type="button">読む操作なら実行</button>
+    <button id="refresh" type="button">更新</button>
+  </p>
+  <h2>結果</h2>
+  <pre id="result" aria-live="polite">-</pre>
+  <h2>最近の頼み</h2>
+  <ol id="history"></ol>
+  <p><button id="clear" type="button">履歴を消す</button></p>
+  <script src="panel.js"></script>
+</body>
+</html>

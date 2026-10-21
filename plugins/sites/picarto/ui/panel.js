@@ -32,10 +32,32 @@ function show(result) {
 
 document.getElementById('refresh').addEventListener('click', call);
 
+const tokenEl = document.getElementById('token');
+const tokenStatusEl = document.getElementById('token-status');
+let savePending = '';
+const SAVE_TEXT = { 'bad-token': 'トークンの形が正しくありません', unavailable: '保存できませんでした', forbidden: 'この画面からは保存できません（丸ストの窓から開いてください）' };
+
+document.getElementById('token-save').addEventListener('click', () => {
+  const token = tokenEl.value;
+  tokenEl.value = '';
+  if (!token.trim()) { tokenStatusEl.textContent = 'トークンを入れてください'; return; }
+  seq += 1;
+  savePending = String(seq);
+  tokenStatusEl.textContent = '保存中…';
+  parent.postMessage({ type: 'marust:call', id: savePending, method: 'plugin.site-picarto.setToken', params: { token: token } }, location.origin);
+});
+
 window.addEventListener('message', (event) => {
   const msg = event.data;
   if (!msg || typeof msg !== 'object') return;
   if (msg.type !== 'marust:result') return;
+  if (savePending && String(msg.id) === savePending) {
+    savePending = '';
+    const r = msg.result;
+    tokenStatusEl.textContent = r && r.ok === true ? '保存しました' : (SAVE_TEXT[r && r.error] || '保存できませんでした');
+    call();
+    return;
+  }
   if (String(msg.id) !== pending) return;
   const result = msg.result;
   if (!result || result.ok !== true) {
@@ -48,3 +70,8 @@ window.addEventListener('message', (event) => {
 
 call();
 setInterval(call, 3000);
+
+// 手順の URL の欄は、押すと全体を選ぶ（コピーしやすく）
+document.querySelectorAll('#token-help .copy').forEach((el) => {
+  el.addEventListener('focus', () => el.select());
+});

@@ -2,7 +2,7 @@
 
 /**
  * サイトのログイン（K3 で host/site-login.js・host/oauth-reauth.js から出した）。
- *  - 状態（none / keys-only / logged-in / expired）・アプリの鍵の保存（client_id・client_secret・戻り先）・ブラウザでの結び直し。
+ *  - 状態（none / keys-only / logged-in / expired / incomplete）・アプリの鍵の保存（client_id・client_secret・戻り先）・ブラウザでの結び直し。
  *  - 読み書きできる秘密は manifest で宣言した 4 つの OAuth（youtube・google・twitch・kick の .oauth）だけ。サイトの設定欄（<site>.config）と cookie・config の有無は核（host/core/site-config.js）。
  *  - ブラウザを開くのは核の口 ctx.external.open（https・manifest の external.hosts だけ）。戻りの待ち受けは自分の中（127.0.0.1 / localhost の一時的な待ち受け）。
  *  - API sites.loginStatus（read・ウィンドウだけ）・sites.setOAuthApp・auth.reauth（write・ウィンドウだけ）。名前・引数・権限は移す前と同じ。値は返さない。
@@ -39,7 +39,12 @@ module.exports = {
         get: (name) => readOauth(ctx, name),
         set: (name, value) => writeOauth(ctx, name, value)
       },
-      loginFacts: () => ctx.api.call('sites.loginFacts', {})
+      loginFacts: () => ctx.api.call('sites.loginFacts', {}),
+      // サイトのプラグインの loginNeeds（種類の言葉だけ）。ctx.peers 経由。答えられなければ null
+      needs: async (siteId) => {
+        const ran = await ctx.peers.run('site-' + siteId, 'loginNeeds', []);
+        return ran && ran.result === 'ok' ? ran.value : null;
+      }
     });
     // oauth-reauth は金庫を { get({ name }), set(name, value) } の形で受ける。ここでは宣言した名前だけの ctx.secrets へつなぐ
     const reauth = createOauthReauth({
@@ -52,7 +57,7 @@ module.exports = {
     ctx.api.register('sites.loginStatus', () => login.status(), {
       access: 'read',
       windowOnly: true,
-      description: 'サイトごとのログイン状態（none / keys-only / logged-in / expired）を返す。値は返さない',
+      description: 'サイトごとのログイン状態（none / keys-only / logged-in / expired / incomplete）と、足りない物（need / how）、拡張のペアリング有無を返す。値は返さない',
       params: {}
     });
     ctx.api.register('sites.setOAuthApp', (params) => login.setOAuthApp(params), {

@@ -16,10 +16,6 @@ function test(name, fn) {
   });
 }
 
-test('NeonTimer import box is hidden in the HTML until dev mode turns it on', () => {
-  assert.ok(/<div id="secret-import" hidden>/.test(read('plugins/ui-standard/shell/template.html')));
-});
-
 test('dev panels are only dropped from a saved layout once devMode is known', () => {
   const hub = hubSource();
   assert.ok(hub.indexOf('var devModeKnown = false;') !== -1);

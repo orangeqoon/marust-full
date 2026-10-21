@@ -2,7 +2,7 @@
 
 /**
  * marust（丸スト）プロセス入口。
- * NeonTimer とは別アプリ。user_data も :18766 も触らない。
+ * 旧いアプリとは別アプリ。user_data も :18766 も触らない。
  * npm start は探索してプラグインを load し、ヘルスを出して終了する。
  * ファンアウトはプラグインごとのモードで決める。live が 1 つでもあれば MARUST_CONFIRM_LIVE=1 が無いと送らない。
  */
@@ -64,7 +64,7 @@ async function main() {
     console.log('[marust] health id=' + row.id + ' result=' + row.result + ' detail=' + detail);
   }
   if ((summary.live + summary.shadow) === 0) {
-    console.log('[marust] legacy のためファンアウトは送りません。本番の配信操作は NeonTimer のままです。');
+    console.log('[marust] legacy のためファンアウトは送りません。本番の配信操作は旧いアプリのままです。');
   }
 
   if (process.argv.includes('--fanout')) {

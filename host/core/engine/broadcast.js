@@ -216,17 +216,22 @@ function createBroadcast(options) {
 
   function engineOf(row) {
     const bound = row && row.engine && typeof row.engine === 'object' ? row.engine : null;
-    const engineId = bound && bound.id ? String(bound.id) : '';
+    let engineId = bound && bound.id ? String(bound.id) : '';
     const targetId = bound && bound.targetId != null ? String(bound.targetId) : '';
-    if (!engineId || !targetId) return null;
+    if (!targetId) return null;
     let impl = null;
     try {
-      impl = engines && typeof engines.get === 'function' ? engines.get(engineId) : null;
+      if (engines && typeof engines.resolveForDestination === 'function') {
+        impl = engines.resolveForDestination(row);
+        if (impl && !engineId) engineId = impl.id || 'obs-local';
+      } else if (engineId) {
+        impl = engines && typeof engines.get === 'function' ? engines.get(engineId) : null;
+      }
     } catch (_) {
       impl = null;
     }
     if (!impl) return null;
-    return { impl: impl, engineId: engineId, targetId: targetId };
+    return { impl: impl, engineId: engineId || 'obs-local', targetId: targetId };
   }
 
   function publicItem(row) {

@@ -126,9 +126,14 @@ function createSitePicarto(deps) {
     return { status: status, text: text };
   }
 
-  async function isConfigured() {
+  // 足りない物を種類だけで答える（値は返さない）。isConfigured はこれの ready と同じ答え
+  async function loginNeeds() {
     const config = await readConfig();
-    return !!config;
+    return config ? { ready: true, need: null, how: 'paste' } : { ready: false, need: 'token', how: 'paste' };
+  }
+
+  async function isConfigured() {
+    return (await loginNeeds()).ready;
   }
 
   async function updateMetadata(input, meta) {
@@ -200,6 +205,28 @@ function createSitePicarto(deps) {
     }
   }
 
+  // パネルの入力欄から Picarto のトークンを金庫に入れる（値は答えにも記録にも出さない）。今ある他の項目（channel など）は残す。
+  async function setToken(params, passed) {
+    const box = passed || ctx;
+    const raw = params && typeof params.token === 'string' ? params.token.trim() : '';
+    if (!raw || raw.length > 2000 || /[\r\n\u0000]/.test(raw) || raw.indexOf('ここに') !== -1) return { ok: false, error: 'bad-token' };
+    if (!box || !box.secrets || typeof box.secrets.set !== 'function') return { ok: false, error: 'unavailable' };
+    let base = {};
+    try {
+      const got = await box.secrets.get(SECRET);
+      if (got && got.ok === true && typeof got.value === 'string') {
+        const old = JSON.parse(got.value.replace(/^\uFEFF/, ''));
+        if (old && typeof old === 'object' && !Array.isArray(old)) base = old;
+      }
+    } catch (_) { base = {}; }
+    base.token = raw;
+    try {
+      const saved = await box.secrets.set(SECRET, JSON.stringify(base));
+      if (!saved || saved.ok !== true) return { ok: false, error: 'unavailable' };
+    } catch (_) { return { ok: false, error: 'unavailable' }; }
+    return { ok: true };
+  }
+
   function load(passed) {
     ctx = passed || null;
   }
@@ -226,9 +253,10 @@ function createSitePicarto(deps) {
     destroy: destroy,
     health: health,
     isConfigured: isConfigured,
+    loginNeeds: loginNeeds,
     updateMetadata: updateMetadata,
     getStatus: getStatus,
-    actions: { getStatus: panelStatus }
+    actions: { getStatus: panelStatus, setToken: setToken }
   };
 }
 

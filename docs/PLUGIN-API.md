@@ -28,7 +28,7 @@
 3. **初回だけ**、ユーザーが画面でそのプラグインを入れる（shadow か live）。legacy のままでは読み込まれない（AI はモードを変えられない）。
 4. ファイルを直す → `plugin.reload` → `plugin.status`・`plugin.logs` で確かめる → 直す…（CLI なら `marust plugin reload <id>` / `logs <id> --n 50` / `status <id>`）。
 5. 画面のパネルは自動で読み直される（開いているそのプラグインの分だけ）。CSS だけなら `ui.reload` の `theme`。
-6. `host/` を直したときだけ `app.restart`（承認が 1 回要る。`marust restart --yes`）。配信中でも reload も restart もできる（映像は OBS が出すので止まらない）。**例外**: OBS の開始・停止を握る自動枠取り（`slot-*`）は、配信中の reload が `streaming-slot` で断られる（`reloadAll` は飛ばす）。
+6. `host/` を直したときだけ `app.restart`（承認が 1 回要る。`marust restart --yes`）。配信中でも reload も restart もできる（映像は OBS が出すので止まらない）。**個別の読み直しは役目単位**（`site-youtube` だけなら `slot-youtube` は動かさない）。OBS の開始・停止を握る自動枠取り（`slot-*`）は、配信中・状態不明の個別 reload が画面での承認待ちになる。承認後にその役目だけ実行する。`reloadAll` は従来どおり自動枠取りを含むサイトを飛ばす。
 7. 型の検査（任意）: プラグインの `index.js` の先頭にこの 2 行を書くと、`ctx` の名前の打ち間違いを `npm run check` が見つける。
    ```js
    // @ts-check
@@ -44,7 +44,7 @@
 | `message: 'legacy-not-loaded'`（`result: 'skip'`） | 外から入れたプラグインが legacy のまま。ユーザーに「画面でこのプラグインを入れて」と頼む |
 | `busy` | 別の読み直しが動いている。少し待ってもう一度 |
 | `dev-only` | 開発者モードでない。ユーザーにオンにしてもらう |
-| `streaming-slot` | 配信中に、OBS を握る自動枠取りを読み直そうとした。配信が終わってからにする |
+| `streaming-slot` | 一括読み直しで、OBS を握る自動枠取りを含むサイトを飛ばした。必要な役目を個別指定する（自動枠取り自身は画面の承認が必要） |
 | `unknown-id` | その id のプラグインも、置き場のフォルダも無い（`plugin.logs`・`plugin.status` も同じ） |
 
 配信中は、全部を読み直す `plugins.reloadAll` より `plugin.reload <id>` を使う（`reloadAll` はコメントの見張りなども一度止めて戻す）。画面の `ui.reload all` も窓ごと読み直すので、配信中は `plugin:<id>` か `theme` を使う。

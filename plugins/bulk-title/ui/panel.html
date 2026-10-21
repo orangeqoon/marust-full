@@ -6,13 +6,18 @@
   <link rel="stylesheet" href="panel.css">
 </head>
 <body>
-  <h1>題名とカテゴリ</h1>
+  <div class="header-row">
+    <h1>タイトル変更プラグイン（全タブ共通）</h1>
+    <span id="phase-badge" class="phase-badge phase-idle">待機中</span>
+  </div>
+  <p id="phase-summary" class="phase-summary">ホーム・題名パネル・タイマーのすべてがこのタイトル変更プラグインの状態を同期しています。</p>
   <div class="setup">
-    <label>題名 <input id="title" type="text" maxlength="200" autocomplete="off"></label>
-    <label>カテゴリ <input id="category" type="text" maxlength="100" autocomplete="off" list="category-suggestions"></label>
+    <label>題名 <input id="title" type="text" maxlength="200" autocomplete="off" placeholder="配信の題名を入力（全タブと同期）"></label>
+    <label>カテゴリ <input id="category" type="text" maxlength="100" autocomplete="off" list="category-suggestions" placeholder="ゲーム名・カテゴリ"></label>
     <datalist id="category-suggestions"></datalist>
     <button id="send" type="button" class="primary">全部のサイトに反映</button>
   </div>
+  <div id="site-cards" class="site-cards" aria-live="polite"></div>
   <p class="hint" id="obs-status">OBS: 未接続</p>
   <div id="results" aria-live="polite"><p class="empty">まだ送信していません。</p></div>
   <script src="bridge.js"></script>

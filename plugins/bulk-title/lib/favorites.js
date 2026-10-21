@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * 題名・カテゴリのお気に入り。NeonTimer からの引き継ぎは、開発者プラグイン dev-legacy-import が merge で足す。
+ * 題名・カテゴリのお気に入り。旧いアプリからの引き継ぎは、開発者プラグイン dev-legacy-import が merge で足す。
  * 置き場（K3）: プラグイン自身の dataDir/favorites.json  { version: 1, titles: [], categories: [] }（opts.dir）。旧い置き場 <STATE_DIR>/data/marust/favorites.json からは、初めて読むとき 1 回だけ写す（元は消さない）。
  * opts.core を渡す古い呼び方（試験）は、今までどおり <STATE_DIR>/data/marust/favorites.json。
  * 新しいものが先頭、最大 50 件、同じ文字列は入れない。文字数は題名 200・カテゴリ 100 まで。
@@ -130,7 +130,7 @@ function createFavorites(options) {
     return Object.assign(get(), { removed: true });
   }
 
-  // 外から集めた一覧（NeonTimer の引き継ぎなど）を足す。今ある一覧は残し、同じ文字列と上限を超える分は数えて捨てる。
+  // 外から集めた一覧（旧いアプリの引き継ぎなど）を足す。今ある一覧は残し、同じ文字列と上限を超える分は数えて捨てる。
   function merge(titles, categories) {
     const state = load();
     const given = { titles: cleanList('title', titles), categories: cleanList('category', categories) };

@@ -1,11 +1,10 @@
 'use strict';
 
 /**
- * プラグイン呼び出しを例外とタイムアウトで隔離する。
- * 既定 8000ms。MARUST_PLUGIN_TIMEOUT_MS が 1000〜60000 の整数のときだけ上書き。
- * 呼び出し側が timeoutMs を渡したときはそれを使う（manifest の上限は orchestrator 側）。
- * タイムアウトしても本体の Promise は止めない。戻り値の settled がその完了を待つ。
- * この関数は投げない。
+ * プラグイン呼び出しを例外とタイムアウトで隔離する。既定 8000ms（manifest の timeouts で変更可）。
+ * 呼び出し元にタイムアウト応答を返しキューをブロックしない Promise レース。同一プロセス（inproc）で
+ * 動作するため同期無限ループの OS kill ではなく、外部通信中断（AbortSignal）や重複防止はプラグイン責務。
+ * タイムアウト後も本体 Promise は止めない。戻り値 settled が完了を待つ。この関数は例外を投げない。
  */
 
 function defaultTimeoutMs() {

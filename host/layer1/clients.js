@@ -282,6 +282,34 @@ function createClients(options) {
     return { ok: true, token: token, client: publicView(row) };
   }
 
+  // ブラウザ拡張機能の自動ペアリング用: コード無しで extension 端末を作る／更新する
+  function issueExtension(input) {
+    const row = input && typeof input === 'object' ? input : {};
+    const extensionId = typeof row.extensionId === 'string' ? row.extensionId.trim() : '';
+    if (!EXTENSION_ID_RE.test(extensionId)) return { ok: false, error: 'origin' };
+    const name = normalizeName(row.name) || 'Marust';
+    if (!name || (typeof row.name === 'string' && (row.name.trim() !== row.name || /[\r\n\u0000]/.test(row.name)))) {
+      return { ok: false, error: 'name' };
+    }
+    const token = crypto.randomBytes(32).toString('hex');
+    const nowIso = new Date(now()).toISOString();
+    const rows = load();
+    const saved = {
+      id: crypto.randomBytes(8).toString('hex'),
+      name: name,
+      kind: 'extension',
+      extensionId: extensionId,
+      requiresApproval: false,
+      permissions: EXTENSION_PERMISSIONS.slice(),
+      tokenHash: sha256(token),
+      createdAt: nowIso,
+      lastSeenAt: nowIso
+    };
+    rows.push(saved);
+    save(rows);
+    return { ok: true, token: token, client: publicView(saved) };
+  }
+
   function failCode() {
     pending.failures += 1;
     if (pending.failures >= 5) {
@@ -345,6 +373,7 @@ function createClients(options) {
     redeem: redeem,
     issueBrowserSession: issueBrowserSession,
     issueNative: issueNative,
+    issueExtension: issueExtension,
     setOnRevoke: function (fn) { onRevoke = fn; },
     pendingCode: function () { return pending ? pending.code : ''; }
   };

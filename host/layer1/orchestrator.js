@@ -3,7 +3,7 @@
 /**
  * 題名／カテゴリのファンアウトと OBS イベントの分配。
  * モードは state/services/marust-fanout.json。無ければ legacy（副作用なし）。
- * この別プロセス骨格は NeonTimer の startStreamingApis を呼ばない。
+ * この別プロセス骨格は 旧いアプリの startStreamingApis を呼ばない。
  * legacy = 送らない。shadow = dryRun で記録。orchestrator = プラグインを呼び、同じ形で記録。
  * プラグインごとのモードは marust-modes.json の plugins[id]、次に default。読み込みは host/core/modes.js。
  * それも無いとき、manifest v1 で fanout を持つものだけ marust-fanout.json を引き継ぐ（orchestrator は live）。
@@ -29,7 +29,7 @@ const { PEER_METHODS } = require('./plugin-api-check');
 const MAX_MANIFEST_TIMEOUT_MS = 120000;
 const STUCK_FLOOR_MS = 60000;
 const SEND_COMMENT_TIMEOUT_MS = 12000;
-const PEER_VALUE = new Set(['updateMetadata', 'sendComment', 'isConfigured', 'suggestCategories']); // 答えの value をプラグインへ返すメソッド
+const PEER_VALUE = new Set(['updateMetadata', 'sendComment', 'isConfigured', 'loginNeeds', 'suggestCategories']); // 答えの value をプラグインへ返すメソッド
 const PEER_WRITES = new Set(['updateMetadata', 'updateStream', 'updateTitle', 'updateCategory', 'sendComment']);
 const OBS_STARTING = 'OBS_WEBSOCKET_OUTPUT_STARTING';
 const OBS_STARTED = 'OBS_WEBSOCKET_OUTPUT_STARTED';
@@ -571,7 +571,7 @@ function createOrchestrator(options) {
     const fan = m.fanout && typeof m.fanout === 'object' ? m.fanout : null;
     if (method === 'updateMetadata' || method === 'suggestCategories') return v2site;
     if (method === 'updateStream' || method === 'updateTitle' || method === 'updateCategory') return !!fan && fan.method === method;
-    if (method === 'isConfigured') return v2site || !!fan;
+    if (method === 'isConfigured' || method === 'loginNeeds') return v2site || !!fan;
     if (method === 'sendComment') return provides.indexOf('chat.sink@1') !== -1;
     return false;
   }

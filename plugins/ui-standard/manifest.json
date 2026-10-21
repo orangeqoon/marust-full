@@ -16,6 +16,7 @@
       "strings.js",
       "core/state.js",
       "core/util.js",
+      "core/login-list.js",
       "core/parent-actions.js",
       "core/panels.js",
       "core/dock.js",

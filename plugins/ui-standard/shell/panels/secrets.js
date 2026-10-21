@@ -13,6 +13,71 @@ function initSecrets() {
     statusEl.textContent = code ? String(code) : '';
   }
   var currentSecrets = [];
+  // サイトのログイン一覧（N3）。sites.loginStatus の答えだけで描く。値は出さない
+  var loginBox = root.querySelector('#site-login');
+  var loginList = root.querySelector('#site-login-list');
+  var pairBox = root.querySelector('#site-login-pair');
+  var pairCode = root.querySelector('#site-login-pair-code');
+  var lastLogin = null;
+  function paintLogin(res, plugins) {
+    if (!loginBox || !loginList || typeof buildLoginList !== 'function' || !STR || typeof STR.siteLoginNeed !== 'function') return;
+    if (!res || res.ok !== true || !Array.isArray(res.sites)) { loginBox.hidden = true; return; }
+    lastLogin = res;
+    var names = {};
+    var pasteSites = {};
+    (Array.isArray(plugins) ? plugins : []).forEach(function (p) {
+      if (!p || !p.site || typeof p.site.id !== 'string') return;
+      names[p.site.id] = p.site.name || p.site.id;
+      if (Array.isArray(p.site.configSchema) && p.site.configSchema.length) pasteSites[p.site.id] = true;
+    });
+    var view = buildLoginList(res.sites, { names: names, pasteSites: pasteSites, paired: !!(res.extension && res.extension.paired), STR: STR });
+    loginBox.hidden = !view.items.length;
+    var title = root.querySelector('#site-login-title');
+    if (title) title.textContent = STR.siteLoginTitle;
+    if (pairBox) {
+      pairBox.hidden = !(view.pairNotice && isWindow);
+      var pt = root.querySelector('#site-login-pair-text');
+      var pb = root.querySelector('#site-login-pair-btn');
+      if (pt) pt.textContent = STR.siteLoginPairNotice;
+      if (pb) { pb.textContent = STR.siteLoginPairButton; pb.disabled = !can.write; }
+    }
+    list_clear(loginList);
+    view.items.forEach(function (it) {
+      var line = document.createElement('p');
+      line.appendChild(document.createTextNode(it.name + ' / ' + it.stateText + (it.needText ? ' / ' + it.needText : '') + ' '));
+      if (it.action !== 'none' && isWindow) {
+        var b = document.createElement('button');
+        b.className = 'timer-btn';
+        b.type = 'button';
+        b.disabled = !can.write;
+        b.textContent = it.action === 'reauth' ? STR.loginRelink : STR.siteLoginGoSites;
+        b.addEventListener('click', function () {
+          if (it.action === 'sites') { openPanel('sites'); return; }
+          if (!isWindow || !can.write || reauthBusy) return;
+          if (!window.confirm(it.id + STR.uiSecrets9)) return;
+          setReauthBusy(true);
+          if (reauthStatus) reauthStatus.textContent = reauthMessage('');
+          call('auth.reauth', { site: it.id }).then(function (r) {
+            if (reauthStatus) reauthStatus.textContent = r && r.ok === true ? STR.uiSecrets10 : reauthMessage(r && r.error);
+            refresh();
+          }).catch(function () {
+            if (reauthStatus) reauthStatus.textContent = reauthMessage('failed');
+          }).then(function () { setReauthBusy(false); });
+        });
+        line.appendChild(b);
+      }
+      loginList.appendChild(line);
+    });
+  }
+  function list_clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+  var pairBtn = root.querySelector('#site-login-pair-btn');
+  if (pairBtn) pairBtn.addEventListener('click', function () {
+    // 既存のペアリング（clients パネルと同じ呼び出し）。コードを出すだけで、自動ではつながらない
+    if (!isWindow || !can.write) return;
+    call('clients.beginPairing', { name: STR.uiClients6, kind: 'extension' }).then(function (r) {
+      if (pairCode) pairCode.textContent = r && r.ok !== false && r.code ? String(r.code) : '';
+    }).catch(function () {});
+  });
   function paint(rows) {
     var items = Array.isArray(rows) ? rows : [];
     currentSecrets = items;
@@ -32,6 +97,7 @@ function initSecrets() {
   }
   var refresh = function () {};
   function loadSecrets() {
+    var loginRead = displayRead('sites.loginStatus'); // hub.getState と同時に読む
     return displayRead('hub.getState').then(function (state) {
       notePermissions(state && state.permissions); if (state && typeof state.confirmLive === 'boolean') confirmLiveWanted = state.confirmLive;
       isWindow = !!(state && state.clientId === 'local-window');
@@ -39,6 +105,7 @@ function initSecrets() {
       var admin = root.querySelector('#secret-admin');
       if (admin) admin.hidden = !isWindow;
       setReauthBusy(reauthBusy); // ボタンは画面の判定（ウィンドウか）が済む前に作られることがある。判定のあとで押せる状態に直す
+      return loginRead.then(function (login) { paintLogin(login, state && state.plugins); }, function () { paintLogin(null); });
     }).catch(function () {}).then(function () {
       return displayRead('secrets.list');
     }).then(function (res) {
@@ -167,128 +234,6 @@ function initSecrets() {
       showStatus(err && err.message);
     });
   });
-  var importList = root.querySelector('#secret-import-list');
-  var importStatus = root.querySelector('#secret-import-status');
-  var importRun = root.querySelector('#secret-import-run');
-  var importBulk = root.querySelector('#secret-import-bulk');
-  var importBusy = false;
-  function importNote(code) {
-    if (importStatus) importStatus.textContent = code ? String(code) : '';
-  }
-  function paintImport(entries) {
-    var items = Array.isArray(entries) ? entries : [];
-    if (!importList) return;
-    if (importBulk) importBulk.hidden = !items.length;
-    if (!items.length) {
-      importList.innerHTML = STR.uiSecrets11;
-      if (importRun) importRun.hidden = true;
-      return;
-    }
-    if (importRun) importRun.hidden = false;
-    importList.innerHTML = items.map(function (row) {
-      var name = row && row.name ? String(row.name) : '';
-      var secret = row && row.secretName ? String(row.secretName) : '';
-      var when = row && row.mtime ? String(row.mtime) : '';
-      var size = row && row.size != null ? String(row.size) : '';
-      var have = row && row.inVault === true ? STR.uiSecrets12 : STR.uiSecrets13;
-      var box = can.write ? '' : ' disabled';
-      return '<p><label><input type="checkbox" data-import-name="' + escapeHtml(name) + '" data-import-have="' + (row && row.inVault === true ? '1' : '0') + '"' + box + ' /> '
-        + escapeHtml(name) + ' / ' + escapeHtml(size) + ' / ' + escapeHtml(when) + ' / '
-        + escapeHtml(secret) + ' / ' + have + '</label></p>';
-    }).join('');
-  }
-  // 一括チェック: 1 件ずつ押さなくてよい。which は 'all'（すべて）・'new'（金庫にないものだけ）・'none'（すべて外す）
-  function checkImport(which) {
-    if (!importList || !can.write) return;
-    var boxes = importList.querySelectorAll('[data-import-name]');
-    var chosen = 0;
-    for (var i = 0; i < boxes.length; i += 1) {
-      var inVault = boxes[i].getAttribute('data-import-have') === '1';
-      // OBS の接続先は、金庫にあるなら「すべて選ぶ」でも選ばない（古い値で上書きしない）
-      var guarded = inVault && boxes[i].getAttribute('data-import-name') === 'obs-config.json';
-      var on = !guarded && (which === 'all' || (which === 'new' && !inVault));
-      boxes[i].checked = on;
-      if (on) chosen += 1;
-    }
-    importNote(which === 'none' ? '' : STR.uiSecrets17(chosen));
-  }
-  [['#secret-import-all', 'all'], ['#secret-import-new', 'new'], ['#secret-import-none', 'none']].forEach(function (pair) {
-    var button = root.querySelector(pair[0]);
-    if (button) button.addEventListener('click', function () { checkImport(pair[1]); });
-  });
-  function paintImportResult(results) {
-    var items = Array.isArray(results) ? results : [];
-    if (importRun) importRun.hidden = true;
-    if (importBulk) importBulk.hidden = true;
-    if (!importList) return;
-    if (!items.length) {
-      importList.innerHTML = STR.uiSecrets14;
-      return;
-    }
-    importList.innerHTML = items.map(function (row) {
-      var name = row && row.name ? String(row.name) : '';
-      var secret = row && row.secretName ? String(row.secretName) : '';
-      var mark = row && row.ok === true ? 'ok' : (row && row.error ? String(row.error) : 'failed');
-      return '<p>' + escapeHtml(name) + ' / ' + escapeHtml(secret) + ' / ' + escapeHtml(mark) + '</p>';
-    }).join('');
-  }
-  var scanButton = root.querySelector('#secret-import-scan');
-  if (scanButton) {
-    scanButton.addEventListener('click', function () {
-      if (importBusy || !isWindow || !can.read) return;
-      importBusy = true;
-      call('legacyImport.scan', {}).then(function (res) {
-        if (!res || res.ok === false) {
-          importNote(res && res.error === 'unknown-method' ? STR.uiSecrets16 : (res && res.error ? res.error : 'failed'));
-          paintImport([]);
-          return;
-        }
-        importNote('');
-        paintImport(res.entries);
-      }).catch(function (err) {
-        importNote(err && err.message);
-      }).then(function () {
-        importBusy = false;
-      });
-    });
-  }
-  if (importRun) {
-    importRun.addEventListener('click', function () {
-      if (importBusy || !isWindow || !can.write || !importList) return;
-      var boxes = importList.querySelectorAll('[data-import-name]');
-      var names = [];
-      for (var i = 0; i < boxes.length; i += 1) {
-        if (boxes[i].checked) names.push(boxes[i].getAttribute('data-import-name') || '');
-      }
-      if (!names.length) {
-        importNote(STR.uiSecrets15);
-        return;
-      }
-      importBusy = true;
-      call('legacyImport.run', { names: names }).then(function (res) {
-        if (!res || res.ok === false) {
-          importNote(res && res.error ? res.error : 'failed');
-          return;
-        }
-        importNote('');
-        paintImportResult(res.results);
-        refresh();
-        // お気に入りは bulk-title へ渡して足す（プラグインどうしは呼び合わない）
-        (res.results || []).forEach(function (row) {
-          if (row && row.ok === true && row.favorites) {
-            call('favorites.merge', { titles: row.favorites.titles || [], categories: row.favorites.categories || [] }).then(function (merged) {
-              if (!merged || merged.ok === false) importNote(merged && merged.error === 'unknown-method' ? STR.uiSecrets18 : (merged && merged.error ? merged.error : 'failed'));
-              else importNote(STR.favImportDone(merged.titlesAdded, merged.categoriesAdded));
-            }).catch(function () { importNote('failed'); });
-          }
-        });
-      }).catch(function (err) {
-        importNote(err && err.message);
-      }).then(function () {
-        importBusy = false;
-      });
-    });
-  }
   refresh = watchDisplay(root, loadSecrets, function (msg) {
     return !!(msg && /^(auth|modes|plugin|feature)\./.test(msg.name || ''));
   });

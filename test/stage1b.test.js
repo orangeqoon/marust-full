@@ -191,13 +191,12 @@ async function main() {
     const overlay = await request(port, 'GET', '/overlay/timer');
     assert.strictEqual(overlay.status, 404);
 
+    // 旧い平文の Cookie 受け口は無い（拡張は /ext/* だけ）。ルートは 404、別の Host は先に 421
     const saved = await request(port, 'POST', '/soop_auth', { cookies: { example: 'not-a-secret' } });
-    assert.strictEqual(saved.status, 200);
-    const soopFile = path.join(core.COOKIES_DIR, 'marust', 'soop-cookies.json');
-    assert.strictEqual(JSON.parse(fs.readFileSync(soopFile, 'utf8')).cookies.example, 'not-a-secret');
+    assert.strictEqual(saved.status, 404);
+    assert.ok(!fs.existsSync(path.join(core.COOKIES_DIR, 'marust', 'soop-cookies.json')));
     const blocked = await request(port, 'POST', '/soop_auth', { cookies: { example: 'other-secret' } }, { Host: 'evil.example:18770' });
     assert.strictEqual(blocked.status, 421);
-    assert.strictEqual(JSON.parse(fs.readFileSync(soopFile, 'utf8')).cookies.example, 'not-a-secret');
 
     const noOrigin = await tryWs(port, { Host: '127.0.0.1:18770' });
     assert.strictEqual(noOrigin.open, false);

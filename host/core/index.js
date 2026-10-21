@@ -51,7 +51,6 @@ const secretMask = Object.freeze({
 module.exports = {
   // セットの置き場（計画 C・D6）
   resolveSetDirs: setDirs.resolveSetDirs,
-  isAuthorBuild: setDirs.isAuthorBuild,
 
   // events
   EVENTS: events.EVENTS,

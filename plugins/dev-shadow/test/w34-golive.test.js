@@ -136,9 +136,9 @@ async function main() {
     const result = await check('rumble', baseDeps());
     assert.strictEqual(result.ok, true);
     assert.strictEqual(result.site, 'rumble');
-    assert.strictEqual(result.steps.length, 6);
+    assert.strictEqual(result.steps.length, 5);
     assert.deepStrictEqual(result.steps.map(function (row) { return row.step; }), [
-      'login', 'destination', 'preflight', 'shadow', 'modes', 'neontimer'
+      'login', 'destination', 'preflight', 'shadow', 'modes'
     ]);
     assert.strictEqual(byStep(result, 'login').level, 'ok');
     assert.strictEqual(byStep(result, 'login').code, 'secrets-ready');
@@ -155,13 +155,10 @@ async function main() {
     assert.strictEqual(byStep(result, 'modes').code, 'modes-live');
     assert.ok(byStep(result, 'modes').detail.indexOf('slot-rumble=live') !== -1);
     assert.ok(byStep(result, 'modes').detail.indexOf('obs-engine=live') !== -1);
-    assert.strictEqual(byStep(result, 'neontimer').level, 'todo');
-    assert.strictEqual(byStep(result, 'neontimer').code, 'neontimer-manual');
-    assert.ok(byStep(result, 'neontimer').detail.indexOf('NeonTimer') !== -1);
     assertNoSecret(result);
   });
 
-  await test('missing login points at NeonTimer import', async function () {
+  await test('missing login points at the vault', async function () {
     const result = await check('youtube', baseDeps({
       secrets: {
         describe: async function () { return { ok: false, error: 'not-found', value: TOKEN }; }
@@ -173,7 +170,7 @@ async function main() {
     const login = byStep(result, 'login');
     assert.strictEqual(login.level, 'todo');
     assert.strictEqual(login.code, 'secrets-missing');
-    assert.ok(login.detail.indexOf('NeonTimer から取り込む') !== -1);
+    assert.ok(login.detail.indexOf('ログインを金庫に入れてください') !== -1);
     assert.strictEqual(byStep(result, 'shadow').code, 'shadow-none');
     assert.strictEqual(byStep(result, 'shadow').level, 'todo');
     assertNoSecret(result);
@@ -191,7 +188,7 @@ async function main() {
     assert.strictEqual(login.level, 'warn');
     assert.strictEqual(login.code, 'secrets-partial');
     assert.ok(login.detail.indexOf('cookies.rumble-main') !== -1);
-    assert.ok(login.detail.indexOf('NeonTimer から取り込む') !== -1);
+    assert.ok(login.detail.indexOf('ログインを金庫に入れてください') !== -1);
     assert.strictEqual(login.detail.indexOf('rumble.livestream-api'), -1);
     assertNoSecret(result);
   });

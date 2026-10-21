@@ -126,6 +126,15 @@
     </section>
     <section class="card" data-panel="secrets">
       <h2>金庫</h2>
+      <div id="site-login" hidden>
+        <h3 id="site-login-title"></h3>
+        <div id="site-login-pair" hidden>
+          <p class="timer-hint" id="site-login-pair-text"></p>
+          <button class="timer-btn" type="button" id="site-login-pair-btn" data-need="write"></button>
+          <strong id="site-login-pair-code" class="pair-code" style="font-size:1.6em;letter-spacing:.15em"></strong>
+        </div>
+        <div id="site-login-list"></div>
+      </div>
       <div id="secret-list"><p class="empty">読み込み中…</p></div>
       <div id="secret-admin" hidden>
         <div class="timer-actions" id="oauth-reauth-actions">
@@ -140,18 +149,6 @@
           <button class="timer-btn" id="secret-save" type="button" data-need="write">保存</button>
         </div>
         <p id="secret-status" class="timer-hint" aria-live="polite"></p>
-        <div id="secret-import" hidden>
-          <button class="timer-btn" id="secret-import-scan" type="button">NeonTimer から取り込む</button>
-          <div id="secret-import-bulk" hidden>
-            <button class="timer-btn" id="secret-import-all" type="button">すべて選ぶ</button>
-            <button class="timer-btn" id="secret-import-new" type="button">金庫にないものだけ選ぶ</button>
-            <button class="timer-btn" id="secret-import-none" type="button">すべて外す</button>
-          </div>
-          <div id="secret-import-list"></div>
-          <button class="timer-btn" id="secret-import-run" type="button" data-need="write" hidden>選んだものを取り込む</button>
-          <p id="secret-import-status" class="timer-hint" aria-live="polite"></p>
-          <p class="timer-hint">名前・大きさ・更新日時と、取り込み先の名前だけです。値は表示しません。</p>
-        </div>
       </div>
     </section>
     <section class="card" data-panel="clients">

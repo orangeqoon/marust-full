@@ -51,8 +51,21 @@ const CONTRACTS = {
     return missingFns(require(file), ['createCore', 'resolveCoreDir', 'pathsJs']);
   } },
   'ui.panel@1': { about: '画面のパネルを持つ', check: panelsOk },
-  // 本体が実装を持つ役割（プラグインが名乗る例はまだ無い）。差し替えるときの約束は docs/PLUGIN-API.md
-  'stream.engine@1': { about: '配信エンジン（OBS の部品とつなぐもの。単位 2）。実装は host/core/engine/', core: 'host/core/engine/index.js', check: () => [] },
+  'stream.engine@1': {
+    about: '配信エンジン（OBS の部品とつなぐもの。単位 2）。実装は host/core/engine/',
+    core: 'host/core/engine/index.js',
+    check: (c) => {
+      const target = c && (c.module || c.engine || c);
+      if (!target || typeof target !== 'object') return ['エンジンまたはモジュールが存在しない'];
+      const engine = typeof target.createEngine === 'function' ? target.createEngine() : target;
+      const required = ['capabilities', 'listTargets', 'status', 'start', 'stop', 'stopAll'];
+      const missing = [];
+      required.forEach((fn) => {
+        if (typeof engine[fn] !== 'function') missing.push('関数 ' + fn);
+      });
+      return missing;
+    }
+  },
   'vault-store@1': { about: '金庫の保存先の差し替え（K6）。実装は host/core/vault-store-file.js', core: 'host/core/vault-store-file.js', check: () => [] },
   'auth.provider@1': { about: 'ログインの提供元（予約）。実装はまだ無い', core: '', check: () => [] }
 };

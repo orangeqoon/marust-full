@@ -30,7 +30,7 @@ const readTokenFile = (t, name) => JSON.parse(fs.readFileSync(path.join(t.servic
 test('開発者モードがオン: CLI と MCP の合言葉が置かれ、承認なしの native（read と write だけ）として通る', () => {
   const t = setup();
   try {
-    const out = autopair.sync({ clients: t.clients, servicesDir: t.services, devModeOn: () => true, env: {} });
+    const out = autopair.sync({ clients: t.clients, servicesDir: t.services, devModeOn: () => true, env: { MARUST_DEV_AUTOPAIR: '1' } });
     assert.strictEqual(out.on, true);
     assert.strictEqual(out.made.length, 2);
     for (const file of ['marust-cli.json', 'marust-mcp.json']) {
@@ -47,10 +47,10 @@ test('開発者モードがオン: CLI と MCP の合言葉が置かれ、承認
 test('もう一度呼んでも増えない（有効な合言葉はそのまま）', () => {
   const t = setup();
   try {
-    autopair.sync({ clients: t.clients, servicesDir: t.services, devModeOn: () => true, env: {} });
+    autopair.sync({ clients: t.clients, servicesDir: t.services, devModeOn: () => true, env: { MARUST_DEV_AUTOPAIR: '1' } });
     const before = t.clients.list().length;
     const tokenBefore = readTokenFile(t, 'marust-cli.json').token;
-    const again = autopair.sync({ clients: t.clients, servicesDir: t.services, devModeOn: () => true, env: {} });
+    const again = autopair.sync({ clients: t.clients, servicesDir: t.services, devModeOn: () => true, env: { MARUST_DEV_AUTOPAIR: '1' } });
     assert.strictEqual(again.made.length, 0);
     assert.strictEqual(t.clients.list().length, before);
     assert.strictEqual(readTokenFile(t, 'marust-cli.json').token, tokenBefore);
@@ -60,11 +60,11 @@ test('もう一度呼んでも増えない（有効な合言葉はそのまま�
 test('取り消された・壊れた合言葉は作り直す', () => {
   const t = setup();
   try {
-    autopair.sync({ clients: t.clients, servicesDir: t.services, devModeOn: () => true, env: {} });
+    autopair.sync({ clients: t.clients, servicesDir: t.services, devModeOn: () => true, env: { MARUST_DEV_AUTOPAIR: '1' } });
     const old = readTokenFile(t, 'marust-mcp.json').token;
     t.clients.revoke(t.clients.authenticate(old).id);
     fs.writeFileSync(path.join(t.services, 'marust-cli.json'), 'not json');
-    const again = autopair.sync({ clients: t.clients, servicesDir: t.services, devModeOn: () => true, env: {} });
+    const again = autopair.sync({ clients: t.clients, servicesDir: t.services, devModeOn: () => true, env: { MARUST_DEV_AUTOPAIR: '1' } });
     assert.strictEqual(again.made.length, 2);
     assert.ok(t.clients.authenticate(readTokenFile(t, 'marust-mcp.json').token));
     assert.ok(t.clients.authenticate(readTokenFile(t, 'marust-cli.json').token));
@@ -76,10 +76,10 @@ test('開発者モードを切る・MARUST_AI_PAIR=1: 自動で作った端末�
   try {
     const hand = t.clients.beginPairing({ name: '手でペア', kind: 'native', permissions: ['read'] });
     t.clients.redeem(hand.code, { kind: 'native' });
-    autopair.sync({ clients: t.clients, servicesDir: t.services, devModeOn: () => true, env: {} });
+    autopair.sync({ clients: t.clients, servicesDir: t.services, devModeOn: () => true, env: { MARUST_DEV_AUTOPAIR: '1' } });
     const tokens = ['marust-cli.json', 'marust-mcp.json'].map((f) => readTokenFile(t, f).token);
-    for (const env of [{}, { MARUST_AI_PAIR: '1' }]) {
-      autopair.sync({ clients: t.clients, servicesDir: t.services, devModeOn: () => true, env: {} });
+    for (const env of [{ MARUST_DEV_AUTOPAIR: '1' }, { MARUST_DEV_AUTOPAIR: '1', MARUST_AI_PAIR: '1' }]) {
+      autopair.sync({ clients: t.clients, servicesDir: t.services, devModeOn: () => true, env: { MARUST_DEV_AUTOPAIR: '1' } });
       const off = autopair.sync({ clients: t.clients, servicesDir: t.services, devModeOn: () => env.MARUST_AI_PAIR !== '1' ? false : true, env: env });
       assert.strictEqual(off.on, false);
       assert.strictEqual(off.revoked, 0);
@@ -89,6 +89,18 @@ test('開発者モードを切る・MARUST_AI_PAIR=1: 自動で作った端末�
       assert.ok(names.indexOf('手でペア') !== -1);
       assert.ok(names.some((n) => n.slice(-4) === '（自動）'));
     }
+  } finally { t.done(); }
+});
+
+test('環境変数 MARUST_DEV_AUTOPAIR=1 が無いと、開発者モードでも作らない（本体では常に無効）', () => {
+  const t = setup();
+  try {
+    const out = autopair.sync({ clients: t.clients, servicesDir: t.services, devModeOn: () => true, env: {} });
+    assert.strictEqual(out.on, false);
+    assert.strictEqual(out.made.length, 0);
+    assert.strictEqual(autopair.enabled({ devModeOn: () => true, env: { MARUST_DEV_AUTOPAIR: '0' } }), false);
+    assert.strictEqual(autopair.enabled({ devModeOn: () => false, env: { MARUST_DEV_AUTOPAIR: '1' } }), false);
+    assert.ok(!fs.existsSync(path.join(t.services, 'marust-cli.json')));
   } finally { t.done(); }
 });
 

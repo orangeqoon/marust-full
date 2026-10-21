@@ -1,19 +1,16 @@
 'use strict';
 
 /**
- * 開発中の自動ペアリング。
- * 開発者モードがオンのあいだは、ペアリングのコードを使わずに、CLI（node cli/marust.js）と AI（MCP）の合言葉を丸スト自身が作って置く。
+ * 開発中の自動ペアリング。本体では常に無効（承認を迂回する道なので、置き場のフォルダの有無などでは開けない）。
+ * 開発する人が、起動の環境変数 MARUST_DEV_AUTOPAIR=1 を付け、かつ開発者モードがオンのときだけ、
+ * ペアリングのコードを使わずに、CLI（node cli/marust.js）と AI（MCP）の合言葉を丸スト自身が作って置く。
  * 置く先は pair と同じ場所（services/marust-cli.json・marust-mcp.json）なので、CLI と MCP は何も変えずにそのまま使える。
- * 承認は要らない（read と write。非常停止は付けない）。
- * 開発者モードを切る、または MARUST_AI_PAIR=1、または DEV_AUTOPAIR を false にすると、自動で作った端末を全部取り消して合言葉も消す
- * → 公開前にペアリングを必須に戻すスイッチはこの 3 つのどれか（コードの変更は DEV_AUTOPAIR の 1 行）。
+ * 承認は要らない（read と write。非常停止は付けない）。MARUST_AI_PAIR=1 のときは作らない。
  */
 
 const fs = require('fs');
 const path = require('path');
 
-// リリースの前に false にすると、開発者モードでもペアリング必須に戻る（ペアの仕組み自体は残してある）。
-const DEV_AUTOPAIR = true;
 const AUTO_SUFFIX = '（自動）';
 const TARGETS = Object.freeze([
   { file: 'marust-cli.json', name: 'CLI' + AUTO_SUFFIX },
@@ -38,15 +35,13 @@ function writeToken(file, token, name) {
 
 function enabled(opts) {
   const env = opts && opts.env ? opts.env : process.env;
-  if (!DEV_AUTOPAIR) return false;
+  if (env.MARUST_DEV_AUTOPAIR !== '1') return false;
   if (env.MARUST_AI_PAIR === '1') return false;
-  // 配る版（作者用の置き場 plugins-author が無い配り物）では、DEV_AUTOPAIR に頼らず自動ペアリングを作らない（承認を迂回する道なので核の中で守る。計画 X・A6）。authorBuild を渡さない呼び方（試験）は従来どおり
-  if (opts && opts.authorBuild === false) return false;
   return !!(opts && typeof opts.devModeOn === 'function' && opts.devModeOn());
 }
 
 /**
- * @param {{ clients: any, servicesDir: string, devModeOn: () => boolean, authorBuild?: boolean, env?: object }} opts
+ * @param {{ clients: any, servicesDir: string, devModeOn: () => boolean, env?: object }} opts
  * @returns {{ on: boolean, made: string[], revoked: number }}
  */
 function sync(opts) {
@@ -70,4 +65,4 @@ function sync(opts) {
   return out;
 }
 
-module.exports = { sync, enabled, DEV_AUTOPAIR, AUTO_SUFFIX };
+module.exports = { sync, enabled, AUTO_SUFFIX };

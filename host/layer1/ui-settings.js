@@ -53,13 +53,13 @@ function list(value, max) {
 const HIDDEN_MAX = 100; // 隠した内蔵プラグインの上限（P3）。内蔵は約 50 なので足りる
 
 /**
- * 今の段階（basic / standard / advanced）。保存した uiLevel があればそれ。無いときは、開発者モードか作者用の配り物なら advanced、そうでなければ basic。
+ * 今の段階（basic / standard / advanced）。保存した uiLevel があればそれ。無いときは、開発者モードなら advanced、そうでなければ basic（版ごとの初回の段階は、初回に保存する ui-settings の既定が決める）。
  * 画面（ui.getSettings）と、プラグインを読み込む門（registry の tierFor）が同じ答えになるよう、ここだけで決める。
  */
 function resolveUiLevel(stored, options) {
   const o = options || {};
   if (ENUMS.uiLevel.indexOf(stored) !== -1) return stored;
-  return o.devMode === true || o.authorBuild === true ? 'advanced' : 'basic';
+  return o.devMode === true ? 'advanced' : 'basic';
 }
 
 function createUiSettings(deps) {

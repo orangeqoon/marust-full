@@ -73,6 +73,7 @@
       "updateTitle",
       "updateCategory",
       "isConfigured",
+      "loginNeeds",
       "suggestCategories"
     ]
   },

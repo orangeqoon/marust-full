@@ -847,6 +847,10 @@ function createObsLocalEngine(options) {
   }
 
   function stop(id, flags) {
+    if (id == null || id === '') {
+      shutdown();
+      return Promise.resolve({ ok: true });
+    }
     if (String(id) === MAIN_ID) {
       if (flags && flags.reason === 'manual') suppressObsStopping = true;
       return controlMain('stop');
@@ -1092,6 +1096,7 @@ function createObsLocalEngine(options) {
     connect: start,
     reconnect,
     stop,
+    close: shutdown,
     setEnabled,
     setKey,
     create,

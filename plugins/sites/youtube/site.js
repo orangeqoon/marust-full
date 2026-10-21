@@ -24,7 +24,8 @@ const KNOWN = new Set([
   'unauthorized',
   'refresh-failed',
   'refresh-unavailable',
-  'network'
+  'network',
+  'invalid-response'
 ]);
 
 function fail(code) {
@@ -90,6 +91,13 @@ function createSiteYoutube(deps) {
   let lastOk = null;
   let lastAt = '';
   let lastError = '';
+  let stage = '';
+  let lastStage = '';
+  let lastStatusError = '';
+  let lastStatusAt = '';
+  let statusStage = '';
+  let credentialsState = 'unchecked';
+  let credentialsError = '';
 
   function nowDate() {
     try {
@@ -157,6 +165,7 @@ function createSiteYoutube(deps) {
     lastOk = ok === true;
     lastAt = nowIso();
     lastError = code;
+    lastStage = stage;
     if (ok) return { ok: true };
     return { ok: false, error: code };
   }
@@ -166,6 +175,8 @@ function createSiteYoutube(deps) {
   }
 
   async function loadParsed(box) {
+    credentialsState = 'vault-unavailable';
+    credentialsError = 'unavailable';
     const target = box || ctx;
     if (!target || !target.secrets || typeof target.secrets.get !== 'function') return null;
     let got;
@@ -174,9 +185,15 @@ function createSiteYoutube(deps) {
     } catch (err) {
       return null;
     }
-    if (!got || got.ok !== true || typeof got.value !== 'string') return null;
+    if (!got || got.ok !== true || typeof got.value !== 'string') {
+      credentialsError = got && ['not-found', 'not-declared', 'decrypt-failed', 'unavailable'].includes(got.error) ? got.error : 'unavailable';
+      credentialsState = credentialsError === 'not-found' ? 'missing' : 'vault-unavailable';
+      return null;
+    }
+    credentialsError = '';
     const parsed = parseOauth(got.value);
-    if (!parsed) return null;
+    if (!parsed) { credentialsState = 'invalid-format'; return null; }
+    credentialsState = configured(parsed) ? 'ready' : 'incomplete';
     remember(parsed.client_id);
     remember(parsed.client_secret);
     remember(parsed.refresh_token);
@@ -273,6 +290,8 @@ function createSiteYoutube(deps) {
     if (!memory || !memory.refresh_token || !memory.client_id || !memory.client_secret) {
       throw fail('refresh-unavailable');
     }
+    const resumeStage = stage;
+    stage = 'refresh-token';
     const res = await raw(TOKEN_URL, {
       method: 'POST',
       headers: {
@@ -281,12 +300,13 @@ function createSiteYoutube(deps) {
       },
       body: oauth.refreshBody(memory)
     });
-    if (res.status !== 200) throw fail('refresh-failed');
+    if (res.status !== 200) throw fail(res.status === 400 || res.status === 401 ? 'refresh-failed' : httpCode(res.status));
     const json = parseJson(await readText(res));
     const fresh = oauth.applyRefresh(memory, json, nowMs());
     if (!fresh) throw fail('refresh-failed');
     fresh.forEach(remember);
     await writeBack();
+    stage = resumeStage;
   }
 
   async function writeBack() {
@@ -345,12 +365,17 @@ function createSiteYoutube(deps) {
   }
 
   async function listAt(kind) {
+    stage = 'list-' + kind;
     const res = await call(listUrl(kind), function (token) {
       return authInit(token, 'GET');
     });
     if (res.status === 401) throw fail('unauthorized');
-    if (res.status < 200 || res.status >= 300) return null;
-    return firstBroadcast(parseJson(await readText(res)));
+    if (res.status < 200 || res.status >= 300) throw fail(httpCode(res.status));
+    const json = parseJson(await readText(res));
+    if (!json || !Array.isArray(json.items)) throw fail('invalid-response');
+    const item = firstBroadcast(json);
+    if (json.items.length && !item) throw fail('invalid-response');
+    return item;
   }
 
   async function findBroadcast() {
@@ -369,7 +394,9 @@ function createSiteYoutube(deps) {
       if (mode === 'legacy') return { ok: true };
       if (mode === 'shadow') return { ok: true, dryRun: true };
       const title = input && typeof input.title === 'string' ? input.title : '';
+      stage = 'validate-title';
       if (!title.trim() || title.length > MAX_TEXT) return finish(false, 'needs-title');
+      stage = 'credentials';
       try {
         const parsed = await loadParsed();
         if (!configured(parsed)) return finish(false, 'not-configured');
@@ -381,6 +408,7 @@ function createSiteYoutube(deps) {
           id: found.item.id,
           snippet: copySnippet(found.item.snippet, title)
         });
+        stage = 'update-title';
         const res = await call(UPDATE_URL, function (token) {
           return authInit(token, 'PUT', body);
         });
@@ -398,19 +426,26 @@ function createSiteYoutube(deps) {
   async function getStatus() {
     return enqueue(async function () {
       if (modeOf(ctx) !== 'live') return {};
+      stage = 'credentials';
       try {
         const parsed = await loadParsed();
-        if (!configured(parsed)) return {};
+        lastStatusAt = nowIso();
+        lastStatusError = '';
+        if (!configured(parsed)) { lastStatusError = 'not-configured'; statusStage = stage; return {}; }
         adopt(parsed);
         resetRun();
         const found = await findBroadcast();
-        if (!found) return { live: false };
+        statusStage = stage;
+        if (!found) { lastStatusError = 'no-broadcast'; return { live: false }; }
         const out = { live: found.live };
         const title = found.item.snippet && found.item.snippet.title;
         if (typeof title === 'string' && title) out.title = title;
         return out;
       } catch (err) {
-        log('warn', 'status ' + asCode(err));
+        lastStatusAt = nowIso();
+        lastStatusError = asCode(err);
+        statusStage = stage;
+        log('warn', 'status ' + lastStatusError);
         return {};
       }
     });
@@ -438,7 +473,13 @@ function createSiteYoutube(deps) {
       mode: modeOf(box),
       lastOk: lastOk,
       lastAt: lastAt,
-      lastError: lastError
+      lastError: lastError,
+      lastStage: lastStage,
+      lastStatusError: lastStatusError,
+      lastStatusAt: lastStatusAt,
+      statusStage: statusStage,
+      credentialsState: credentialsState,
+      credentialsError: credentialsError
     };
   }
 
@@ -458,6 +499,9 @@ function createSiteYoutube(deps) {
     lastOk = null;
     lastAt = '';
     lastError = '';
+    stage = lastStage = lastStatusError = lastStatusAt = statusStage = '';
+    credentialsState = 'unchecked';
+    credentialsError = '';
   }
 
   async function health() {

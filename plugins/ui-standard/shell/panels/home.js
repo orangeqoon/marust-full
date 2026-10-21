@@ -20,7 +20,7 @@ function homeTipFeature(rows, id) {
   }
   return null;
 }
-var HOME_EVENTS = ['stream.stopped', 'modes.changed', 'slot.acquired', 'site.trouble', 'engine.target.changed', 'broadcast.result', 'broadcast.stopped', 'signal.stateChanged', 'auth.updated'];
+var HOME_EVENTS = ['stream.stopped', 'modes.changed', 'slot.acquired', 'site.trouble', 'engine.target.changed', 'broadcast.result', 'broadcast.stopped', 'signal.stateChanged', 'auth.updated', 'stream.metadata.changed'];
 
 function homeSiteName(row, id) {
   if (row && row.site && row.site.name) return row.site.name;
@@ -47,6 +47,7 @@ function homeSiteRows(modeRows, targets) {
       tier: row.site.tier === 'core' ? 'core' : 'extra',
       experimental: row.stability === 'experimental',
       send: row.send === true,
+      configured: typeof row.configured === 'boolean' ? row.configured : null,
       targets: mine,
       destState: !mine.length ? 'none' : (live ? 'live' : (starting ? 'connecting' : 'stopped')),
       destEnabled: mine.length > 0 && mine.every(function (t) { return t.enabled === true; }),
@@ -89,7 +90,13 @@ function homeMainOutputLabel(site, siteNames) {
 function homeApplyResultSentence(res, siteNames) {
   if (!res) return { text: (typeof STR !== 'undefined' ? STR.homeApplyFailed : '反映できませんでした'), kind: 'ng' };
   if (res.ok === false && res.error === 'no-plugin') return { text: (typeof STR !== 'undefined' ? STR.noTitlePlugin : '題名を送るプラグインがありません'), kind: 'warn' };
-  var rows = Array.isArray(res.results) ? res.results : [];
+  var allRows = Array.isArray(res.results) ? res.results : [];
+  var rows = allRows.filter(function (r) {
+    if (!r || !r.id) return false;
+    if (r.id === 'sample' || r.id === 'sample-v2') return false;
+    if (r.message === 'no-fanout' || r.message === 'superseded-by-v2') return false;
+    return true;
+  });
   if (!rows.length) return { text: (typeof STR !== 'undefined' ? STR.homeApplyNone : '「題名を送る」になっているサイトがありません。'), kind: 'warn' };
   if (rows.every(function (r) { return r.result === 'skip'; })) {
     var skipMsg = typeof STR !== 'undefined' && STR.homeApplyAllSkipped ? STR.homeApplyAllSkipped : (typeof STR !== 'undefined' ? STR.homeApplySkipped : '送っていません。');
@@ -198,7 +205,9 @@ function ensureHomePanel() {
   setup.appendChild(l1);
   setup.appendChild(l2);
   setup.appendChild(mk('button', 'timer-btn primary', STR.homeApplyAll, { id: 'home-apply', type: 'button', 'data-need': 'write' }));
+  setup.appendChild(mk('button', 'timer-btn', 'タイトル変更の詳細画面', { id: 'home-title-plugin-open', type: 'button' }));
   section.appendChild(setup);
+  section.appendChild(mk('p', 'timer-hint', '', { id: 'home-title-plugin-bar', 'aria-live': 'polite' }));
   section.appendChild(mk('p', 'timer-hint', '', { id: 'home-apply-status', 'aria-live': 'polite' }));
 
   // 配信ボタン: 全配信開始・全配信停止と、サイトごとのボタン（止まっている＝薄い赤、配信中＝明るい緑）
@@ -248,12 +257,32 @@ function initHome() {
   if (!root || root.dataset.bound === '1') return;
   root.dataset.bound = '1';
   function el(id) { return root.querySelector('#' + id); }
-  var state = { allTargets: [], isWindow: false, sites: [], groups: [], login: null, slots: {}, alert: null, tips: { pending: '', features: [] }, uplink: null, uplinkOff: false, watch: null, liveCount: null, controlOn: false, obs: null, ids: [], stats: {}, destRows: [], mainMsg: '', siteLive: {}, obsStopped: false, lastStopAt: 0, prevLive: null };
+  var state = { allTargets: [], isWindow: false, sites: [], groups: [], login: null, slots: {}, alert: null, tips: { pending: '', features: [] }, uplink: null, uplinkOff: false, watch: null, liveCount: null, controlOn: false, obs: null, ids: [], stats: {}, destRows: [], mainMsg: '', siteLive: {}, obsStopped: false, lastStopAt: 0, prevLive: null, titlePlugin: null };
   var busyFast = false;
   var busySlow = false;
   var busyStats = false;
   attachFavorites(el('home-title'), 'title');
   attachFavorites(el('home-category'), 'category');
+  var homeDraftTimer = null;
+  function pushHomeTitleDraft() {
+    if (homeDraftTimer) clearTimeout(homeDraftTimer);
+    homeDraftTimer = setTimeout(function () {
+      call('favorites.get', {
+        title: el('home-title').value,
+        category: el('home-category').value,
+        source: 'home'
+      }).then(function (r) {
+        if (r && r.state) { state.titlePlugin = r.state; paintTitlePluginBar(); }
+      }).catch(function () {});
+    }, 250);
+  }
+  el('home-title').addEventListener('input', pushHomeTitleDraft);
+  el('home-title').addEventListener('change', pushHomeTitleDraft);
+  el('home-category').addEventListener('input', pushHomeTitleDraft);
+  el('home-category').addEventListener('change', pushHomeTitleDraft);
+  if (el('home-title-plugin-open')) {
+    el('home-title-plugin-open').addEventListener('click', function () { openPanel('plugin:bulk-title:main'); });
+  }
   var timerEvent = null;
   var openDetails = {};   // 詳細を開いているサイト（描き直しても開いたままにする）
   var keyBoxOpen = {};    // キー差し替えの入力欄を開いているターゲット
@@ -736,8 +765,34 @@ function initHome() {
     });
     box.appendChild(row);
   }
+  function paintTitlePluginBar() {
+    var bar = el('home-title-plugin-bar');
+    if (!bar) return;
+    var tp = state.titlePlugin;
+    var activeSites = state.sites.filter(function (s) { return s.send; });
+    if (!activeSites.length) {
+      bar.textContent = '【タイトル変更プラグイン】現在「題名を送る」がオンのサイトはありません（下のサイト一覧でオンにできます）';
+      return;
+    }
+    var resMap = {};
+    if (tp && Array.isArray(tp.siteResults)) {
+      tp.siteResults.forEach(function (r) { if (r && r.site) resMap[r.site] = r; });
+    }
+    var parts = activeSites.map(function (s) {
+      var r = resMap[s.site];
+      var status = '待機中';
+      if (tp && tp.phase === 'sending') status = '送信中…';
+      else if (r && r.result === 'ok') status = '✓反映済';
+      else if (r && (r.message === 'not-configured' || r.message === 'not-configured-timeout')) status = '⚠未設定';
+      else if (r && r.result === 'error') status = '×失敗';
+      else if (s.configured === false) status = '⚠未設定';
+      return s.name + ': ' + status;
+    });
+    var prefix = (tp && tp.phase === 'sending') ? '【タイトル変更プラグイン: 送信中…】 ' : '【タイトル変更プラグイン同期中】 ';
+    bar.textContent = prefix + parts.join(' ／ ');
+  }
   function paintAll() {
-    paintAlert(); paintTip(); paintObs(); paintSites(); paintButtons(); paintLine(); paintControl();
+    paintAlert(); paintTip(); paintObs(); paintSites(); paintButtons(); paintLine(); paintControl(); paintTitlePluginBar();
     if (modalKey && !Object.keys(keyBoxOpen).some(function (k) { return keyBoxOpen[k]; })) paintModal();
   }
 
@@ -764,6 +819,19 @@ function initHome() {
       call('engine.listTargets').then(function (r) { mode.targets = Array.isArray(r) ? r : []; }).catch(function () {}),
       call('home.getState', {}).then(function (r) {
         if (r && r.ok === true) { state.slots = r.slots || {}; state.alert = r.alert || null; }
+      }).catch(function () {}),
+      call('favorites.get', {}).then(function (r) {
+        if (r && r.state) {
+          state.titlePlugin = r.state;
+          var ti = el('home-title');
+          var ci = el('home-category');
+          if (ti && typeof r.state.title === 'string' && document.activeElement !== ti && ti.value !== r.state.title && (r.state.title || !ti.value)) {
+            ti.value = r.state.title;
+          }
+          if (ci && typeof r.state.category === 'string' && document.activeElement !== ci && ci.value !== r.state.category && (r.state.category || !ci.value)) {
+            ci.value = r.state.category;
+          }
+        }
       }).catch(function () {}),
       call('tips.get', {}).then(function (r) {
         if (r && r.ok === true) state.tips = { pending: r.tipPending || '', features: Array.isArray(r.features) ? r.features : [] };
@@ -975,7 +1043,8 @@ function initHome() {
       if (!res) return;
       var info = homeApplyResultSentence(res, state.sites);
       sayApply(info.text, info.kind);
-    }).catch(function () { sayApply(STR.homeApplyFailed, 'ng'); });
+      refreshFast();
+    }).catch(function () { sayApply(STR.homeApplyFailed, 'ng'); refreshFast(); });
   });
   el('home-start').addEventListener('click', function () {
     if (!state.controlOn || !can.write) return;

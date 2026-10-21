@@ -21,7 +21,8 @@
       ],
       "defaultMode": "legacy",
       "actions": {
-        "getStatus": "read"
+        "getStatus": "read",
+        "setToken": "write"
       },
       "panels": [
         {

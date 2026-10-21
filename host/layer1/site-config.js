@@ -31,6 +31,8 @@ function createSiteConfig(options) {
   const reader = opts.reader || null;
   const getSites = typeof opts.getSites === 'function' ? opts.getSites : async () => [];
   // 二層目（plugin-layers.json の layer2）の動いているプラグインが宣言している金庫の名前（名前だけ。L11b）
+  // 拡張が 1 つでもペアリング済みか（端末の一覧から kind が extension の行があるかだけ。名前・ID は出さない。N2）
+  const extensionPaired = typeof opts.extensionPaired === 'function' ? opts.extensionPaired : () => false;
   const getDeclared = typeof opts.getDeclaredNames === 'function' ? opts.getDeclaredNames : () => [];
 
   async function readJson(name) {
@@ -60,7 +62,9 @@ function createSiteConfig(options) {
       const hasLayer2 = declared.some((n) => n.startsWith(site.id + '.') || n.startsWith('cookies.' + site.id + '-'));
       out.push({ id: site.id, type: login.type, oauthName: login.type === 'oauth' ? name : '', present: !!name && have.has(name), hasLayer2: hasLayer2 });
     }
-    return { ok: true, sites: out };
+    let paired = false;
+    try { paired = extensionPaired() === true; } catch (_) { paired = false; }
+    return { ok: true, sites: out, extension: { paired: paired } };
   }
 
   async function findSite(id) {

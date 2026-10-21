@@ -105,7 +105,7 @@ const noLeak = (value, root) => !JSON.stringify(value).toLowerCase().includes(ro
     } finally { t.done(); }
   });
 
-  await test('配信中でも普通のプラグインは reload できる。OBS を握るものだけ streaming-slot・reloadAll はそれを飛ばす・restart は承認待ち', async () => {
+  await test('配信中でも普通のプラグインは reload できる。OBS を握るものだけ承認待ち・reloadAll はそれを飛ばす・restart は承認待ち', async () => {
     const t = setup({ liveCount: 1 });
     try {
       t.put(t.builtin, 'demo');
@@ -119,7 +119,9 @@ const noLeak = (value, root) => !JSON.stringify(value).toLowerCase().includes(ro
       const ok = await t.api.call('plugin.reload', { id: 'demo' }, t.mcpCtx);
       assert.strictEqual(ok.ok, true, JSON.stringify(ok));
       assert.strictEqual(ok.result, 'ok');
-      assert.strictEqual((await t.api.call('plugin.reload', { id: 'obs-holder' }, t.mcpCtx)).error, 'streaming-slot');
+      const heldReload = await t.api.call('plugin.reload', { id: 'obs-holder' }, t.mcpCtx);
+      assert.strictEqual(heldReload.pending, true);
+      assert.strictEqual((await t.api.call('approval.approve', { id: heldReload.approvalId }, t.win)).result.result, 'ok');
       const all = await t.api.call('plugins.reloadAll', {}, t.mcpCtx);
       assert.strictEqual(all.ok, true);
       const byId = {};
@@ -138,7 +140,7 @@ const noLeak = (value, root) => !JSON.stringify(value).toLowerCase().includes(ro
     } finally { t.done(); }
   });
 
-  await test('配信中か分からない（getState が throw）ときは、OBS を握るものだけ閉じる', async () => {
+  await test('配信中か分からない（getState が throw）ときは、OBS を握るものだけ承認待ち', async () => {
     const t = setup();
     try {
       t.put(t.builtin, 'demo');
@@ -149,7 +151,7 @@ const noLeak = (value, root) => !JSON.stringify(value).toLowerCase().includes(ro
       fs.writeFileSync(path.join(dir, 'manifest.json'), JSON.stringify(m));
       await t.registry.loadAll();
       t.state.stateBroken = true;
-      assert.strictEqual((await t.api.call('plugin.reload', { id: 'obs-holder' }, t.win)).error, 'streaming-slot');
+      assert.strictEqual((await t.api.call('plugin.reload', { id: 'obs-holder' }, t.win)).pending, true);
       assert.strictEqual((await t.api.call('plugin.reload', { id: 'demo' }, t.win)).result, 'ok');
       const all = await t.api.call('plugins.reloadAll', {}, t.win);
       const byId = {};
@@ -159,7 +161,7 @@ const noLeak = (value, root) => !JSON.stringify(value).toLowerCase().includes(ro
     } finally { t.done(); }
   });
 
-  await test('本物の形: sites/<x> の slot の役目と、同じサイトの site の役目は、配信中どちらも streaming-slot・reloadAll は両方飛ばす', async () => {
+  await test('本物の形: sites/<x> の slot の役目と、同じサイトの site の役目は、配信中は slot だけ承認待ち・site は単品で読み直せる', async () => {
     const t = setup({ liveCount: 1 });
     try {
       const siteDir = path.join(t.builtin, 'sites', 'demo-site');
@@ -185,8 +187,10 @@ const noLeak = (value, root) => !JSON.stringify(value).toLowerCase().includes(ro
       const slot = rows.find((r) => r.role === 'slot');
       const site = rows.find((r) => r.role === 'site');
       assert.ok(slot && site);
-      assert.strictEqual((await t.api.call('plugin.reload', { id: slot.id }, t.win)).error, 'streaming-slot');
-      assert.strictEqual((await t.api.call('plugin.reload', { id: site.id }, t.win)).error, 'streaming-slot');
+      const originalSlot = t.registry.getRunning().find((r) => r.id === slot.id).instance;
+      assert.strictEqual((await t.api.call('plugin.reload', { id: slot.id }, t.win)).pending, true);
+      assert.strictEqual((await t.api.call('plugin.reload', { id: site.id }, t.win)).result, 'ok');
+      assert.strictEqual(t.registry.getRunning().find((r) => r.id === slot.id).instance, originalSlot, 'site reload must not touch the slot instance');
       const all = await t.api.call('plugins.reloadAll', {}, t.win);
       const skipped = all.results.filter((row) => row.message === 'streaming-slot').map((row) => row.id).sort();
       assert.deepStrictEqual(skipped, [site.id, slot.id].sort());

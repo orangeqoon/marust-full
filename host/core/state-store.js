@@ -230,6 +230,16 @@ function createStateStore(options) {
     return { count: count };
   }
 
+  function deleteDestination(id) {
+    if (readOnly) return false;
+    if (typeof id !== 'string' || !id) return false;
+    const index = state.destinations.findIndex((row) => row && row.id === id);
+    if (index === -1) return false;
+    state.destinations.splice(index, 1);
+    save();
+    return true;
+  }
+
   function warning() {
     return warningText;
   }
@@ -241,6 +251,7 @@ function createStateStore(options) {
     save,
     snapshot,
     putDestination,
+    deleteDestination,
     updateActual,
     destinationSummary,
     filePath,

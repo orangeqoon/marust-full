@@ -239,10 +239,15 @@ function createSiteSoop(deps) {
     return true;
   }
 
+  // 足りない物を種類だけで答える（値は返さない）。isConfigured はこれの ready と同じ答え
+  async function loginNeeds() {
+    if (!cookieHeader(await readSecret(COOKIE))) return { ready: false, need: 'cookies', how: 'extension' };
+    if (!parseCapture(await readSecret(CAPTURE))) return { ready: false, need: 'config', how: 'extension' };
+    return { ready: true, need: null, how: 'extension' };
+  }
+
   async function isConfigured() {
-    const header = cookieHeader(await readSecret(COOKIE));
-    const template = parseCapture(await readSecret(CAPTURE));
-    return !!(header && template);
+    return (await loginNeeds()).ready;
   }
 
   async function updateMetadata(input, meta) {
@@ -345,6 +350,7 @@ function createSiteSoop(deps) {
     destroy: destroy,
     health: health,
     isConfigured: isConfigured,
+    loginNeeds: loginNeeds,
     updateMetadata: updateMetadata,
     getStatus: getStatus,
     actions: { getStatus: panelStatus }

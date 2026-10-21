@@ -98,7 +98,7 @@
     "note": "計画 X（PLAN-X-run-all.md）の見張り。数えるのは test/_core-x.js。ゼロ目標（P1・P4・P8）は減ったら上限を下げる。大きさ（P7）は上限以下。keepIdRefs は理由つきの例外（'ファイル → id': 理由）。P1b（json/html/css）と P4 の _community・marust-plugins は Q15 で足した数え方（2026-10-12）。 C3/C4: shellを外へ移し参照/配置の上限を再測定。核にshell-pickを1ファイル追加。C4 見直し: plugin-scaffold を核に戻し hostLines を再測定。C5: ctx-ports.js を足し hostFiles/hostLines を再測定。C5 見直し: always の口と obs の付け方で hostLines を再測定。",
     "pluginIdRefs": 0,
     "pluginIdRefsAssets": 23,
-    "keepIdRefsMax": 5,
+    "keepIdRefsMax": 4,
     "stringsPluginPrefixes": [
       "migration",
       "gcal",
@@ -112,7 +112,6 @@
     "hostLines": 21066,
     "apiNamespaces": 24,
     "keepIdRefs": {
-      "host/layer1/capture-receiver.js → soop": "旧い平文の経路（作者の印があるときだけ開く）の中のサイト名。plugins-author への切り出しは見送り（QUESTIONS Q9）",
       "host/layer1/migration-bundle.js → hotkeys": "同上（引っ越しの節の名前）",
       "host/layer1/settings-export.js → hotkeys": "設定ファイルの節の名前（hotkeys.json を書く節）。キーの検査は keys-port のまま（A3 の割りは見送り。QUESTIONS Q9）",
       "host/layer1/plugin-install.js → backup": "プラグインの id ではなく、書式の名前（format: 'backup'）",

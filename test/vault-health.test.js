@@ -26,7 +26,7 @@ async function main() {
     // 空の金庫は「失われた」ではない
     const empty = open(dir);
     await empty.ready;
-    assert.deepStrictEqual(await empty.health(), { ok: true, usable: true, reason: '', store: 'file', total: 0, readable: 0, unreadable: 0, lost: false });
+    assert.deepStrictEqual(await empty.health(), { ok: true, usable: true, reason: '', store: 'file', total: 0, readable: 0, unreadable: 0, lost: false, backendMismatch: 0, decryptFailures: 0 });
 
     // 読める 2 件
     await empty.set('a.one', SECRET, 'local-window');
@@ -47,6 +47,14 @@ async function main() {
     assert.strictEqual(bad.readable, 0);
     assert.strictEqual(bad.unreadable, 2);
     assert.strictEqual(bad.lost, true);
+    assert.strictEqual(bad.decryptFailures, 2);
+    assert.strictEqual(bad.backendMismatch, 0);
+    const otherBackend = createFakeBackend();
+    otherBackend.id = 'different-test-backend';
+    const mismatched = await open(dir, otherBackend).health();
+    assert.strictEqual(mismatched.backendMismatch, 2);
+    assert.strictEqual(mismatched.decryptFailures, 0);
+    assert.ok(!JSON.stringify(mismatched).includes(SECRET));
 
     // 一部だけ読めない → lost ではない
     let calls = 0;
