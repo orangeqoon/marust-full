@@ -54,8 +54,8 @@
     <textarea id="slot-desc" rows="4" maxlength="5000"></textarea>
     <label for="slot-autoclose-obs">OBS配信停止時に自動で枠を閉じる</label>
     <input id="slot-autoclose-obs" type="checkbox">
-    <label for="slot-autoclose-delay">OBS停止後の枠閉じ猶予（秒、0で即時）</label>
-    <input id="slot-autoclose-delay" type="number" min="0" max="7200" value="0">
+    <label for="slot-autoclose-delay">OBS停止後の枠閉じ猶予（秒、初期値60秒）</label>
+    <input id="slot-autoclose-delay" type="number" min="0" max="7200" value="60">
     <label for="slot-autoclose">OBS切断時のタイムアウト（分）</label>
     <input id="slot-autoclose" type="number" min="1" max="120">
     <label for="slot-next">自然終了のあと次の枠を作る</label>
@@ -69,7 +69,7 @@
     <span></span>
     <span><button id="slot-save" type="submit">設定を保存</button> <span id="slot-saved"></span></span>
   </form>
-  <p class="note">前の枠があれば、その題名を引き継ぎます。ここの題名は前の枠が無いときだけ使います（{part} は通し番号）。ニコ生のストリームキーは OBS の配信先に最初に 1 回入れておいてください（キーはアカウントで固定です）。ログインは、ブラウザ拡張でニコニコにログインしておくと使えます。</p>
+  <p class="note">前の枠があれば、その題名を引き継ぎます。ここの題名は前の枠が無いときだけ使います（{part} は通し番号）。ニコ生のストリームキーは OBS の配信先に最初に 1 回入れておいてください（キーはアカウントで固定です）。ログインは、ブラウザ拡張でニコニコにログインしておくと使えます。OBS配信停止時は、誤停止を防ぐため猶予時間（初期値60秒＝1分後）が経過した後に自動で枠を閉じます。</p>
   <script src="theme-apply.js"></script>
   <script src="panel.js"></script>
   <script src="panel-sink.js"></script>

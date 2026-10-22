@@ -17,7 +17,8 @@ function noteSiteOrder(rows) {
 var SITE_COLUMNS = [
   ['site', STR.sitesColSite, STR.sitesColSiteHint],
   ['sink', STR.sitesColSink, STR.sitesColSinkHint],
-  ['chat', STR.sitesColChat, STR.sitesColChatHint]
+  ['chat', STR.sitesColChat, STR.sitesColChatHint],
+  ['slot', STR.sitesColSlot, STR.sitesColSlotHint]
 ];
 function siteCell(kind, status, mode) {
   var td = document.createElement('td');
@@ -125,6 +126,35 @@ function initSites() {
     td.appendChild(document.createElement('br'));
     td.appendChild(mk('span', 'site-note', note));
   }
+  // 自動枠取り（slot-<サイト>）にはオン/オフのスイッチと枠設定パネルへのボタンを足す。
+  function decorateSlot(td, site, byId) {
+    var row = byId['slot-' + site];
+    if (!row) return;
+    td.classList.remove('site-off');
+    while (td.firstChild) td.removeChild(td.firstChild);
+    var isLive = row.mode === 'live';
+    var badge = document.createElement('span');
+    badge.className = 'site-mode site-mode-' + (row.mode || 'legacy');
+    badge.textContent = isLive ? STR.sitesModeLive : (row.mode === 'shadow' ? STR.sitesModeShadow : STR.sitesModeOff);
+    td.appendChild(badge);
+    var sw = mk('label', 'site-send');
+    var cb = mk('input', '', null, { type: 'checkbox', 'data-slot-site': site, 'aria-label': siteLabel(site) + ': ' + STR.sitesColSlot });
+    cb.checked = isLive;
+    if (!can.write || !loginRows) cb.disabled = true;
+    sw.appendChild(cb);
+    sw.appendChild(document.createTextNode(' ' + (isLive ? STR.sitesSlotOn : STR.sitesSlotOff)));
+    td.appendChild(document.createElement('br'));
+    td.appendChild(sw);
+    var slotBtn = mk('button', 'timer-btn', STR.sitesSlotOpen, { type: 'button' });
+    if (!can.write) slotBtn.disabled = true;
+    slotBtn.addEventListener('click', function () { openPanel('plugin:slot-' + site + ':status'); });
+    td.appendChild(document.createTextNode(' '));
+    td.appendChild(slotBtn);
+    if (site === 'niconico') {
+      td.appendChild(document.createElement('br'));
+      td.appendChild(mk('span', 'site-note', STR.sitesSlotNicoHint));
+    }
+  }
   function paint(sites, byId, statuses) {
     var table = document.createElement('table');
     table.className = 'dest-table sites-table';
@@ -185,6 +215,7 @@ function initSites() {
         var td = byId[id] ? siteCell(col[0], statuses[id], byId[id].mode) : siteCell(col[0], null, '');
         td.title = byId[id] ? col[2] : STR.sitesNoFeature;
         if (col[0] === 'chat') decorateReceive(td, site, byId, inlets);
+        if (col[0] === 'slot') decorateSlot(td, site, byId);
         tr.appendChild(td);
       });
       if (showLogin) tr.appendChild(loginCell(site));
@@ -257,7 +288,12 @@ function initSites() {
     f.appendChild(mk('h3', '', (info.name || site) + ': ' + STR.loginSetup));
     var rowInfo = null;
     (loginRows || []).forEach(function (r) { if (r.id === site) rowInfo = r; });
-    f.appendChild(mk('p', 'timer-hint', STR.loginOauthGuide(info.name || site, rowInfo && rowInfo.defaultRedirect)));
+    var guideText = (site === 'youtube' && typeof STR.loginOauthGuideYoutube === 'function')
+      ? STR.loginOauthGuideYoutube(rowInfo && rowInfo.defaultRedirect)
+      : STR.loginOauthGuide(info.name || site, rowInfo && rowInfo.defaultRedirect);
+    var guideEl = mk('p', 'timer-hint', guideText);
+    if (site === 'youtube') guideEl.style.whiteSpace = 'pre-wrap';
+    f.appendChild(guideEl);
     var setup = mk('div', 'timer-setup');
     var idEl = field(setup, STR.sitesClientId, 'text', 'login-client-id');
     var secEl = field(setup, STR.sitesClientSecret, 'password', 'login-client-secret');
@@ -324,7 +360,7 @@ function initSites() {
         if (hm && row.visible === false) hiddenSites[hm[1]] = true;
       });
       rows.forEach(function (row) {
-        var m = /^(site|sink|chat)-(.+)$/.exec(row.id || '');
+        var m = /^(site|sink|chat|slot)-(.+)$/.exec(row.id || '');
         if (!m || row.visible === false || hiddenSites[m[2]]) return;
         byId[row.id] = row;
         if (names.indexOf(m[2]) === -1) names.push(m[2]);
@@ -373,6 +409,17 @@ function initSites() {
     var want = cb.checked;
     call('sites.setReceive', { site: site, receive: want }).then(function (res) {
       if (!res || res.ok === false) { cb.checked = !want; window.alert(STR.receiveSwitchError(res && res.error)); }
+      refresh();
+    }).catch(function () { cb.checked = !want; });
+  });
+  // サイトごとの「自動枠取り（オン／オフ）」
+  box.addEventListener('change', function (ev) {
+    var cb = ev.target && ev.target.closest ? ev.target.closest('[data-slot-site]') : null;
+    if (!cb || !can.write) return;
+    var site = cb.getAttribute('data-slot-site');
+    var want = cb.checked;
+    call('sites.setAutoSlot', { site: site, enabled: want }).then(function (res) {
+      if (!res || res.ok === false) { cb.checked = !want; window.alert(STR.autoSlotErr ? STR.autoSlotErr(res && res.error) : '切り替えに失敗しました'); }
       refresh();
     }).catch(function () { cb.checked = !want; });
   });

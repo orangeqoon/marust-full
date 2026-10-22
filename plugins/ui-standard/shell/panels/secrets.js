@@ -68,6 +68,17 @@ function initSecrets() {
       }
       loginList.appendChild(line);
     });
+    if (view.items.length) {
+      var hint = document.createElement('div');
+      hint.className = 'timer-hint';
+      var pYt = document.createElement('p');
+      pYt.textContent = STR.secretsYoutubeHint;
+      hint.appendChild(pYt);
+      var pNico = document.createElement('p');
+      pNico.textContent = STR.secretsNicoSlotHint;
+      hint.appendChild(pNico);
+      loginList.appendChild(hint);
+    }
   }
   function list_clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
   var pairBtn = root.querySelector('#site-login-pair-btn');

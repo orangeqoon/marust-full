@@ -58,7 +58,7 @@
     set(els.tags, c.tags || '');
     set(els.desc, c.description || '');
     if (els['autoclose-obs']) els['autoclose-obs'].checked = c.autoCloseOnObsStop !== false;
-    set(els['autoclose-delay'], c.autoCloseDelaySec != null ? c.autoCloseDelaySec : 0);
+    set(els['autoclose-delay'], c.autoCloseDelaySec != null ? c.autoCloseDelaySec : 60);
     set(els.autoclose, c.autoCloseMin || 5);
     els.next.checked = c.createNextOnNaturalEnd !== false;
     els.extend.checked = c.extendToMax !== false;
