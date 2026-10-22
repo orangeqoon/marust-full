@@ -45,3 +45,11 @@ th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--line
 .fav-pick { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .fav-import { width: 100%; margin-top: 4px; }
 .fav-note { color: var(--muted, #9aa6bd); font-size: 0.85rem; }
+
+.card-actions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; padding-top: 5px; border-top: 1px dashed rgba(255, 255, 255, 0.12); }
+.card-action-btn, .card-action-link { display: inline-flex; align-items: center; justify-content: center; font-size: 0.76rem; padding: 3px 7px; border-radius: 5px; text-decoration: none; border: 1px solid #3d4a63; background: #222b3d; color: #b8c8e8; cursor: pointer; line-height: 1.2; }
+.card-action-btn:hover, .card-action-link:hover { background: #323f59; color: #fff; border-color: #5d7096; }
+.card-action-btn.relink { background: #3b2818; border-color: #8c5b23; color: #ffd699; }
+.card-action-btn.relink:hover { background: #523821; color: #fff; }
+.card-action-btn.external { background: #1a2f3d; border-color: #2b6182; color: #9ce2ff; }
+.card-action-btn.external:hover { background: #264459; color: #fff; }

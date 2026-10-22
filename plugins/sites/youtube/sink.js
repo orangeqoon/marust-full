@@ -374,6 +374,8 @@ function createSinkYoutube(deps) {
     if (active) return active;
     const upcoming = await listChatId('upcoming');
     if (upcoming) return upcoming;
+    const mine = await listChatId('mine');
+    if (mine) return mine;
     return null;
   }
 

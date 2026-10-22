@@ -106,7 +106,10 @@ function configured(parsed) {
 function categoryIdOf(item) {
   if (!item || typeof item !== 'object') return null;
   if (typeof item.id === 'number' && Number.isFinite(item.id)) return item.id;
-  if (typeof item.id === 'string' && item.id.trim()) return item.id.trim();
+  if (typeof item.id === 'string' && item.id.trim()) {
+    const num = Number(item.id.trim());
+    return Number.isFinite(num) ? num : item.id.trim();
+  }
   return null;
 }
 
@@ -458,20 +461,37 @@ function createSiteKick(deps) {
         if (title.trim()) payload.stream_title = title;
         if (category) {
           const categoryId = await searchCategory(category);
-          if (categoryId != null && categoryId !== '') payload.category_id = categoryId;
+          if (categoryId != null && categoryId !== '') {
+            const num = Number(categoryId);
+            payload.category_id = Number.isFinite(num) ? num : categoryId;
+          }
         }
         if (Object.keys(payload).length === 0) {
           log('info', 'update ok');
           return finish(true);
         }
         const body = JSON.stringify(payload);
-        const res = await call(CHANNELS_URL, function (token) {
+        let res = await call(CHANNELS_URL, function (token) {
           return {
             method: 'PATCH',
             headers: kickHeaders(token, { 'Content-Type': 'application/json' }),
             body: body
           };
         });
+        if (res.status !== 200 && res.status !== 204 && payload.category_id != null && payload.stream_title) {
+          const fallbackBody = JSON.stringify({ stream_title: payload.stream_title });
+          const retryRes = await call(CHANNELS_URL, function (token) {
+            return {
+              method: 'PATCH',
+              headers: kickHeaders(token, { 'Content-Type': 'application/json' }),
+              body: fallbackBody
+            };
+          });
+          if (retryRes.status === 200 || retryRes.status === 204) {
+            log('warn', 'category-rejected title-updated');
+            return finish(true);
+          }
+        }
         if (res.status !== 200 && res.status !== 204) return finish(false, httpCode(res.status));
         log('info', 'update ok');
         return finish(true);
@@ -496,7 +516,7 @@ function createSiteKick(deps) {
         });
         if (res.status !== 200) return {};
         const json = parseJson(await readText(res));
-        const row = json && Array.isArray(json.data) ? json.data[0] : null;
+        const row = json && (Array.isArray(json.data) ? json.data[0] : (json.data && typeof json.data === 'object' ? json.data : null));
         if (!row || typeof row !== 'object') return {};
         const out = {};
         if (typeof row.stream_title === 'string' && row.stream_title) out.title = row.stream_title;

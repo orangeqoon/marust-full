@@ -198,6 +198,15 @@ var STR = {
       : '戻り先（リダイレクト URL）は、この PC を指す http://localhost:ポート番号/ の形で、必ず入れてください。';
     return name + ' のログインには、あなた自身の「開発者アプリ」が要ります。サイトの開発者向けページでアプリを作り、「クライアント ID」と「クライアントシークレット」を、ここへ入れます。' + re + ' 作り方は docs/GUIDE.md の「ログインの準備」を見てください。';
   },
+  loginOauthGuideYoutube: function (defaultRedirect) {
+    var redirect = defaultRedirect || 'http://127.0.0.1:3000/';
+    return '【YouTube のクライアント ID / シークレットの取得手順（Google Cloud）】\n' +
+      '1. Google Cloud Console（https://console.cloud.google.com/）を開き、新しいプロジェクトを作成します。\n' +
+      '2.「APIとサービス」→「ライブラリ」から「YouTube Data API v3」を検索して「有効にする」を押します。\n' +
+      '3.「OAuth 同意画面」で「外部」を選び、アプリ名と連絡先メールアドレスを入力して保存します（「テスト中」のときは「テストユーザー」にご自身の配信アカウントを追加してください）。\n' +
+      '4.「認証情報」→「認証情報を作成」→「OAuth クライアント ID」を選び、種類を「ウェブ アプリケーション」にします。「承認済みのリダイレクト URI」に ' + redirect + ' を追加して保存します。\n' +
+      '5. 画面に表示された「クライアント ID」と「クライアント シークレット」を下の欄に貼り付け、「保存してログインする」を押してください。';
+  },
   loginSaved: '保存しました。値は表示しません。',
   loginErr: function (code) {
     var map = {
@@ -496,6 +505,12 @@ var STR = {
   sitesColSinkHint: 'あなたの名前で、そのサイトのチャットへコメントを書き込む機能です。コメントのパネルで送ると、ここに結果が出ます。',
   sitesColChat: 'コメント受信',
   sitesColChatHint: 'そのサイトの視聴者のコメントを取り込む機能です。取り込んだコメントはコメントのパネルに流れます。',
+  sitesColSlot: '自動枠取り',
+  sitesColSlotHint: 'OBS で配信開始時に枠を自動で作ります（ニコ生・YouTube）',
+  sitesSlotOpen: '枠設定を開く',
+  sitesSlotOn: '枠取り ON',
+  sitesSlotOff: '枠取り OFF',
+  sitesSlotNicoHint: '※ ニコ生はOBS停止から1分後に自動で枠を閉じます（誤停止防止の猶予時間付き）。',
   sitesModeLive: '本番',
   sitesModeShadow: '記録のみ',
   sitesModeOff: '停止中',
@@ -1089,6 +1104,8 @@ var STR = {
     }).join(' ／ ');
   },
   uiSecrets10:'結び直しが完了しました。',
+  secretsYoutubeHint: '※ YouTube のクライアント ID・シークレットの設定は「サイト別の状態」パネル（ツール → サイト別の状態）から行えます。',
+  secretsNicoSlotHint: '※ ニコ生の自動枠取りはブラウザ拡張でログイン後、OBS開始で枠作成・自動延長・OBS停止1分後に自動終了します。',
   uiSession1: '一時停止',
   uiSession2: '進行中',
   uiSession3: '(題名なし)',

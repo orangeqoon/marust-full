@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 520" width="100%" height="100%">
+  <defs>
+    <!-- グラデーション定義 -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#090d16" />
+      <stop offset="50%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#111827" />
+    </linearGradient>
+    <linearGradient id="cardBeforeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1f161c" />
+      <stop offset="100%" stop-color="#141217" />
+    </linearGradient>
+    <linearGradient id="cardAfterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0d241d" />
+      <stop offset="100%" stop-color="#0b1b19" />
+    </linearGradient>
+    <linearGradient id="buttonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#60a5fa" />
+      <stop offset="50%" stop-color="#a78bfa" />
+      <stop offset="100%" stop-color="#f472b6" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; }
+    .title { font-weight: 800; font-size: 28px; fill: url(#titleGrad); }
+    .subtitle { font-weight: 500; font-size: 15px; fill: #94a3b8; }
+    .card-title-before { font-weight: 700; font-size: 19px; fill: #fb7185; }
+    .card-title-after { font-weight: 700; font-size: 20px; fill: #34d399; }
+    .item-text { font-size: 14px; fill: #e2e8f0; font-weight: 500; }
+    .item-sub { font-size: 12px; fill: #94a3b8; }
+    .obs-btn-text { font-weight: 800; font-size: 17px; fill: #ffffff; letter-spacing: 0.5px; }
+    .tag-before { font-size: 12px; fill: #f43f5e; font-weight: 700; }
+    .tag-after { font-size: 12px; fill: #10b981; font-weight: 700; }
+  </style>
+
+  <!-- 全体背景 -->
+  <rect width="940" height="520" rx="16" fill="url(#bgGrad)" stroke="#334155" stroke-width="1.5" />
+
+  <!-- 装飾グロー効果 -->
+  <circle cx="200" cy="80" r="120" fill="#3b82f6" opacity="0.08" filter="url(#glow)" />
+  <circle cx="760" cy="400" r="140" fill="#10b981" opacity="0.09" filter="url(#glow)" />
+
+  <!-- ヘッダーエリア -->
+  <g transform="translate(470, 48)" text-anchor="middle" class="font-sans">
+    <text class="title" y="0">枠取りページは、もう開かなくていい。</text>
+    <text class="subtitle" y="28">丸ストを起動して、OBSの『配信開始』を押すだけ。すべて全自動で始まります。</text>
+  </g>
+
+  <!-- 左側カード：Before（これまでの配信準備） -->
+  <g transform="translate(40, 105)" class="font-sans">
+    <rect width="390" height="375" rx="14" fill="url(#cardBeforeGrad)" stroke="#e11d48" stroke-width="1.5" stroke-opacity="0.6" />
+    
+    <!-- カードヘッダー -->
+    <rect x="16" y="16" width="358" height="42" rx="8" fill="#e11d48" fill-opacity="0.15" />
+    <text x="32" y="43" class="card-title-before">😫 これまでの配信準備</text>
+    <text x="358" y="42" text-anchor="end" class="tag-before">手作業でヘトヘト</text>
+
+    <!-- 項目 1 -->
+    <g transform="translate(24, 82)">
+      <circle cx="12" cy="12" r="12" fill="#e11d48" fill-opacity="0.2" />
+      <text x="12" y="16" text-anchor="middle" fill="#fb7185" font-weight="700" font-size="12">✕</text>
+      <text x="34" y="12" class="item-text">毎回ニコ生の枠取りページを開いて入力</text>
+      <text x="34" y="28" class="item-sub">タイトル、説明文、カテゴリを毎回コピペ…</text>
+    </g>
+
+    <!-- 項目 2 -->
+    <g transform="translate(24, 138)">
+      <circle cx="12" cy="12" r="12" fill="#e11d48" fill-opacity="0.2" />
+      <text x="12" y="16" text-anchor="middle" fill="#fb7185" font-weight="700" font-size="12">✕</text>
+      <text x="34" y="12" class="item-text">30分ごとにチラチラ時計を見て手動延長</text>
+      <text x="34" y="28" class="item-sub">ゲームプレイ中も延長忘れが気になって集中できない</text>
+    </g>
+
+    <!-- 項目 3 -->
+    <g transform="translate(24, 194)">
+      <circle cx="12" cy="12" r="12" fill="#e11d48" fill-opacity="0.2" />
+      <text x="12" y="16" text-anchor="middle" fill="#fb7185" font-weight="700" font-size="12">✕</text>
+      <text x="34" y="12" class="item-text">配信終了後の枠閉じ忘れ（事故リスク！）</text>
+      <text x="34" y="28" class="item-sub">OBSを止めても枠が開きっぱなしで真っ暗画面が放置</text>
+    </g>
+
+    <!-- 項目 4 -->
+    <g transform="translate(24, 250)">
+      <circle cx="12" cy="12" r="12" fill="#e11d48" fill-opacity="0.2" />
+      <text x="12" y="16" text-anchor="middle" fill="#fb7185" font-weight="700" font-size="12">✕</text>
+      <text x="34" y="12" class="item-text">サイトごとに管理画面を行ったり来たり…</text>
+      <text x="34" y="28" class="item-sub">YouTube、Twitch、ツイキャス… 設定だけで時間が消える</text>
+    </g>
+
+    <!-- 左下メッセージ -->
+    <rect x="20" y="312" width="350" height="42" rx="8" fill="#000000" fill-opacity="0.35" />
+    <text x="195" y="338" text-anchor="middle" fill="#fda4af" font-size="13" font-weight="600">配信を始めるだけでエネルギーを使い切る… 💦</text>
+  </g>
+
+  <!-- 中央の接続矢印・ロゴ -->
+  <g transform="translate(470, 292)" class="font-sans" text-anchor="middle">
+    <circle cx="0" cy="0" r="26" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+    <path d="M-8,-10 L4,0 L-8,10" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+    <text x="0" y="-38" fill="#38bdf8" font-size="13" font-weight="800" letter-spacing="1px">丸スト導入</text>
+  </g>
+
+  <!-- 右側カード：After（丸ストを入れたら） -->
+  <g transform="translate(510, 105)" class="font-sans">
+    <rect width="390" height="375" rx="14" fill="url(#cardAfterGrad)" stroke="#10b981" stroke-width="2" />
+    
+    <!-- カードヘッダー -->
+    <rect x="16" y="16" width="358" height="42" rx="8" fill="#10b981" fill-opacity="0.2" />
+    <text x="32" y="43" class="card-title-after">🎉 丸スト導入後</text>
+    <text x="358" y="42" text-anchor="end" class="tag-after">OBSボタン1発で全自動！</text>
+
+    <!-- OBS開始ボタン演出 -->
+    <g transform="translate(24, 76)">
+      <rect width="342" height="50" rx="10" fill="url(#buttonGrad)" filter="url(#glow)" opacity="0.3" />
+      <rect width="342" height="50" rx="10" fill="url(#buttonGrad)" />
+      <!-- 再生アイコン -->
+      <polygon points="26,17 26,33 40,25" fill="#ffffff" />
+      <text x="52" y="32" class="obs-btn-text">OBSの『配信開始』をポチッ！</text>
+      <text x="322" y="31" text-anchor="end" fill="#d1fae5" font-size="12" font-weight="700">👉 これだけ</text>
+    </g>
+
+    <!-- 項目 1 -->
+    <g transform="translate(24, 148)">
+      <circle cx="12" cy="12" r="12" fill="#10b981" fill-opacity="0.25" />
+      <text x="12" y="17" text-anchor="middle" fill="#34d399" font-weight="800" font-size="13">✓</text>
+      <text x="34" y="12" class="item-text" font-weight="700">ニコ生の枠取りが全自動！</text>
+      <text x="34" y="27" class="item-sub">枠取りページを開く必要ゼロ。番組URLも自動反映</text>
+    </g>
+
+    <!-- 項目 2 -->
+    <g transform="translate(24, 196)">
+      <circle cx="12" cy="12" r="12" fill="#10b981" fill-opacity="0.25" />
+      <text x="12" y="17" text-anchor="middle" fill="#34d399" font-weight="800" font-size="13">✓</text>
+      <text x="34" y="12" class="item-text" font-weight="700">最大12時間まで自動延長！</text>
+      <text x="34" y="27" class="item-sub">配信中に時計を見る必要なし。枠切れの心配ゼロ</text>
+    </g>
+
+    <!-- 項目 3 -->
+    <g transform="translate(24, 244)">
+      <circle cx="12" cy="12" r="12" fill="#10b981" fill-opacity="0.25" />
+      <text x="12" y="17" text-anchor="middle" fill="#34d399" font-weight="800" font-size="13">✓</text>
+      <text x="34" y="12" class="item-text" font-weight="700">OBS停止から1分後に自動枠閉じ！</text>
+      <text x="34" y="27" class="item-sub">放送事故を完全防止（1分以内に再開すれば枠継続の安心設計）</text>
+    </g>
+
+    <!-- 項目 4 -->
+    <g transform="translate(24, 292)">
+      <circle cx="12" cy="12" r="12" fill="#10b981" fill-opacity="0.25" />
+      <text x="12" y="17" text-anchor="middle" fill="#34d399" font-weight="800" font-size="13">✓</text>
+      <text x="34" y="12" class="item-text" font-weight="700">YouTubeや他サイトも同時連動！</text>
+      <text x="34" y="27" class="item-sub">タイトル一括変更やコメント送信も全部1つに集約</text>
+    </g>
+
+    <!-- 右下メッセージ -->
+    <rect x="20" y="334" width="350" height="28" rx="6" fill="#064e3b" fill-opacity="0.4" />
+    <text x="195" y="353" text-anchor="middle" fill="#6ee7b7" font-size="12" font-weight="700">丸ストを立ち上げておくだけ。あとはいつものOBSを押すだけ！ ✨</text>
+  </g>
+</svg>

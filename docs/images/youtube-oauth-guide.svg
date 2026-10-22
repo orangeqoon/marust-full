@@ -1,0 +1,173 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 540" width="100%" height="100%">
+  <defs>
+    <!-- グラデーション定義 -->
+    <linearGradient id="bgGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#090d16" />
+      <stop offset="50%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#111827" />
+    </linearGradient>
+    <linearGradient id="boxGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="boxDoneGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b" />
+      <stop offset="100%" stop-color="#022c22" />
+    </linearGradient>
+    <linearGradient id="titleGrad3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f87171" />
+      <stop offset="50%" stop-color="#fb923c" />
+      <stop offset="100%" stop-color="#fbbf24" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <style>
+    .font-sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; }
+    .title { font-weight: 800; font-size: 26px; fill: url(#titleGrad3); }
+    .subtitle { font-weight: 500; font-size: 14px; fill: #94a3b8; }
+    .step-num { font-weight: 800; font-size: 12px; fill: #ffffff; }
+    .step-title { font-weight: 700; font-size: 15px; fill: #f8fafc; }
+    .step-text { font-size: 12px; fill: #cbd5e1; line-height: 1.5; }
+    .highlight-btn { font-weight: 700; font-size: 11px; fill: #38bdf8; }
+    .important-badge { font-weight: 700; font-size: 11px; fill: #facc15; }
+  </style>
+
+  <!-- 全体背景 -->
+  <rect width="940" height="540" rx="16" fill="url(#bgGrad3)" stroke="#334155" stroke-width="1.5" />
+
+  <!-- ヘッダーエリア -->
+  <g transform="translate(470, 42)" text-anchor="middle" class="font-sans">
+    <text class="title" y="0">🔑 YouTube APIキー取得：迷わない5ステップ図解</text>
+    <text class="subtitle" y="26">Googleの決まりで鍵の作成が必要ですが、画面の通りに真似すれば10分で完了します！</text>
+  </g>
+
+  <!-- 上段：STEP 1 〜 STEP 3 -->
+
+  <!-- STEP 1 -->
+  <g transform="translate(40, 95)" class="font-sans" filter="url(#shadow)">
+    <rect width="265" height="185" rx="12" fill="url(#boxGrad)" stroke="#475569" stroke-width="1.5" />
+    <!-- バッジ -->
+    <rect x="14" y="14" width="60" height="22" rx="11" fill="#ef4444" />
+    <text x="44" y="29" text-anchor="middle" class="step-num">STEP 1</text>
+    
+    <text x="82" y="30" class="step-title">プロジェクト作成</text>
+    
+    <text x="14" y="62" class="step-text">Google Cloud Console にアクセス。</text>
+    <text x="14" y="80" class="step-text">左上のプロジェクト選択から</text>
+    <rect x="14" y="88" width="130" height="22" rx="4" fill="#334155" />
+    <text x="79" y="103" text-anchor="middle" class="highlight-btn">「新しいプロジェクト」</text>
+    <text x="150" y="104" class="step-text">をクリック。</text>
+    <text x="14" y="132" class="step-text">名前（例: marust-live）を入れて</text>
+    <text x="14" y="150" fill="#38bdf8" font-size="12" font-weight="700">「作成」を押します。</text>
+  </g>
+
+  <!-- 矢印 1 -> 2 -->
+  <g transform="translate(315, 185)" class="font-sans">
+    <path d="M0,0 L20,0 M14,-5 L20,0 L14,5" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+
+  <!-- STEP 2 -->
+  <g transform="translate(345, 95)" class="font-sans" filter="url(#shadow)">
+    <rect width="265" height="185" rx="12" fill="url(#boxGrad)" stroke="#475569" stroke-width="1.5" />
+    <!-- バッジ -->
+    <rect x="14" y="14" width="60" height="22" rx="11" fill="#f97316" />
+    <text x="44" y="29" text-anchor="middle" class="step-num">STEP 2</text>
+    
+    <text x="82" y="30" class="step-title">APIを有効化</text>
+    
+    <text x="14" y="62" class="step-text">左メニューの「APIとサービス」から</text>
+    <rect x="14" y="70" width="85" height="22" rx="4" fill="#334155" />
+    <text x="56" y="85" text-anchor="middle" class="highlight-btn">「ライブラリ」</text>
+    <text x="105" y="86" class="step-text">を開きます。</text>
+    
+    <text x="14" y="112" class="step-text">検索欄に YouTube と入力し、</text>
+    <text x="14" y="130" fill="#f8fafc" font-size="12" font-weight="700">「YouTube Data API v3」</text>
+    <text x="14" y="148" class="step-text">を選んで</text>
+    <text x="64" y="148" fill="#38bdf8" font-size="12" font-weight="700">「有効にする」をクリック！</text>
+  </g>
+
+  <!-- 矢印 2 -> 3 -->
+  <g transform="translate(620, 185)" class="font-sans">
+    <path d="M0,0 L20,0 M14,-5 L20,0 L14,5" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+
+  <!-- STEP 3 -->
+  <g transform="translate(650, 95)" class="font-sans" filter="url(#shadow)">
+    <rect width="250" height="185" rx="12" fill="url(#boxGrad)" stroke="#475569" stroke-width="1.5" />
+    <!-- バッジ -->
+    <rect x="14" y="14" width="60" height="22" rx="11" fill="#eab308" />
+    <text x="44" y="29" text-anchor="middle" class="step-num">STEP 3</text>
+    
+    <text x="82" y="30" class="step-title">同意画面の設定</text>
+    
+    <text x="14" y="62" class="step-text">「OAuth同意画面」を開き、</text>
+    <text x="14" y="80" class="step-text">ユーザータイプは</text>
+    <rect x="110" y="66" width="55" height="20" rx="4" fill="#334155" />
+    <text x="137" y="80" text-anchor="middle" class="highlight-btn">「外部」</text>
+    <text x="170" y="80" class="step-text">を選択。</text>
+    
+    <text x="14" y="106" class="step-text">アプリ名とメアドを入力して進み、</text>
+    <rect x="14" y="116" width="222" height="38" rx="6" fill="#854d0e" fill-opacity="0.3" stroke="#eab308" stroke-width="1" />
+    <text x="24" y="132" class="important-badge">⚠️ 重要ポイント：</text>
+    <text x="24" y="146" fill="#fef08a" font-size="11">「テストユーザー」に自分のGmailを追加</text>
+  </g>
+
+  <!-- 中段つなぎ矢印（下へ） -->
+  <g transform="translate(775, 292)" class="font-sans">
+    <path d="M0,0 L0,22 M-5,16 L0,22 L5,16" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+
+  <!-- 下段：STEP 4 〜 STEP 5 -->
+
+  <!-- STEP 4 -->
+  <g transform="translate(180, 325)" class="font-sans" filter="url(#shadow)">
+    <rect width="330" height="185" rx="12" fill="url(#boxGrad)" stroke="#3b82f6" stroke-width="1.8" />
+    <!-- バッジ -->
+    <rect x="16" y="16" width="60" height="22" rx="11" fill="#3b82f6" />
+    <text x="46" y="31" text-anchor="middle" class="step-num">STEP 4</text>
+    
+    <text x="86" y="32" class="step-title">デスクトップ用キー作成</text>
+    
+    <text x="16" y="64" class="step-text">「認証情報」➔「認証情報を作成」➔</text>
+    <rect x="16" y="72" width="160" height="22" rx="4" fill="#334155" />
+    <text x="96" y="87" text-anchor="middle" class="highlight-btn">「OAuthクライアントID」</text>
+    <text x="180" y="88" class="step-text">を選択。</text>
+
+    <!-- 最重要ハイライト -->
+    <rect x="16" y="104" width="298" height="42" rx="6" fill="#1e3a8a" fill-opacity="0.5" stroke="#60a5fa" stroke-width="1" />
+    <text x="26" y="121" fill="#93c5fd" font-size="11" font-weight="700">★ ここが最大のポイント！</text>
+    <text x="26" y="137" fill="#ffffff" font-size="12" font-weight="700">アプリケーションの種類：【デスクトップアプリ】</text>
+
+    <text x="16" y="165" fill="#94a3b8" font-size="11">「作成」を押すとIDとシークレットが表示されます。</text>
+  </g>
+
+  <!-- 矢印 4 -> 5 -->
+  <g transform="translate(525, 415)" class="font-sans">
+    <path d="M0,0 L20,0 M14,-5 L20,0 L14,5" fill="none" stroke="#34d399" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+
+  <!-- STEP 5 -->
+  <g transform="translate(560, 325)" class="font-sans" filter="url(#shadow)">
+    <rect width="340" height="185" rx="12" fill="url(#boxDoneGrad)" stroke="#10b981" stroke-width="2" />
+    <!-- バッジ -->
+    <rect x="16" y="16" width="60" height="22" rx="11" fill="#10b981" />
+    <text x="46" y="31" text-anchor="middle" class="step-num">STEP 5</text>
+    
+    <text x="86" y="32" class="step-title" fill="#34d399">丸ストにコピペして完了！ 🎉</text>
+    
+    <text x="16" y="64" fill="#a7f3d0" font-size="12">表示された2つの文字列をコピー：</text>
+    
+    <rect x="16" y="74" width="308" height="24" rx="4" fill="#000000" fill-opacity="0.3" stroke="#059669" stroke-width="0.8" />
+    <text x="24" y="90" fill="#6ee7b7" font-size="11" font-family="monospace">クライアントID：xxxx.apps.googleusercontent.com</text>
+    
+    <rect x="16" y="104" width="308" height="24" rx="4" fill="#000000" fill-opacity="0.3" stroke="#059669" stroke-width="0.8" />
+    <text x="24" y="120" fill="#6ee7b7" font-size="11" font-family="monospace">クライアントシークレット：GOCSPX-xxxx</text>
+
+    <!-- 結び直すボタン風 -->
+    <rect x="16" y="138" width="308" height="32" rx="6" fill="#10b981" />
+    <text x="170" y="159" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="800">丸ストの「結び直す」をクリック ➔ 完了！</text>
+  </g>
+</svg>

@@ -29,6 +29,13 @@ var SITE_LABELS = {
   rumble: 'Rumble'
 };
 var SITE_ORDER = ['youtube', 'twitch', 'kick', 'twitcasting', 'niconico', 'fc2', 'soop', 'kukulu', 'picarto', 'rumble'];
+var SITE_DASHBOARDS = {
+  fc2: { url: 'https://live.fc2.com/', label: '🌐 FC2 Liveを開く', title: 'FC2 Live管理画面を開くと丸スト拡張機能がCookieを自動転送します' },
+  kick: { url: 'https://kick.com/dashboard/stream', label: '🌐 Kick管理画面', title: 'Kickの配信管理画面を開きます' },
+  youtube: { url: 'https://studio.youtube.com/channel/mine/livestreaming', label: '🌐 YouTube Studio', title: 'YouTubeライブ管理画面を開きます' },
+  twitch: { url: 'https://dashboard.twitch.tv/stream-manager', label: '🌐 Twitch管理', title: 'Twitch配信マネージャーを開きます' },
+  niconico: { url: 'https://live.nicovideo.jp/', label: '🌐 ニコ生を開く', title: 'ニコニコ生放送を開きます' }
+};
 
 var lastHubPlugins = [];
 var lastTitleState = null;
@@ -85,7 +92,9 @@ function humanizeMessage(result, message, configured, mode, need, how) {
   if (result === 'error') {
     var detail = message === 'unauthorized' || message === 'login-expired'
       ? 'ログイン期限切れ（再ログインが必要）'
-      : ('送信エラー' + (message ? ' (' + message + ')' : ''));
+      : (message === 'settings-unavailable'
+        ? 'Cookie未取得（FC2 Liveを開いて送信）'
+        : ('送信エラー' + (message ? ' (' + message + ')' : '')));
     return { label: '失敗', detail: detail, tone: 'card-error' };
   }
   return { label: '待機中', detail: '次の送信で反映されます', tone: '' };
@@ -150,6 +159,25 @@ function updateLiveDisplay(phaseOverride) {
       top.appendChild(el('span', 'site-card-state', info.label));
       card.appendChild(top);
       card.appendChild(el('div', 'site-card-detail', info.detail));
+
+      if (mode !== 'legacy' && (info.tone === 'card-error' || info.tone === 'card-warn')) {
+        var actions = el('div', 'card-actions');
+        var dash = SITE_DASHBOARDS[site];
+        if (dash) {
+          var dashA = el('a', 'card-action-btn external', dash.label);
+          dashA.href = dash.url;
+          dashA.target = '_blank';
+          dashA.title = dash.title;
+          actions.appendChild(dashA);
+        }
+        var guideA = el('a', 'card-action-link', '📖 直し方');
+        guideA.href = 'http://127.0.0.1:18770/plugins/ui-standard/shell/guide/sites-trouble.html#' + site;
+        guideA.target = '_blank';
+        guideA.title = (SITE_LABELS[site] || site) + 'のトラブルシューティングガイドを開きます';
+        actions.appendChild(guideA);
+        card.appendChild(actions);
+      }
+
       siteCardsEl.appendChild(card);
     });
   }

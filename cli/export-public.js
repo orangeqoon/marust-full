@@ -70,7 +70,7 @@ function allowed(rel) {
   if (DENY_BASENAME.indexOf(rel.split('/').pop()) !== -1) return false;
   if (DENY_PREFIX.some((p) => rel.indexOf(p) === 0)) return false;
   if (DENY_NAME_RE.test(rel)) return false;
-  if (rel.indexOf('docs/') === 0) return DOCS_ALLOW.indexOf(rel) !== -1;
+  if (rel.indexOf('docs/') === 0) return DOCS_ALLOW.indexOf(rel) !== -1 || rel.indexOf('docs/images/') === 0;
   return true;
 }
 
@@ -155,6 +155,19 @@ function exportPublic(options) {
     const from = path.join(srcRoot, 'docs', 'public', pair[0]);
     if (fs.existsSync(from)) { fs.mkdirSync(path.dirname(path.join(outDir, pair[1])), { recursive: true }); fs.copyFileSync(from, path.join(outDir, pair[1])); wrote.push(pair[1]); }
   });
+  // docs/images/ の図解画像を公開リポジトリへコピーする
+  const imagesDir = path.join(srcRoot, 'docs', 'images');
+  if (fs.existsSync(imagesDir)) {
+    fs.readdirSync(imagesDir).forEach((file) => {
+      const from = path.join(imagesDir, file);
+      if (fs.statSync(from).isFile()) {
+        const to = path.join(outDir, 'docs', 'images', file);
+        fs.mkdirSync(path.dirname(to), { recursive: true });
+        fs.copyFileSync(from, to);
+        if (wrote.indexOf('docs/images/' + file) === -1) wrote.push('docs/images/' + file);
+      }
+    });
+  }
   return { outDir: outDir, files: wrote, findings: scanDir(outDir) };
 }
 

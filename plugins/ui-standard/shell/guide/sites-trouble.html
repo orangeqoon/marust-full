@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>サイト別の困ったとき・直し方ガイド（丸スト）</title>
+  <link rel="stylesheet" href="guide.css" />
+</head>
+<body>
+<main>
+  <h1>サイト別の困ったとき・直し方ガイド</h1>
+  <p>丸ストでタイトル変更やコメント受信、ログインで問題が発生したときのサイト別対処法と復旧手順です。</p>
+
+  <nav class="nav-links">
+    <a href="#fc2">FC2ライブ</a>
+    <a href="#kick">Kick</a>
+    <a href="#youtube">YouTube</a>
+    <a href="#twitch">Twitch</a>
+    <a href="#niconico">ニコニコ生放送</a>
+    <a href="#twitcasting">ツイキャス</a>
+    <a href="#soop">SOOP</a>
+    <a href="#kukulu">Kukulu</a>
+    <a href="#picarto">Picarto</a>
+    <a href="#rumble">Rumble</a>
+  </nav>
+
+  <!-- FC2 -->
+  <section id="fc2" class="site-section">
+    <div class="site-header">
+      <h2>FC2ライブ</h2>
+      <span class="site-tag">Cookie 認証（拡張機能）</span>
+    </div>
+    
+    <h3>1. 「設定が取得できない」「settings-unavailable」「未設定」と表示される</h3>
+    <div class="card-tip">
+      <b>原因:</b> 丸スト内の Cookie（ログイン情報）が切れているか、最新情報が丸ストに届いていません。
+    </div>
+    <ol class="step-list">
+      <li>ブラウザ（Edge や Chrome）で、FC2のトップページではなく <b>FC2 Live の配信管理ページ</b>（<a href="https://live.fc2.com/" target="_blank">https://live.fc2.com/</a>）を開きます。</li>
+      <li>ブラウザに入れた「丸スト拡張機能」が配信管理ページを検知し、最新の Cookie と配信情報を丸スト（<code>127.0.0.1:18770</code>）へ自動転送します。</li>
+      <li>自動転送されない場合は、ブラウザの右上ツールバーにある丸スト拡張機能アイコンをクリックし、「Cookie を今すぐ送信」を押してください。</li>
+      <li>転送完了後、丸ストの画面で再度タイトル変更をお試しください。</li>
+    </ol>
+    <a href="https://live.fc2.com/" target="_blank" class="btn-link">🌐 FC2 Live 配信管理画面を開く</a>
+
+    <h3>2. 「コメントが待機のまま取得されない」</h3>
+    <p>FC2 のコメント受信（<code>chat-fc2</code>）は、<b>OBS で FC2 への配信が行われている間（配信中）のみ</b> 動作する設計になっています。配信を開始すると自動で「待機」から受信状態へ切り替わります。</p>
+  </section>
+
+  <!-- Kick -->
+  <section id="kick" class="site-section">
+    <div class="site-header">
+      <h2>Kick</h2>
+      <span class="site-tag">OAuth 2.1 認証</span>
+    </div>
+
+    <h3>1. 「結び直したのにタイトル変更でエラー（500）になる」</h3>
+    <div class="card-tip">
+      <b>原因:</b> Kick サーバー側で一部のカテゴリ（<code>I'm Only Sleeping</code> などサーバー内部で不整合を起こす特定カテゴリ）を指定した際、Kick 側で Internal Server Error が発生します。
+    </div>
+    <ol class="step-list">
+      <li>カテゴリを「Just Chatting」や「Art」など一般的なカテゴリに変更して送信してみてください。</li>
+      <li>丸スト最新版では、Kick 側がカテゴリでエラーを返しても、配信タイトル単体で自動再試行（フォールバック）を行い、タイトルの更新を確実に成功させます。</li>
+    </ol>
+
+    <h3>2. 「ログインが切れた」「再認証（結び直し）したい」</h3>
+    <ol class="step-list">
+      <li>丸ストのメニュー「サイト」またはタイトル変更パネルの「🔄 結び直す」ボタンを押します。</li>
+      <li>ブラウザで Kick の認証画面が開くので、「Authorize」をクリックして認可してください。</li>
+      <li>自動的に丸ストに新しいトークンが保存され、画面に反映されます。</li>
+    </ol>
+  </section>
+
+  <!-- YouTube -->
+  <section id="youtube" class="site-section">
+    <div class="site-header">
+      <h2>YouTube</h2>
+      <span class="site-tag">Google OAuth 2.0</span>
+    </div>
+
+    <h3>1. 「タイトルが変わらない」「unauthorized」</h3>
+    <div class="card-tip">
+      <b>原因:</b> Google 認証トークンの期限切れ、または配信枠（LiveBroadcast）が存在しない状態です。
+    </div>
+    <ol class="step-list">
+      <li>YouTube Studio（<a href="https://studio.youtube.com/channel/mine/livestreaming" target="_blank">ライブ配信ダッシュボード</a>）で配信枠が作成されているか確認します。</li>
+      <li>丸ストの「サイト」画面から YouTube の「結び直す」をクリックし、ブラウザで Google アカウントのログインを行ってください。</li>
+    </ol>
+
+    <h3>2. 「コメントが送信・取得できない」</h3>
+    <p>YouTube のコメントは、YouTube 側で枠がアクティブ（配信中または公開枠）になって初めて LiveChatId が発行されます。配信を開始した後に自動で送受信が始まります。</p>
+  </section>
+
+  <!-- Twitch -->
+  <section id="twitch" class="site-section">
+    <div class="site-header">
+      <h2>Twitch</h2>
+      <span class="site-tag">Helix OAuth 認証</span>
+    </div>
+
+    <h3>1. 「カテゴリが見つからない・反映されない」</h3>
+    <p>Twitch のカテゴリは Helix API の正式名称と一致している必要があります。入力欄で文字を入力すると候補（サジェスト）が出るので、候補一覧から選択して送信してください。</p>
+
+    <h3>2. 「ログインを結び直す」</h3>
+    <p>「サイト」画面から Twitch の「結び直す」を押すとブラウザで Twitch の承認画面が開きます。</p>
+  </section>
+
+  <!-- ニコニコ生放送 -->
+  <section id="niconico" class="site-section">
+    <div class="site-header">
+      <h2>ニコニコ生放送</h2>
+      <span class="site-tag">Cookie 認証 ＋ 枠取り</span>
+    </div>
+
+    <h3>1. 「ログイン情報がない」</h3>
+    <p>ブラウザでニコニコ生放送にログインした状態で丸スト拡張機能から Cookie を送信するか、「ツール → 金庫」で設定します。</p>
+
+    <h3>2. 「OBS 停止時の自動枠閉じについて」</h3>
+    <p>丸ストでは誤操作や一時的な切断で枠が閉じてしまわないよう、OBS 停止後 <b>60秒間（1分）待機</b> してから自動で番組を終了する安全ガードを設けています。1分以内に OBS 配信を再開した場合は枠閉じが自動キャンセルされます。</p>
+  </section>
+
+  <!-- ツイキャス -->
+  <section id="twitcasting" class="site-section">
+    <div class="site-header">
+      <h2>ツイキャス</h2>
+      <span class="site-tag">OAuth / 配信キー</span>
+    </div>
+    <p>ツイキャスのタイトル・カテゴリ変更は API 経由で行われます。エラーが出る場合は「サイト」パネルでツイキャスの接続状態を確認してください。</p>
+  </section>
+
+  <!-- SOOP -->
+  <section id="soop" class="site-section">
+    <div class="site-header">
+      <h2>SOOP</h2>
+      <span class="site-tag">Cookie / トークン</span>
+    </div>
+    <p>ブラウザで SOOP にログインし、拡張機能から最新の Cookie を同期してください。</p>
+  </section>
+
+  <!-- Kukulu -->
+  <section id="kukulu" class="site-section">
+    <div class="site-header">
+      <h2>KukuluLive</h2>
+      <span class="site-tag">Cookie 認証</span>
+    </div>
+    <p>kukulu.erinn.biz にログインした状態で Cookie を同期します。スリープ検知プラグインが待機と再接続を自動管理します。</p>
+  </section>
+
+  <!-- Picarto -->
+  <section id="picarto" class="site-section">
+    <div class="site-header">
+      <h2>Picarto</h2>
+      <span class="site-tag">API トークン / 配信キー</span>
+    </div>
+    <p>Picarto のダッシュボードで発行した Bot/API トークンを金庫に登録して使用します。</p>
+  </section>
+
+  <!-- Rumble -->
+  <section id="rumble" class="site-section">
+    <div class="site-header">
+      <h2>Rumble</h2>
+      <span class="site-tag">配信枠 / サーバーキー</span>
+    </div>
+    <p>Rumble の配信管理画面で発行した RTMP URL とキーを登録して使用します。</p>
+  </section>
+</main>
+</body>
+</html>
